@@ -1,0 +1,6 @@
+framework module Pods_NextMatch {
+  umbrella header "Pods-NextMatch-umbrella.h"
+
+  export *
+  module * { export * }
+}
