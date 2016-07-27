@@ -1,163 +1,208 @@
 const Realm = require('realm');
-var TabBar = require('./TabBar.js');
-
+var TabBar = require("../View/TabBar");
 
 import React, { Component } from 'react';
 import {
-	// AppRegistry,
-	TabBarIOS,
 	StyleSheet,
 	Text,
-	View
+	View,
+	TextInput,
+  	Image,
+  	Dimensions,
+  	TouchableHighlight,
+  	NavigatorIOS,
+  	TabBarIOS,
 } from 'react-native';
 
-function setup(): ReactClass<{}> {
-	class NextMatch extends Component {
-		render() {
-			let realm = new Realm({
-				schema: [{name: 'Dog', properties: {name: 'string'}}]
-			});
+var windowSize = Dimensions.get('window');
 
-			realm.write(() => {
-				let dogs = realm.objects('Dog');
-				let tanDogs = dogs.filtered('name BEGINSWITH "R"');
-
-			});
-		// let dogs = realm.objects('Dog');
-		// let RDogs = dogs.filtered('name BEGINSWITH "R"');
-
-		return (
-			<View style={styles.container}>
-			<Text style={styles.welcome}>
-			Hi Boss Dao Truong Giang!
-			</Text>
-			<Text style={styles.instructions}>
-			To get started, edit index.ios.js
-			</Text>
-			<Text style={styles.instructions}>
-			Press Cmd+R to reload,{'\n'}
-			Cmd+D or shake for dev menu
-			Count of Dogs in Realm: {realm.objects('Dog').length}
+var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACSR7JhAAADtUlEQVR4Ac3YA2Bj6QLH0XPT1Fzbtm29tW3btm3bfLZtv7e2ObZnms7d8Uw098tuetPzrxv8wiISrtVudrG2JXQZ4VOv+qUfmqCGGl1mqLhoA52oZlb0mrjsnhKpgeUNEs91Z0pd1kvihA3ULGVHiQO2narKSHKkEMulm9VgUyE60s1aWoMQUbpZOWE+kaqs4eLEjdIlZTcFZB0ndc1+lhB1lZrIuk5P2aib1NBpZaL+JaOGIt0ls47SKzLC7CqrlGF6RZ09HGoNy1lYl2aRSWL5GuzqWU1KafRdoRp0iOQEiDzgZPnG6DbldcomadViflnl/cL93tOoVbsOLVM2jylvdWjXolWX1hmfZbGR/wjypDjFLSZIRov09BgYmtUqPQPlQrPapecLgTIy0jMgPKtTeob2zWtrGH3xvjUkPCtNg/tm1rjwrMa+mdUkPd3hWbH0jArPGiU9ufCsNNWFZ40wpwn+62/66R2RUtoso1OB34tnLOcy7YB1fUdc9e0q3yru8PGM773vXsuZ5YIZX+5xmHwHGVvlrGPN6ZSiP1smOsMMde40wKv2VmwPPVXNut4sVpUreZiLBHi0qln/VQeI/LTMYXpsJtFiclUN+5HVZazim+Ky+7sAvxWnvjXrJFneVtLWLyPJu9K3cXLWeOlbMTlrIelbMDlrLenrjEQOtIF+fuI9xRp9ZBFp6+b6WT8RrxEpdK64BuvHgDk+vUy+b5hYk6zfyfs051gRoNO1usU12WWRWL73/MMEy9pMi9qIrR4ZpV16Rrvduxazmy1FSvuFXRkqTnE7m2kdb5U8xGjLw/spRr1uTov4uOgQE+0N/DvFrG/Jt7i/FzwxbA9kDanhf2w+t4V97G8lrT7wc08aA2QNUkuTfW/KimT01wdlfK4yEw030VfT0RtZbzjeMprNq8m8tnSTASrTLti64oBNdpmMQm0eEwvfPwRbUBywG5TzjPCsdwk3IeAXjQblLCoXnDVeoAz6SfJNk5TTzytCNZk/POtTSV40NwOFWzw86wNJRpubpXsn60NJFlHeqlYRbslqZm2jnEZ3qcSKgm0kTli3zZVS7y/iivZTweYXJ26Y+RTbV1zh3hYkgyFGSTKPfRVbRqWWVReaxYeSLarYv1Qqsmh1s95S7G+eEWK0f3jYKTbV6bOwepjfhtafsvUsqrQvrGC8YhmnO9cSCk3yuY984F1vesdHYhWJ5FvASlacshUsajFt2mUM9pqzvKGcyNJW0arTKN1GGGzQlH0tXwLDgQTurS8eIQAAAABJRU5ErkJggg==';
 
 
 
-			</Text>
-			</View>
-			);
+const UserSchema = {
+				name: 'User',
+				primaryKey: 'id',
+				properties: {
+    				id:    'int',    // primary key
+    				user: 'string',
+    				password: 'string'
+    				
+				}
+};
+let realm = new Realm({schema: [UserSchema]});
+
+//
 
 
+class Login extends Component{
+	// 
+
+	// static propTypes = {
+	// 	title: PropTypes.string.isRequired,
+	// 	navigator: PropTypes.object.isRequired,
+	// }
+
+	constructor(props) {
+		super(props);
+		this.state = {username:'', password:'',isLoggedIn: false};
+		this.onClick = this.onClick.bind(this);
 		
+	}
+
+	
+
+	onClick(){
+		let users = realm.objects('User');
+		let user = users.filtered('user = "{this.state.username}" AND password = "{this.state.password}"');
+		if (user != null) {
+			
+			// this.props.toggleNavBar();
+			this.props.navigator.push({
+				title: "Secure Page",
+            	component: TabBar,
+            	passProps: {username: this.state.username, password: this.state.password,isLoggedin:this.isLoggedIn},
+			});
 		}
 	}
 
-	var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACSR7JhAAADtUlEQVR4Ac3YA2Bj6QLH0XPT1Fzbtm29tW3btm3bfLZtv7e2ObZnms7d8Uw098tuetPzrxv8wiISrtVudrG2JXQZ4VOv+qUfmqCGGl1mqLhoA52oZlb0mrjsnhKpgeUNEs91Z0pd1kvihA3ULGVHiQO2narKSHKkEMulm9VgUyE60s1aWoMQUbpZOWE+kaqs4eLEjdIlZTcFZB0ndc1+lhB1lZrIuk5P2aib1NBpZaL+JaOGIt0ls47SKzLC7CqrlGF6RZ09HGoNy1lYl2aRSWL5GuzqWU1KafRdoRp0iOQEiDzgZPnG6DbldcomadViflnl/cL93tOoVbsOLVM2jylvdWjXolWX1hmfZbGR/wjypDjFLSZIRov09BgYmtUqPQPlQrPapecLgTIy0jMgPKtTeob2zWtrGH3xvjUkPCtNg/tm1rjwrMa+mdUkPd3hWbH0jArPGiU9ufCsNNWFZ40wpwn+62/66R2RUtoso1OB34tnLOcy7YB1fUdc9e0q3yru8PGM773vXsuZ5YIZX+5xmHwHGVvlrGPN6ZSiP1smOsMMde40wKv2VmwPPVXNut4sVpUreZiLBHi0qln/VQeI/LTMYXpsJtFiclUN+5HVZazim+Ky+7sAvxWnvjXrJFneVtLWLyPJu9K3cXLWeOlbMTlrIelbMDlrLenrjEQOtIF+fuI9xRp9ZBFp6+b6WT8RrxEpdK64BuvHgDk+vUy+b5hYk6zfyfs051gRoNO1usU12WWRWL73/MMEy9pMi9qIrR4ZpV16Rrvduxazmy1FSvuFXRkqTnE7m2kdb5U8xGjLw/spRr1uTov4uOgQE+0N/DvFrG/Jt7i/FzwxbA9kDanhf2w+t4V97G8lrT7wc08aA2QNUkuTfW/KimT01wdlfK4yEw030VfT0RtZbzjeMprNq8m8tnSTASrTLti64oBNdpmMQm0eEwvfPwRbUBywG5TzjPCsdwk3IeAXjQblLCoXnDVeoAz6SfJNk5TTzytCNZk/POtTSV40NwOFWzw86wNJRpubpXsn60NJFlHeqlYRbslqZm2jnEZ3qcSKgm0kTli3zZVS7y/iivZTweYXJ26Y+RTbV1zh3hYkgyFGSTKPfRVbRqWWVReaxYeSLarYv1Qqsmh1s95S7G+eEWK0f3jYKTbV6bOwepjfhtafsvUsqrQvrGC8YhmnO9cSCk3yuY984F1vesdHYhWJ5FvASlacshUsajFt2mUM9pqzvKGcyNJW0arTKN1GGGzQlH0tXwLDgQTurS8eIQAAAABJRU5ErkJggg==';
+	render() {
+		
+
+		
+		// realm.write(() => {
+		// 	realm.create('User', {id: 2,user:'Giang', password:'Giang'});
+		// });
 
 
-	var TabBar = React.createClass({
-		statics: {
-			title: '<TabBarIOS>',
-			description: 'Tab-based navigation.',
-		},
 
-		displayName: 'TabBarExample',
+		return (
+			
 
-		getInitialState: function() {
-			return {
-				selectedTab: 'redTab',
-				notifCount: 0,
-				presses: 0,
-			};
-		},
+			<View style={styles.container}>
+			<Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
+			<View style={styles.header}>
+			<Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
+			</View>
+			<View style={styles.inputs}>
+			<View style={styles.inputContainer}>
+			<Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
+			<TextInput 
+			style={[styles.input, styles.whiteFont]}
+			placeholder="Username"
+			placeholderTextColor="#FFF"
+			onChangeText={(username) => this.setState({username})}
+			value={this.state.username}
+			/>
+			</View>
+			<View style={styles.inputContainer}>
+			<Image style={styles.inputPassword} source={{uri: 'http://i.imgur.com/ON58SIG.png'}}/>
+			<TextInput
+			password={true}
+			style={[styles.input, styles.whiteFont]}
+			placeholder="Pasword"
+			placeholderTextColor="#FFF"
+			onChangeText={(password) => this.setState({password})}
+			value={this.state.password}
+			/>
+			</View>
+			<View style={styles.forgotContainer}>
+			<Text style={styles.greyFont}>Forgot Password</Text>
+			</View>
+			</View>
+			<View style={styles.signin}>
+			<TouchableHighlight onPress={this.onClick}>
+			<Text style={styles.whiteFont}>Sign In</Text>
+			</TouchableHighlight>
+			
+			</View>
+			<View style={styles.signup}>
+			<Text style={styles.greyFont}>Don't have an account?<Text style={styles.whiteFont}>  Sign Up</Text></Text>
+			</View>
+			</View>
+			);
+	}
+};
 
-		_renderContent: function(color: string, pageText: string, num?: number) {
-			return (
-				<View style={[styles.tabContent, {backgroundColor: color}]}>
-				<Text style={styles.tabText}>{pageText}</Text>
-				<Text style={styles.tabText}>{num} re-renders of the {pageText}</Text>
-				</View>
-				);
-		},
 
-		render: function() {
-			return (
-				<TabBarIOS
-				unselectedTintColor="yellow"
-				tintColor="white"
-				barTintColor="darkslateblue">
-				<TabBarIOS.Item
-				title="Blue Tab"
-				icon={{uri: base64Icon, scale: 3}}
-				selected={this.state.selectedTab === 'blueTab'}
-				onPress={() => {
-					this.setState({
-						selectedTab: 'blueTab',
-					});
-				}}>
-				{this._renderContent('#414A8C', 'Blue Tab')}
-				</TabBarIOS.Item>
-				<TabBarIOS.Item
-				systemIcon="history"
-				badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
-				selected={this.state.selectedTab === 'redTab'}
-				onPress={() => {
-					this.setState({
-						selectedTab: 'redTab',
-						notifCount: this.state.notifCount + 1,
-					});
-				}}>
-				{this._renderContent('#783E33', 'Red Tab', this.state.notifCount)}
-				</TabBarIOS.Item>
-				<TabBarIOS.Item
-				icon={require('./flux.png')}
-				selectedIcon={require('./relay.png')}
-				renderAsOriginal
-				title="More"
-				selected={this.state.selectedTab === 'greenTab'}
-				onPress={() => {
-					this.setState({
-						selectedTab: 'greenTab',
-						presses: this.state.presses + 1
-					});
-				}}>
-				{this._renderContent('#21551C', 'Green Tab', this.state.presses)}
-				</TabBarIOS.Item>
-				</TabBarIOS>
-				);
-		},
 
-	});
 
-	var styles = StyleSheet.create({
-		tabContent: {
-			flex: 1,
-			alignItems: 'center',
-		},
-		tabText: {
-			color: 'white',
-			margin: 50,
-		},
-	});
-	return TabBar;
-	// return NextMatch;
-}
+
+
+	
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: '#F5FCFF',
-	},
-	welcome: {
-		fontSize: 20,
-		textAlign: 'center',
-		margin: 10,
-	},
-	instructions: {
-		textAlign: 'center',
-		color: '#333333',
-		marginBottom: 5,
-	},
-});
+    container: {
+      flexDirection: 'column',
+      flex: 1,
+      backgroundColor: 'transparent'
+    },
+    bg: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: windowSize.width,
+        height: windowSize.height
+    },
+    header: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: .5,
+        backgroundColor: 'transparent'
+    },
+    mark: {
+        width: 150,
+        height: 150
+    },
+    signin: {
+        backgroundColor: '#FF3366',
+        padding: 20,
+        alignItems: 'center'
+    },
+    signup: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      flex: .15
+    },
+    inputs: {
+        marginTop: 10,
+        marginBottom: 10,
+        flex: .25
+    },
+    inputPassword: {
+        marginLeft: 15,
+        width: 20,
+        height: 21
+    },
+    inputUsername: {
+      marginLeft: 15,
+      width: 20,
+      height: 20
+    },
+    inputContainer: {
+        padding: 10,
+        borderWidth: 1,
+        borderBottomColor: '#CCC',
+        borderColor: 'transparent'
+    },
+    input: {
+        position: 'absolute',
+        left: 61,
+        top: 12,
+        right: 0,
+        height: 20,
+        fontSize: 14
+    },
+    forgotContainer: {
+      alignItems: 'flex-end',
+      padding: 15,
+    },
+    greyFont: {
+      color: '#D8D8D8'
+    },
+    whiteFont: {
+      color: '#FFF'
+    }
+})
 
-module.exports = setup;
+module.exports = Login;
