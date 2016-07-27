@@ -1,5 +1,9 @@
 'use strict';
-var Ranking = require("./Ranking.ios");
+var Ranking = require("./Ranking.js");
+var YourTeam = require("./yourTeam.js");
+var Match = require("./Match.js");
+var Profile = require("./Profile.js");
+
 import React, { Component } from 'react';
 import {
   StyleSheet,
@@ -61,33 +65,52 @@ class TabBar extends Component{
         }}>
         <Ranking/>
         </TabBarIOS.Item>
-        
+
         <TabBarIOS.Item
-        systemIcon="history"
-        badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
-      selected={this.state.selectedTab === 'redTab'}
-      onPress={() => {
-        this.setState({
-          selectedTab: 'redTab',
-          notifCount: this.state.notifCount + 1,
-        });
+        // systemIcon="history"
+        title="Match"
+        icon={{uri: base64Icon, scale: 3}}
+        // badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
+        selected={this.state.selectedTab === 'Match'}
+        onPress={() => {
+          this.setState({
+            selectedTab: 'Match',
+            // notifCount: this.state.notifCount + 1,
+          });
       }}>
-      {this._renderContent('#783E33', 'Red Tab', this.state.notifCount)}
+      <Match/>
       </TabBarIOS.Item>
+
       <TabBarIOS.Item
       icon={require('./flux.png')}
       selectedIcon={require('./relay.png')}
       renderAsOriginal
-      title="More"
-      selected={this.state.selectedTab === 'greenTab'}
+      title="Your Profile"
+      selected={this.state.selectedTab === 'profile'}
       onPress={() => {
         this.setState({
-          selectedTab: 'greenTab',
-          presses: this.state.presses + 1
+          selectedTab: 'profile',
+          // presses: this.state.presses + 1
         });
       }}>
-      {this._renderContent('#21551C', 'Green Tab', this.state.presses)}
+      <Profile/>
       </TabBarIOS.Item>
+
+      <TabBarIOS.Item
+        // systemIcon="history"
+        title="Your Team"
+        icon={{uri: base64Icon, scale: 3}}
+        // badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
+        selected={this.state.selectedTab === 'yourTeam'}
+        onPress={() => {
+          this.setState({
+            selectedTab: 'yourTeam',
+            // notifCount: this.state.notifCount + 1,
+          });
+      }}>
+      <YourTeam/>
+      </TabBarIOS.Item>
+
       </TabBarIOS>
       );
   }

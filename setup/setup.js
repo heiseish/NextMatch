@@ -30,18 +30,28 @@ const UserSchema = {
     				
 				}
 };
-let realm = new Realm({schema: [UserSchema]});
+const ReviewSchema = {
+  name: 'Review',
+  properties: {
+    review: 'int',
+  }
+};
 
-//
+const TeamSchema = {
+  name: 'Team',
+  primaryKey: 'id',
+  properties: {
+    id:    'int',    // primary key
+    teamname: 'string',
+    rankpoint: 'int',
+    teamdescription: 'string',
+    review: {type: 'list', objectType: 'Review'},
+  }
+};
+let realm = new Realm({schema: [ReviewSchema, TeamSchema, UserSchema]});
 
 
 class Login extends Component{
-	// 
-
-	// static propTypes = {
-	// 	title: PropTypes.string.isRequired,
-	// 	navigator: PropTypes.object.isRequired,
-	// }
 
 	constructor(props) {
 		super(props);

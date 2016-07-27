@@ -6,6 +6,26 @@ import {
   TabBarIOS
 } from 'react-native';
 
+const ReviewSchema = {
+  name: 'Review',
+  properties: {
+    review: 'int',
+  }
+};
+
+const TeamSchema = {
+  name: 'Team',
+  primaryKey: 'id',
+  properties: {
+    id:    'int',    // primary key
+    teamname: 'string',
+    rankpoint: 'int',
+    teamdescription: 'string',
+    review: {type: 'list', objectType: 'Review', optional: true},
+  }
+};
+let realm = new Realm({schema: [ReviewSchema, TeamSchema]});
+
 var styles = StyleSheet.create({
   description: {
     fontSize: 20,
@@ -20,7 +40,7 @@ var styles = StyleSheet.create({
   }
 });
  
-class Ranking extends Component {
+class YourTeam extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -31,4 +51,4 @@ class Ranking extends Component {
     );
   }
 }
-module.exports = Ranking;
+module.exports = YourTeam;
