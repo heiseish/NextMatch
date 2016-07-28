@@ -1,4 +1,6 @@
-const Realm = require('realm');
+// const Realm = require('realm');
+var realm = require('../Model/model.js');
+
 import React, { Component } from 'react';
 import {
   StyleSheet,
@@ -8,77 +10,38 @@ import {
   ListView,
 } from 'react-native';
 // import { ListView } from 'realm/react-native';
-const UserSchema = {
-        name: 'User',
-        primaryKey: 'id',
-        properties: {
-            id:    'int',    // primary key
-            user: 'string',
-            password: 'string'
-            
-        }
-};
+// realm.write(() => {
+//   realm.create('Team', {id : 3,teamname:  'Haha United'});
+// });
+var arr = [];
+let results = realm.objects('Team');
+results.forEach(function(current,i,Team){
+  arr.push(results[i]);
+})
 
-const ReviewSchema = {
-  name: 'Review',
-  properties: {
-    review: 'int',
-  }
-};
 
-const TeamSchema = {
-  name: 'Team',
-  primaryKey: 'id',
-  properties: {
-    id:    'int',    // primary key
-    teamname: 'string',
-    rankpoint: 'int',
-    teamdescription: 'string',
-    review: {type: 'list', objectType: 'Review'},
-  }
-};
-let realm = new Realm({schema: [ReviewSchema, TeamSchema, UserSchema]});
-
-var testData = [{"firstName":"Black","lastName":"Garrett"},
-{"firstName":"Morales","lastName":"Duncan"},
-{"firstName":"Ramos","lastName":"King"},
-{"firstName":"Dunn","lastName":"Collins"},
-{"firstName":"Fernandez","lastName":"Montgomery"},
-{"firstName":"Burns","lastName":"Fox"},
-{"firstName":"Richardson","lastName":"Kim"},
-{"firstName":"Hanson","lastName":"Evans"},
-{"firstName":"Anderson","lastName":"Hunt"},
-{"firstName":"Carter","lastName":"Grant"},
-{"firstName":"Ray","lastName":"Ruiz"},
-{"firstName":"Hart","lastName":"Schmidt"},
-{"firstName":"White","lastName":"Andrews"},
-{"firstName":"Hall","lastName":"Holmes"},
-{"firstName":"Hawkins","lastName":"Gomez"},
-{"firstName":"Bowman","lastName":"Sullivan"},
-{"firstName":"Brooks","lastName":"Evans"},
-{"firstName":"Reyes","lastName":"Perez"},
-{"firstName":"Dixon","lastName":"Barnes"},
-{"firstName":"Ward","lastName":"Lee"},
-{"firstName":"Berry","lastName":"Payne"},
-{"firstName":"Murray","lastName":"Rose"},
-{"firstName":"Stephens","lastName":"Fowler"},
-{"firstName":"Rodriguez","lastName":"Lewis"},
-{"firstName":"Cook","lastName":"Dean"}];
+// function compare(a,b) {
+//   if (a.lastName < b.lastName)
+//     return -1;
+//   if (a.lastName > b.lastName)
+//     return 1;
+//   return 0;
+// }
 
 function compare(a,b) {
-  if (a.lastName < b.lastName)
+  if (a.rankpoint < b.rankpoint)
     return -1;
-  if (a.lastName > b.lastName)
+  if (a.rankpoint > b.rankpoint)
     return 1;
   return 0;
 }
 
-class SampleRow extends Component{
+class Row extends Component{
   render() {
     return (
       <View style={styles.wrapper}>
         <View>
-          <Text style={styles.text}>{this.props.lastName}, {this.props.firstName}</Text>
+          <Text style={styles.text}>{this.props.teamname}        {this.props.rankpoint}</Text>
         </View>
       </View>
     );
@@ -94,7 +57,7 @@ class Ranking extends Component{
         rowHasChanged: (r1, r2) => r1 !== r2
         });
 
-        var {data, sectionIds} = this.renderListViewData(testData.sort(compare));
+        var {data, sectionIds} = this.renderListViewData(arr.sort(compare));
 
         this.state = {
           dataSource: ds.cloneWithRowsAndSections(data, sectionIds)
@@ -103,7 +66,7 @@ class Ranking extends Component{
   
   componentDidMount() {
     var listViewScrollView = this.refs.listView.getScrollResponder();
-    listViewScrollView.scrollTo(1); // Hack to get ListView to render fully
+    listViewScrollView.scrollTo({x:1, animated:true}); // Hack to get ListView to render fully
   }
   
   renderListViewData(users) {
@@ -111,7 +74,7 @@ class Ranking extends Component{
     var sectionIds = [];
     
     users.map((user) => {
-      var section = user.lastName.charAt(0);
+      var section = user.teamname.charAt(0);
       if (sectionIds.indexOf(section) === -1) {
         sectionIds.push(section);
         data[section] = [];
@@ -122,17 +85,17 @@ class Ranking extends Component{
     return {data, sectionIds};
   }
   
-  renderSectionHeader(data, sectionId) {
-    var text;
-    return (
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionHeaderText}>{sectionId}</Text>
-      </View>
-    );
-  }
+  // renderSectionHeader(data, sectionId) {
+  //   var text;
+  //   return (
+  //     <View style={styles.sectionHeader}>
+  //       <Text style={styles.sectionHeaderText}>{sectionId}</Text>
+  //     </View>
+  //   );
+  // }
   
   renderRow(rowData) {
-    return <SampleRow {...rowData} style={styles.row} />
+    return <Row {...rowData} style={styles.row} />
   }
 
   render() {
@@ -142,7 +105,7 @@ class Ranking extends Component{
         automaticallyAdjustContentInsets={false}
         dataSource={this.state.dataSource}
         renderRow={this.renderRow}
-        renderSectionHeader={this.renderSectionHeader}
+        // renderSectionHeader={this.renderSectionHeader}
       />
     );
   }
@@ -178,92 +141,10 @@ var styles = StyleSheet.create({
   },
 });
 
-// var arr = [];
-
-// let teams = realm.objects('Team').sorted('rankpoint');
-// let teams2 = teams.value;
-// let team = {};
-
-// teams.forEach(function(team,i,teams2){
-//   arr.push(team);
-// })
-// console.log(arr[0]);
-// // console.log(teams);
 
 
 
 
-// Specify your own logic for sorting the datasource objects
-// function compare(a,b) {
-//   if (a.rankpoint < b.rankpoint)
-//     return -1;
-//   if (a.rankpoint > b.rankpoint)
-//     return 1;
-//   return 0;
-// }
-
-// class Row extends Component({
-//   render() {
-//     return (
-//       <View style={styles.wrapper}>
-//         <View>
-//           <Text style={styles.text}>{this.props.lastName}, {this.props.firstName}</Text>
-//         </View>
-//       </View>
-//     );
-//   }
-// });
-
-
-
- 
-// class Ranking extends Component {
-
-//   // getInitialState() {
-//   //       var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-//   //       let teams = [ realm.objects('Team').sorted('rankpoint') ];
-        
-//   //       return {
-//   //           //dataSource: ds.cloneWithRows(['row 1', 'row 2', 'row 3']),
-//   //           dataSource: ds.cloneWithRows(teams)
-//   //       };
-//   //   }
-
-//     constructor(props){
-//         super(props);
-//         var ds = new ListView.DataSource({
-//         rowHasChanged: (r1, r2) => r1 !== r2,
-//         });
-//         this.state = {
-//           dataSource: ds.cloneWithRows(teams)
-//         }
-//     }
-
-//     render() {
-      
-//       return (
-//         <ListView
-//           dataSource={this.state.dataSource}
-//           renderRow={(rowData) => <Text>{rowData}</Text>}
-//         />
-//       );
-//     }
-  // getInitialState() {
-  //   var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-  //   return {
-  //     dataSource: ds.cloneWithRows(['row 1', 'row 2']),
-  //   };
-  // }
-
-  // render() {
-  //   return (
-  //     <ListView
-  //     dataSource={this.state.dataSource.bind(this)}
-  //     renderRow={(rowData) => <Text>{rowData}</Text>}
-  //     />
-  //     );
-  // }
-// }
 
 
 

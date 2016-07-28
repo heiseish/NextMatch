@@ -1,3 +1,4 @@
+var realm = require('../Model/model.js');
 import React, { Component } from 'react';
 import {
   StyleSheet,
@@ -6,25 +7,25 @@ import {
   TabBarIOS
 } from 'react-native';
 
-const ReviewSchema = {
-  name: 'Review',
-  properties: {
-    review: 'int',
-  }
-};
+// const ReviewSchema = {
+//   name: 'Review',
+//   properties: {
+//     review: 'int',
+//   }
+// };
 
-const TeamSchema = {
-  name: 'Team',
-  primaryKey: 'id',
-  properties: {
-    id:    'int',    // primary key
-    teamname: 'string',
-    rankpoint: 'int',
-    teamdescription: 'string',
-    review: {type: 'list', objectType: 'Review', optional: true},
-  }
-};
-let realm = new Realm({schema: [ReviewSchema, TeamSchema]});
+// const TeamSchema = {
+//   name: 'Team',
+//   primaryKey: 'id',
+//   properties: {
+//     id:    'int',    // primary key
+//     teamname: 'string',
+//     rankpoint: 'int',
+//     teamdescription: 'string',
+//     review: {type: 'list', objectType: 'Review', optional: true},
+//   }
+// };
+// let realm = new Realm({schema: [ReviewSchema, TeamSchema]});
 
 var styles = StyleSheet.create({
   description: {

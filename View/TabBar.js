@@ -3,6 +3,8 @@ var Ranking = require("./Ranking.js");
 var YourTeam = require("./yourTeam.js");
 var Match = require("./Match.js");
 var Profile = require("./Profile.js");
+var realm = require('../Model/model.js');
+
 
 import React, { Component } from 'react';
 import {
