@@ -60,7 +60,8 @@ class Ranking extends Component {
 
     this.props.navigator.push({
       title: "Team View",
-      component: <TeamView/>,
+      component: TeamView,
+      navigationBarHidden: false,
       passProps: {property: teamSelected},
     });
   }

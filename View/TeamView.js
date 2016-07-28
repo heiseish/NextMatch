@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 class TeamView extends Component {
+
   constructor(props) {
     super(props);
     this.state = {

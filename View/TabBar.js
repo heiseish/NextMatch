@@ -74,7 +74,7 @@ class TabBar extends Component{
             selectedTab: 'Ranking',
           });
         }}>
-        <Ranking/>
+        <Ranking navigator={this.props.navigator} navComponent={this.props.navCompent}/>
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
