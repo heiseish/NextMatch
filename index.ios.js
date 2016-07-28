@@ -11,14 +11,17 @@ import { NavigatorIOS, Text } from 'react-native';
 export default class NextMatch extends Component {
   render() {
 
+
     return (
       <NavigatorIOS
         initialRoute={{
+          name: 'Login',
           component: Login,
           title: 'My Initial Scene',
         }}
         style={{flex: 1}}
         navigationBarHidden={true}
+        renderScene={ this.renderScene }
       />
     );
   }

@@ -1,3 +1,6 @@
+'use strict';
+
+
 var TabBar = require("../View/TabBar");
 var realm = require('../Model/model.js');
 
@@ -42,20 +45,21 @@ class Login extends Component{
 
 	onClick(){
 		// this.setState({ isLoading: true });
-		this.setState({ progress:0 });
+		// this.setState({ progress:0 });
 		// let users = realm.objects('User');
-		// let username = this.state.username;
-		// let password = this.state.password;
-		// let user = users.filtered('user = username AND password = password');
-		// if (user.id) {
+		
+		// let user = users.filtered('username == $0',this.state.username)[0];
+		// if ((user) && user.password === this.state.password) {
 				this.setState({ progress:1 });
 				this.props.navigator.push({
 						title: "Secure Page",
-            			component: TabBar,
-            			passProps: {username: this.state.username, password: this.state.password,isLoggedin:this.isLoggedIn},
+            component: TabBar,
+            passProps: {username: this.state.username, password: this.state.password,isLoggedin:this.isLoggedIn},
 				});
 		
-		// }
+		// } else {
+
+  //   }
 	}
 
 	render() {
@@ -67,12 +71,7 @@ class Login extends Component{
             progress={this.state.progress}
             indeterminate={this.state.indeterminate}
           	/>) : ( <View/>);;
-		
 
-		
-		// realm.write(() => {
-		// 	realm.create('User', {id: 2,user:'Giang', password:'Giang'});
-		// });
 
 
 
@@ -129,8 +128,6 @@ class Login extends Component{
 			);
 	}
 };
-
-
 // <Progress.Circle
 // size={this.state.Size}
 // style={styles.progress}
@@ -138,11 +135,7 @@ class Login extends Component{
 // progress={this.state.progress}
 // indeterminate={this.state.indeterminate}
 // />
-
-
-
 	
-
 const styles = StyleSheet.create({
     container: {
       flexDirection: 'column',
@@ -215,7 +208,6 @@ const styles = StyleSheet.create({
     whiteFont: {
       color: '#FFF'
     },
-
     circles: {
     	flexDirection: 'row',
     	alignItems: 'center',
@@ -224,5 +216,4 @@ const styles = StyleSheet.create({
     	margin: 10,
     },
 })
-
 module.exports = Login;

@@ -1,3 +1,5 @@
+'use strict';
+
 var realm = require('../Model/model.js');
 import React, { Component } from 'react';
 import {

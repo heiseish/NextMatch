@@ -1,5 +1,6 @@
-// const Realm = require('realm');
+'use strict';
 var realm = require('../Model/model.js');
+var TeamView = require('./TeamView');
 
 import React, { Component } from 'react';
 import {
@@ -8,10 +9,14 @@ import {
   View,
   TabBarIOS,
   // ListView,
+  // Dimensions,
   TouchableHighlight,
   Image,
+  NavigatorIOS,
 } from 'react-native';
 import { ListView } from 'realm/react-native';
+
+// var windowSize = Dimensions.get('window');
 
 var arr = [];
 let results = realm.objects('Team');
@@ -30,18 +35,36 @@ function compare(a,b) {
 
 
 
-
 class Ranking extends Component {
- 
+ //  renderScene(route, navigator) {
+ //   if(route.component == 'Login') {
+ //     return <TabBar navigator={navigator} />
+ //   }
+ //   if(route.component == 'Ranking') {
+ //     return <TeamView navigator={navigator} />
+ //   }
+ // }
   constructor(props) {
     super(props);
     var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1 !== r2});
+      {rowHasChanged: (r1, r2) => r1.id !== r2.id});
 
     this.state = {
       dataSource: dataSource.cloneWithRows(arr.sort(compare))
     };
+    // this.rowPressed = this.rowPressed.bind(this);
   }
+
+  rowPressed(id) {
+    var teamSelected = arr.filter(prop => prop.id === id)[0];
+
+    this.props.navigator.push({
+      title: "Team View",
+      component: <TeamView/>,
+      passProps: {property: teamSelected},
+    });
+  }
+
 
  
   renderRow(rowData, sectionID, rowID) {
@@ -49,10 +72,11 @@ class Ranking extends Component {
 
     return (
 
-      <TouchableHighlight onPress={() => this.rowPressed(rowData.guid)}
+      <TouchableHighlight onPress={() => this.rowPressed(rowData.id)}
       underlayColor='#dddddd'>
         <View>
           <View style={styles.rowContainer}>
+            
             <Image style={styles.thumb} source={{ uri: rowData.image }} />
           <View  style={styles.textContainer}>
           <Text style={styles.rankpoint}>{mmr} MMR</Text>
@@ -63,6 +87,7 @@ class Ranking extends Component {
         <View style={styles.separator}/>
         </View>
       </TouchableHighlight>
+
       );
   }
 
@@ -74,8 +99,10 @@ class Ranking extends Component {
     return (
 
       <ListView
+        // navigator={this.props.navigator}
         dataSource={this.state.dataSource}
         renderRow={this.renderRow.bind(this)}/>
+
     );
   }
  
@@ -83,31 +110,21 @@ class Ranking extends Component {
 
 
 var styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   backgroundColor: '#F5FCFF',
-  // },
-  // wrapper: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   paddingRight: 10,
-  //   borderBottomWidth: 1,
-  //   borderBottomColor: '#e9e9e9',
-  // },
-  // text: {
-  //   fontSize: 24,
-  //   fontWeight: "100",
-  //   color: 'black',
-  // },
 
+  // bg: {
+  //   position: 'absolute',
+  //   left: 0,
+  //   top: 0,
+  //   width: windowSize.width,
+  //   height: windowSize.height
+  // },
   thumb: {
     width: 80,
     height: 80,
     marginRight: 10
   },
   textContainer: {
-    flex: 1
+    flex: 2
   },
   separator: {
     height: 1,
@@ -128,77 +145,6 @@ var styles = StyleSheet.create({
   },
 });
 
-
-
-// class Row extends Component{
-//   render() {
-//     return (
-//       <View style={styles.wrapper}>
-//       <TouchableHighlight underlayColor='#dddddd' onPress={() => this.rowPressed(rowData.guid)}>
-//         <View>
-//           <Text style={styles.text}>{this.props.teamname}        {this.props.rankpoint}</Text>
-//         </View>
-//         </TouchableHighlight>
-//       </View>
-//     );
-//   }
-// };
-
-
-// class Ranking extends Component{
-//   constructor(props){
-//         super(props);
-//         var ds = new ListView.DataSource({
-//         sectionHeaderHasChanged: (r1, r2) => r1 !== r2,
-//         rowHasChanged: (r1, r2) => r1 !== r2
-//         });
-
-        // var {data, sectionIds} = this.renderListViewData(arr.sort(compare));
-
-//         this.state = {
-//           dataSource: ds.cloneWithRowsAndSections(data, sectionIds)
-//         }
-//     }
-  
-  // componentDidMount() {
-  //   var listViewScrollView = this.refs.listView.getScrollResponder();
-  //   listViewScrollView.scrollTo({x:1, animated:true}); // Hack to get ListView to render fully
-  // }
-  
-//   renderListViewData(users) {
-//     var data = {};
-//     var sectionIds = [];
-    
-//     users.map((user) => {
-//       var section = user.teamname.charAt(0);
-//       if (sectionIds.indexOf(section) === -1) {
-//         sectionIds.push(section);
-//         data[section] = [];
-//       }
-//       data[section].push(user);
-//     });
-
-//     return {data, sectionIds};
-//   }
-  
-
-  
-//   renderRow(rowData) {
-//     return <Row {...rowData} style={styles.row} />
-//   }
-
-//   render() {
-//     return (
-//       <ListView
-//         ref="listView"
-//         automaticallyAdjustContentInsets={false}
-//         dataSource={this.state.dataSource}
-//         renderRow={this.renderRow}
-     
-//       />
-//     );
-//   }
-// };
 
 
 
