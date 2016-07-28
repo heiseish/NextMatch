@@ -3,11 +3,14 @@
 const {AppRegistry} = require('react-native');
 const Login = require('./setup/setup.js')
 
+
+
 import React, { Component } from 'react';
 import { NavigatorIOS, Text } from 'react-native';
 
 export default class NextMatch extends Component {
   render() {
+
     return (
       <NavigatorIOS
         initialRoute={{
@@ -24,4 +27,7 @@ export default class NextMatch extends Component {
 
 
 
+
+
 AppRegistry.registerComponent('NextMatch',() => NextMatch);
+

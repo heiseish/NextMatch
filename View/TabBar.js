@@ -13,6 +13,7 @@ import {
   View,
   TabBarIOS,
   NavigatorIOS,
+  ActivityIndicatorIOS,
 } from 'react-native';
 
 
@@ -31,7 +32,7 @@ class TabBar extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab:'Ranking',
+      selectedTab:'Match',
       notifCount: 0,
       presses:0,
       username: this.props.username,
@@ -84,8 +85,8 @@ class TabBar extends Component{
       </TabBarIOS.Item>
 
       <TabBarIOS.Item
-      icon={require('./flux.png')}
-      selectedIcon={require('./relay.png')}
+      icon={require('../Resource/flux.png')}
+      selectedIcon={require('../Resource/relay.png')}
       renderAsOriginal
       title="Your Profile"
       selected={this.state.selectedTab === 'profile'}

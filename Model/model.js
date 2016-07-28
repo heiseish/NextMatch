@@ -41,6 +41,7 @@ const TeamSchema = {
   properties: {
     id:    'int',    // primary key
     teamname: 'string',
+    image: {type: 'string', optional: true},
     rankpoint: {type: 'int', default: 0},
     teamdescription: {type: 'string', optional: true},
     review: {type: 'list', objectType: 'Review'},
@@ -59,7 +60,7 @@ const TeamSchema = {
 // let realm = new Realm({schema: [UpdatedPersonSchema]});
 
 // this will succeed and update the Realm to the new schema
-let realm = new Realm({schema: [UpdatedUserSchema,TeamSchema, ReviewSchema], schemaVersion: 2});
+let realm = new Realm({schema: [UpdatedUserSchema,TeamSchema, ReviewSchema], schemaVersion: 3});
 
 
 
