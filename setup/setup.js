@@ -3,6 +3,7 @@
 
 var TabBar = require("../View/TabBar");
 var realm = require('../Model/model.js');
+var Signup = require('./Signup');
 
 import * as Progress from 'react-native-progress';
 import React, { Component } from 'react';
@@ -16,7 +17,7 @@ import {
   	TouchableHighlight,
   	NavigatorIOS,
   	TabBarIOS,
-  	// ActivityIndicator,
+    AlertIOS,
 } from 'react-native';
 
 var windowSize = Dimensions.get('window');
@@ -37,30 +38,41 @@ class Login extends Component{
       		size: 80,
       		showsText: true
 		};
-		this.onClick = this.onClick.bind(this);
+		this.onClickLogin = this.onClickLogin.bind(this);
+    this.onClickSignup = this.onClickSignup.bind(this);
 		
 	}
 
 	
 
-	onClick(){
+	onClickLogin(){
 		// this.setState({ isLoading: true });
 		// this.setState({ progress:0 });
 		// let users = realm.objects('User');
 		
 		// let user = users.filtered('username == $0',this.state.username)[0];
 		// if ((user) && user.password === this.state.password) {
-				this.setState({ progress:1 });
+				// this.setState({ progress:1 });
 				this.props.navigator.push({
-						title: "Secure Page",
+						title: "Main",
             component: TabBar,
             passProps: {username: this.state.username, password: this.state.password,isLoggedin:this.isLoggedIn},
 				});
 		
-		// } else {
-
-  //   }
+	// 	} else {
+ //        AlertIOS.alert(
+ //            'Your ussername-password pair is incorrect! Please try again'
+ //          )
+ //        this.setState({isLoading: false})
+ //    }
 	}
+  onClickSignup(){
+    this.props.navigator.push({
+        title: "New Account",
+        component:Signup,
+        navigationBarHidden: false,
+    });
+  }
 
 	render() {
 		var spinner = this.state.isLoading ?
@@ -117,12 +129,12 @@ class Login extends Component{
 			<View style={styles.signin}>
 			{spinner}
 			
-			<TouchableHighlight onPress={this.onClick}>
+			<TouchableHighlight onPress={this.onClickLogin}>
 			<Text style={styles.whiteFont}>Sign In</Text>
 			</TouchableHighlight>
 			</View>
 			<View style={styles.signup}>
-			<Text style={styles.greyFont}>Don't have an account?<Text style={styles.whiteFont}>  Sign Up</Text></Text>
+			<Text style={styles.greyFont}>Don't have an account?</Text><TouchableHighlight onPress={this.onClickSignup}><Text style={styles.whiteFont}> Sign Up</Text></TouchableHighlight>
 			</View>
 			</View>
 			);
@@ -165,6 +177,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     signup: {
+      flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       flex: .15
@@ -215,5 +228,6 @@ const styles = StyleSheet.create({
     progress: {
     	margin: 10,
     },
+    
 })
 module.exports = Login;

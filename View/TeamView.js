@@ -36,7 +36,7 @@ class TeamView extends Component {
           <Text style={styles.title}>{teamSelected.teamname}</Text>
           <View style={styles.separator}/>
         </View>
-        <Text style={styles.description}>{teamSelected.description}</Text>
+        <Text style={styles.description}>{teamSelected.teamdescription}</Text>
         <Text style={styles.description}>Not yet</Text>
       </View>
     );

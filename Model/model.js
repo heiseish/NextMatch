@@ -1,20 +1,10 @@
 'use strict';
 
 const Realm = require('realm');
-// const UserSchema = {
-// 				name: 'User',
-// 				primaryKey: 'id',
-// 				properties: {
-//     				id:    'int',    // primary key
-//     				user: 'string',
-//     				password: 'string'
-    				
-// 				}
-// };
 
-const UpdatedUserSchema = {
-  // The schema name is the same, so previous `Person` object
-  // in the Realm will be updated
+
+const UserSchema = {
+
   name: 'User',
         primaryKey: 'username',
         properties: {
@@ -62,7 +52,7 @@ const TeamSchema = {
 // let realm = new Realm({schema: [UpdatedPersonSchema]});
 
 // this will succeed and update the Realm to the new schema
-let realm = new Realm({schema: [UpdatedUserSchema,TeamSchema, ReviewSchema], schemaVersion: 4});
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema], schemaVersion: 4});
 // realm.write(() => {
 
 //   realm.create('User',{

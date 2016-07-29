@@ -67,6 +67,8 @@ class TabBar extends Component{
 
         <TabBarIOS.Item
         title="Ranking"
+        //bookmarks', 'contacts', 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') bookmarks', 'contacts', 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') bookmarks', 'contacts',
+         // 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') 
         icon={{uri: base64Icon, scale: 3}}
         selected={this.state.selectedTab === 'Ranking'}
         onPress={() => {
