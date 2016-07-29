@@ -56,9 +56,8 @@ class Login extends Component{
 				this.props.navigator.push({
 						title: "Main",
             component: TabBar,
-            passProps: {username: this.state.username, password: this.state.password,isLoggedin:this.isLoggedIn},
+            passProps: {username: this.state.username},
 				});
-		
 	// 	} else {
  //        AlertIOS.alert(
  //            'Your ussername-password pair is incorrect! Please try again'

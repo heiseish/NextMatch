@@ -17,7 +17,7 @@ export default class NextMatch extends Component {
         initialRoute={{
           name: 'Login',
           component: Login,
-          title: 'My Initial Scene',
+          title: 'Log In',
         }}
         style={{flex: 1}}
         navigationBarHidden={true}

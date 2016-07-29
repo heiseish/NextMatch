@@ -8,12 +8,12 @@ const UserSchema = {
   name: 'User',
         primaryKey: 'username',
         properties: {
-            id:    'int',    // primary key
-            username: 'string',
+            id:    'int',   
+            username: 'string', // primary key
             password: 'string',
             fullname: 'string',
             displayname: 'string',
-            position: 'string',
+            position: {type: 'string', optional: true},
             picture: {type: 'data', optional: true},
             team: {type: 'string', optional:true}
             
@@ -52,11 +52,11 @@ const TeamSchema = {
 // let realm = new Realm({schema: [UpdatedPersonSchema]});
 
 // this will succeed and update the Realm to the new schema
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema], schemaVersion: 4});
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema], schemaVersion: 5});
 // realm.write(() => {
 
 //   realm.create('User',{
-//             id:    1,    // primary key
+//             id:    1,    
 //             username: 'giang',
 //             password: 'giang',
 //             fullname: 'Đào Trường Giang',
