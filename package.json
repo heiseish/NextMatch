@@ -7,9 +7,15 @@
   },
   "dependencies": {
     "art": "^0.10.0",
+    "code-push-cli": "^1.12.1-beta",
+    "moment": "^2.13.0",
+    "native-base": "^0.5.2",
     "react": "15.2.1",
     "react-native": "0.30.0",
+    "react-native-code-push": "^1.13.5-beta",
     "react-native-progress": "^3.0.1",
-    "realm": "^0.14.1"
+    "react-redux": "^4.4.5",
+    "realm": "^0.14.1",
+    "redux": "^3.5.2"
   }
 }

@@ -11,6 +11,7 @@ import {
   Image,
   NavigatorIOS,
 } from 'react-native';
+import { replaceRoute } from '../actions/route';
 
 class TeamView extends Component {
 

@@ -5,7 +5,7 @@ var Match = require("./Match.js");
 var Profile = require("./Profile.js");
 var realm = require('../Model/model.js');
 var TeamView = require('./TeamView.js');
-
+import { replaceRoute } from '../actions/route';
 import React, { Component } from 'react';
 import {
   StyleSheet,

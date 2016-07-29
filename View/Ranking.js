@@ -1,6 +1,7 @@
 'use strict';
 var realm = require('../Model/model.js');
 var TeamView = require('./TeamView');
+import { replaceRoute } from '../actions/route';
 
 import React, { Component } from 'react';
 import {
@@ -59,6 +60,7 @@ class Ranking extends Component {
     var teamSelected = arr.filter(prop => prop.id === id)[0];
 
     this.props.navigator.push({
+      name: "TeamView",
       title: "Team View",
       component: TeamView,
       navigationBarHidden: false,
