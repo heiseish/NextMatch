@@ -4,7 +4,7 @@ var YourTeam = require("./yourTeam.js");
 var Match = require("./Match.js");
 var Profile = require("./Profile.js");
 var realm = require('../Model/model.js');
-var TeamView = require('./TeamView.js');
+
 import { replaceRoute } from '../actions/route';
 import React, { Component } from 'react';
 import {
@@ -15,6 +15,10 @@ import {
   NavigatorIOS,
   ActivityIndicatorIOS,
 } from 'react-native';
+
+import { 
+  Icon, 
+} from 'native-base';
 
 
 
@@ -40,11 +44,9 @@ class TabBar extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab:'Match',
+      selectedTab:this.props.selectedTab,
       notifCount: 0,
       presses:0,
-      username: this.props.username,
-      password: this.props.password
     };
    
   }
@@ -67,8 +69,6 @@ class TabBar extends Component{
 
         <TabBarIOS.Item
         title="Ranking"
-        //bookmarks', 'contacts', 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') bookmarks', 'contacts', 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') bookmarks', 'contacts',
-         // 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') 
         icon={{uri: base64Icon, scale: 3}}
         selected={this.state.selectedTab === 'Ranking'}
         onPress={() => {
@@ -76,7 +76,7 @@ class TabBar extends Component{
             selectedTab: 'Ranking',
           });
         }}>
-        <Ranking navigator={this.props.navigator} navComponent={this.props.navCompent}/>
+        <Ranking navigator={this.props.navigator} user={this.props.user}/>
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
@@ -91,7 +91,7 @@ class TabBar extends Component{
             // notifCount: this.state.notifCount + 1,
           });
       }}>
-      <Match/>
+      <Match navigator={this.props.navigator} user={this.props.user}/>
       </TabBarIOS.Item>
 
       <TabBarIOS.Item
@@ -106,7 +106,7 @@ class TabBar extends Component{
           // presses: this.state.presses + 1
         });
       }}>
-      <Profile/>
+      <Profile navigator={this.props.navigator} user={this.props.user}/>
       </TabBarIOS.Item>
 
       <TabBarIOS.Item
@@ -121,7 +121,7 @@ class TabBar extends Component{
             // notifCount: this.state.notifCount + 1,
           });
       }}>
-      <YourTeam/>
+      <YourTeam navigator={this.props.navigator} user={this.props.user}/>
       </TabBarIOS.Item>
 
       </TabBarIOS>

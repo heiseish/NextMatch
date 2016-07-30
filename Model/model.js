@@ -13,8 +13,9 @@ const UserSchema = {
             password: 'string',
             fullname: 'string',
             displayname: 'string',
+            briefdesc: {type: 'string', optional:true},
             position: {type: 'string', optional: true},
-            picture: {type: 'data', optional: true},
+            image: {type: 'string', optional: true},
             team: {type: 'string', optional:true}
             
         }
@@ -39,32 +40,34 @@ const TeamSchema = {
     review: {type: 'list', objectType: 'Review'},
   }
 };
-// let realm = new Realm({schema: [ReviewSchema, TeamSchema, UserSchema]});
 
+const MatchSchema = {
+  name: 'Match',
+  primaryKey: 'id',
+  properties: { 
+    id: 'int',
+    hometeam: 'string',
+    awayteam: 'string',
+    state: {type: 'string', default: 'Coming'},
+    time: {type: 'string', optional: true},
+    hometeamscore: {type: 'int', optional: true},
+    awayteamscore: {type: 'int', optional: true},
+    
+  }
+};
 
-
-
-
-
-
-// this will throw because the schema has changed
-// and `schemaVersion` is not specified
-// let realm = new Realm({schema: [UpdatedPersonSchema]});
-
-// this will succeed and update the Realm to the new schema
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema], schemaVersion: 5});
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema], schemaVersion: 6});
 // realm.write(() => {
 
-//   realm.create('User',{
-//             id:    1,    
-//             username: 'giang',
-//             password: 'giang',
-//             fullname: 'Đào Trường Giang',
-//             displayname: 'heiseish',
-//             position: 'Center Back',
-//             team: 'NJ'
-            
-//         })
+//   realm.create('Match',{ 
+//     id: 6,
+//     hometeam: 'Phuc',
+//     awayteam: 'Giang',
+//     state: 'finished',
+//     hometeamscore: 1,
+//     awayteamscore: 69,
+    
+//   })
 // });
 
 

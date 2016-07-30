@@ -4,7 +4,7 @@ const {AppRegistry} = require('react-native');
 const Login = require('./setup/setup.js')
 
 import CodePush from 'react-native-code-push';
-import AppNavigator from './setup/AppNavigator';
+// import AppNavigator from './setup/AppNavigator';
 import React, { Component } from 'react';
 import { NavigatorIOS, Text,AppState } from 'react-native';
 
@@ -32,6 +32,8 @@ export default class NextMatch extends Component {
                 return <TabBar navigator={navigator} />;
             case 'Ranking':
                 return <Ranking navigator={navigator} />;
+            case 'editProfile':
+                return <EditProfile navigator={navigator} />;
             default :
                 return <Login navigator={navigator}  />;
         }

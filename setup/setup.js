@@ -43,6 +43,7 @@ class Login extends Component{
 		
 	}
 
+
  
         
  
@@ -50,25 +51,25 @@ class Login extends Component{
 
 	onClickLogin(){
 		this.setState({ isLoading: true });
-		// this.setState({ progress:0 });
-		// let users = realm.objects('User');
-		
-		// let user = users.filtered('username == $0',this.state.username)[0];
-		// if ((user) && user.password === this.state.password) {
-				// this.setState({ progress:1 });
+		this.setState({ progress:0 });
+		let users = realm.objects('User');
+		let user = users.filtered('username == $0',this.state.username)[0];
+
+		if ((user) && user.password === this.state.password) {
+				this.setState({isLoading: false})
 				this.props.navigator.push({
             title: 'Main',
 						name: "TabBar",
             component: TabBar,
-            passProps: {username: this.state.username},
+            passProps: {user:user,selectedTab:'profile'},
 				});
       
-	// 	} else {
- //        AlertIOS.alert(
- //            'Your ussername-password pair is incorrect! Please try again'
- //          )
- //        this.setState({isLoading: false})
- //    }
+		} else {
+        AlertIOS.alert(
+            'Your ussername-password pair is incorrect! Please try again'
+          )
+        this.setState({isLoading: false})
+    }
 	}
   onClickSignup(){
     this.props.navigator.push({

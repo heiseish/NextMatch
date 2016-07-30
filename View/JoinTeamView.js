@@ -30,43 +30,21 @@ import {
 } from 'react-native';
 
 
-
-
-
-
-
-class Ranking extends Component {
-  constructor(props) {
+class JoinTeamView extends Component {
+  constructor(props){
     super(props);
     this.state = {
       search: '',
+      loading: false, 
       radio1 : true,
       check1: false,
       modalVisible: false,
       selectedItem: undefined,
       results: {
-                teams: this.returnSortedTeam()
+                teams: []
             }
     }
   }
-
-  compare(a,b) {
-    if (a.rankpoint > b.rankpoint)
-      return -1;
-    if (a.rankpoint < b.rankpoint)
-      return 1;
-    return 0;
-  }
-  returnSortedTeam(){
-    var arr = [];
-    let results = realm.objects('Team');
-    results.forEach(function(current,i,Team){
-      arr.push(results[i]);
-    })
-    return (arr.sort(this.compare))
-
-  }
-
   setModalVisible(visible, x) {
         this.setState({
             modalVisible: visible,
@@ -77,6 +55,10 @@ class Ranking extends Component {
         this.setState({
             check1 : !this.state.check1
         })
+  }
+
+  _goBack(){
+    this.props.navigator.pop();
   }
 
   search() {
@@ -96,30 +78,27 @@ class Ranking extends Component {
     })
 
   }
-
-  render() {
-    return (
+  render(){
+    return(
       <Container>
-      <Header searchBar rounded>                            
-      <InputGroup>                        
-      <Icon name="ios-search" />                        
-      <Input placeholder="Search" value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
-      </InputGroup>                    
-      <Button transparent onPress={()=>this.search()}>Go</Button>                
-      </Header>
+        <Header searchBar rounded>                         
+          <InputGroup>                        
+            <Icon name="ios-search" />                        
+            <Input placeholder="Search" value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
+            <Icon name="logo-steam" />
+          </InputGroup>                    
+          <Button transparent onPress={() => {this._goBack()}}>Cancel</Button>                
+        </Header>
 
-      <Content>
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.results.teams} renderRow={(team) =>               
+        <Content>
+        <List dataArray={this.state.results.teams} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
         <Thumbnail square size={80} source={{uri: team.image}} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.teamname}</Text></Text>
         <Text style={{color:'#007594'}}>{team.teamdescription}</Text>    
         <Text note>Score: <Text note style={{marginTop: 5}}>{team.rankpoint}</Text></Text>    
         </ListItem>                            
-      }> </List> }
-
-
-
+      }> </List>
 
       <Modal
       animationType="slide"
@@ -149,13 +128,9 @@ class Ranking extends Component {
       </Card>
       </Modal>
 
-
-
-
       </Content>
       </Container>
-
-      );
+    );
   }
 }
 
@@ -180,9 +155,4 @@ const styles = StyleSheet.create({
 });
 
 
-
-
-
-
-
-module.exports = Ranking;
+module.exports = JoinTeamView;

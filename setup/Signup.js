@@ -35,6 +35,7 @@ class Signup extends Component{
   }
 
   onClickSignUp(){
+    let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
     if (this.state.passwordConf !== this.state.password) {
       AlertIOS.alert('Your passwords do not match. Please type in again')
       this._password.setNativeProps({text: ''});
@@ -47,11 +48,13 @@ class Signup extends Component{
       AlertIOS.alert('Please enter a valid username');
     } else if (this.state.password === ''){
       AlertIOS.alert('Please enter a valid password');
-    } else{
+    } else if ((user) && (user.username)){
+      AlertIOS.alert('This username already exists. Please choose another one');
+    } else {
       realm.write(() => {
 
         realm.create('User',{
-            // id:    1,   later
+            id:    3,
             username: this.state.username,
             password: this.state.password,
             fullname: this.state.fullname,
@@ -59,10 +62,12 @@ class Signup extends Component{
             position: this.state.position || '',
           })
       });
+      
+      let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
       this.props.navigator.push({
             title: "Main",
             component: TabBar,
-            passProps: {username: this.state.username},
+            passProps: {user: user},
         });
     }
   }
