@@ -32,8 +32,6 @@ export default class NextMatch extends Component {
                 return <TabBar navigator={navigator} />;
             case 'Ranking':
                 return <Ranking navigator={navigator} />;
-            case 'TeamView':
-                return <TeamView navigator={navigator} />;
             default :
                 return <Login navigator={navigator}  />;
         }

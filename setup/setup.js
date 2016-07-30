@@ -34,9 +34,9 @@ class Login extends Component{
 			// isLoggedIn: false,
 			isLoading: false,
 			progress: 0,
-      		indeterminate: true,
-      		size: 80,
-      		showsText: true
+      indeterminate: true,
+      size: 80,
+      showsText: true
 		};
 		this.onClickLogin = this.onClickLogin.bind(this);
     this.onClickSignup = this.onClickSignup.bind(this);
@@ -49,7 +49,7 @@ class Login extends Component{
 	
 
 	onClickLogin(){
-		// this.setState({ isLoading: true });
+		this.setState({ isLoading: true });
 		// this.setState({ progress:0 });
 		// let users = realm.objects('User');
 		

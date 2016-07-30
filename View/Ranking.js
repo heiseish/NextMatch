@@ -4,149 +4,162 @@ var TeamView = require('./TeamView');
 import { replaceRoute } from '../actions/route';
 
 import React, { Component } from 'react';
+import { 
+  Container, 
+  Header, 
+  Title, 
+  Content, 
+  Text, 
+  InputGroup, 
+  Input, 
+  Icon, 
+  Button ,
+  List,
+  ListItem,
+  Thumbnail,
+  Card,
+  CardItem,
+  H3,
+} from 'native-base';
 import {
+  Modal,
   StyleSheet,
-  Text,
+  Platform,
   View,
-  TabBarIOS,
-  // ListView,
-  // Dimensions,
-  TouchableHighlight,
   Image,
-  NavigatorIOS,
 } from 'react-native';
-import { ListView } from 'realm/react-native';
-
-// var windowSize = Dimensions.get('window');
-
-var arr = [];
-let results = realm.objects('Team');
-results.forEach(function(current,i,Team){
-  arr.push(results[i]);
-})
 
 
-function compare(a,b) {
-  if (a.rankpoint > b.rankpoint)
-    return -1;
-  if (a.rankpoint < b.rankpoint)
-    return 1;
-  return 0;
-}
+
+
 
 
 
 class Ranking extends Component {
- //  renderScene(route, navigator) {
- //   if(route.component == 'Login') {
- //     return <TabBar navigator={navigator} />
- //   }
- //   if(route.component == 'Ranking') {
- //     return <TeamView navigator={navigator} />
- //   }
- // }
   constructor(props) {
     super(props);
-    var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1.id !== r2.id});
-
     this.state = {
-      dataSource: dataSource.cloneWithRows(arr.sort(compare))
-    };
-    // this.rowPressed = this.rowPressed.bind(this);
+      search: '',
+      radio1 : true,
+      check1: false,
+      modalVisible: false,
+      search: 'nativebase',
+      selectedItem: undefined,
+    }
   }
 
-  rowPressed(id) {
-    var teamSelected = arr.filter(prop => prop.id === id)[0];
+  compare(a,b) {
+    if (a.rankpoint > b.rankpoint)
+      return -1;
+    if (a.rankpoint < b.rankpoint)
+      return 1;
+    return 0;
+  }
+  returnSortedTeam(){
+    var arr = [];
+    let results = realm.objects('Team');
+    results.forEach(function(current,i,Team){
+      arr.push(results[i]);
+    })
+    return (arr.sort(this.compare))
 
-    this.props.navigator.push({
-      name: "TeamView",
-      title: "Team View",
-      component: TeamView,
-      navigationBarHidden: false,
-      passProps: {property: teamSelected},
-    });
   }
 
+  setModalVisible(visible, x) {
+        this.setState({
+            modalVisible: visible,
+            selectedItem: x
+        });
+  }
+  toggleCheck() {
+        this.setState({
+            check1 : !this.state.check1
+        })
+  }
 
- 
-  renderRow(rowData, sectionID, rowID) {
-    var mmr = rowData.rankpoint;
-
+  render() {
     return (
+      <Container>
+      <Header searchBar rounded>                            
+      <InputGroup>                        
+      <Icon name="ios-search" />                        
+      <Input placeholder="Search" value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
+      </InputGroup>                    
+      <Button transparent onPress={()=>this.search()}>Go</Button>                
+      </Header>
 
-      <TouchableHighlight onPress={() => this.rowPressed(rowData.id)}
-      underlayColor='#dddddd'>
-        <View>
-          <View style={styles.rowContainer}>
-            
-            <Image style={styles.thumb} source={{ uri: rowData.image }} />
-          <View  style={styles.textContainer}>
-          <Text style={styles.rankpoint}>{mmr} MMR</Text>
-          <Text style={styles.title}
-            numberOfLines={1}>{rowData.teamname}</Text>
-          </View>
-        </View>
-        <View style={styles.separator}/>
-        </View>
-      </TouchableHighlight>
+      <Content>
+      <List dataArray={this.returnSortedTeam()} renderRow={(team) =>               
+        <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
+        <Thumbnail square size={80} source={{uri: team.image}} />        
+        <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.teamname}</Text></Text>
+        <Text style={{color:'#007594'}}>{team.teamdescription}</Text>    
+        <Text note>Score: <Text note style={{marginTop: 5}}>{team.rankpoint}</Text></Text>    
+        </ListItem>                            
+      }> </List>
+
+
+
+
+      <Modal
+      animationType="slide"
+      transparent={false}
+      visible={this.state.modalVisible}
+      onRequestClose={() => {alert("Modal has been closed.")}}
+      >
+      <Card style={{paddingTop: 20}}>
+      {!this.state.selectedItem ? <View />
+        :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
+        <Image style={styles.modalImage} source={{uri: this.state.selectedItem.image}}  />
+        <H3 style={styles.header}> {this.state.selectedItem.teamname}
+        </H3>
+        <Text style={styles.negativeMargin} >
+        Rank Point: <Text style={styles.bold}>{this.state.selectedItem.rankpoint}</Text>
+        </Text>
+        <Text style={styles.negativeMargin} >
+        Description: <Text style={styles.bold}>{this.state.selectedItem.teamdescription}</Text>
+        </Text>
+        <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+          this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+        }}>
+        Go Back
+        </Button>
+        </CardItem>
+      }
+      </Card>
+      </Modal>
+
+
+
+
+      </Content>
+      </Container>
 
       );
   }
-
-  // componentDidMount() {
-  //   ListView.scrollTo({x:1, animated:true})
-  // }
- 
-  render() {
-    return (
-
-      <ListView
-        // navigator={this.props.navigator}
-        dataSource={this.state.dataSource}
-        renderRow={this.renderRow.bind(this)}/>
-
-    );
-  }
- 
 }
 
-
-var styles = StyleSheet.create({
-
-  // bg: {
-  //   position: 'absolute',
-  //   left: 0,
-  //   top: 0,
-  //   width: windowSize.width,
-  //   height: windowSize.height
-  // },
-  thumb: {
-    width: 80,
-    height: 80,
-    marginRight: 10
-  },
-  textContainer: {
-    flex: 2
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#dddddd'
-  },
-  rankpoint: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#48BBEC'
-  },
-  title: {
-    fontSize: 20,
-    color: '#656565'
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    padding: 10
-  },
+const styles = StyleSheet.create({
+    header : {
+        marginLeft: -5,
+        marginTop: 5,
+        marginBottom: (Platform.OS==='ios') ? -7 : 0,
+        lineHeight: 24,
+        color: '#5357b6'
+    },
+    modalImage: {
+        resizeMode: 'contain',
+        height: 200
+    },
+    bold: {
+        fontWeight: '600'
+    },
+    negativeMargin: {
+        marginBottom: -10
+    }
 });
+
+
 
 
 

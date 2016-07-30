@@ -1,6 +1,8 @@
 package com.nextmatch;
 
 import com.facebook.react.ReactActivity;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.microsoft.codepush.react.CodePush;
 import io.realm.react.RealmReactPackage;
 
 public class MainActivity extends ReactActivity {
