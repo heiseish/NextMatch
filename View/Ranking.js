@@ -28,6 +28,7 @@ import {
   View,
   Image,
 } from 'react-native';
+import Theme from '../Theme/Theme';
 
 
 
@@ -99,7 +100,7 @@ class Ranking extends Component {
 
   render() {
     return (
-      <Container>
+      <Container theme={Theme}>
       <Header searchBar rounded>                            
       <InputGroup>                        
       <Icon name="ios-search" />                        

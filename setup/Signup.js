@@ -10,13 +10,19 @@ import {
 	Text,
 	View,
 	TextInput,
-  	Image,
-  	Dimensions,
-  	TouchableHighlight,
-  	NavigatorIOS,
-  	TabBarIOS,
-    AlertIOS,
+  Image,
+  Dimensions,
+  AlertIOS,
 } from 'react-native';
+import {
+  Button,
+  Spinner,
+  Container,
+  Content,
+  Header,
+  Title,
+  Icon,
+} from 'native-base';
 var windowSize = Dimensions.get('window');
 
 class Signup extends Component{
@@ -30,26 +36,36 @@ class Signup extends Component{
       fullname: '',
       position: '',
       displayname: '',
+      isLoading: false,
     }
     this.onClickSignUp = this.onClickSignUp.bind(this);
   }
-
+  _return(){
+    this.props.navigator.pop();
+  }
   onClickSignUp(){
+    this.setState({isLoading: true})
     let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
     if (this.state.passwordConf !== this.state.password) {
       AlertIOS.alert('Your passwords do not match. Please type in again')
       this._password.setNativeProps({text: ''});
       this._passwordConf.setNativeProps({text: ''});
+      this.setState({isLoading: false})
     } else if (this.state.fullname === ''){
       AlertIOS.alert('Please enter a valid full name');
+      this.setState({isLoading: false})
     } else if (this.state.displayname === ''){
       AlertIOS.alert('Please enter a valid display name');
+      this.setState({isLoading: false})
     } else if (this.state.username === ''){
       AlertIOS.alert('Please enter a valid username');
+      this.setState({isLoading: false})
     } else if (this.state.password === ''){
       AlertIOS.alert('Please enter a valid password');
+      this.setState({isLoading: false})
     } else if ((user) && (user.username)){
       AlertIOS.alert('This username already exists. Please choose another one');
+      this.setState({isLoading: false})
     } else {
       realm.write(() => {
 
@@ -75,11 +91,19 @@ class Signup extends Component{
   render() {
 
     return (
+      <Container>
+       
       
+      
+     <Content>
+      <Button transparent onPress={() => this._return()}>
+        <Icon name="ios-arrow-dropleft-outline" />
+      </Button>
 
       <View style={styles.container}>
 
-      <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/236x/8d/1a/da/8d1adab145a2d606c85e339873b9bb0e.jpg'}}/>
+
+      <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/72/0d/cc/720dcc0dd534354d60ef8920ea92ce72.jpg'}}/>
       <View style={styles.header}>
       <Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
       </View>
@@ -148,15 +172,16 @@ class Signup extends Component{
       onChangeText={(position) => this.setState({position})}
       value={this.state.position}
       />
+
+      </View>
+      {this.state.isLoading ? <Spinner /> : <Button block warning onPress={this.onClickSignUp}>
+      Sign Up
+      </Button>}
       </View>
       
       </View>
-      <View style={styles.signin}>
-      <TouchableHighlight onPress={this.onClickSignUp}>
-      <Text style={styles.whiteFont}>Sign Up Now</Text>
-      </TouchableHighlight>
-      </View>
-      </View>
+      </Content>
+      </Container>
       );
   }
 };
@@ -177,7 +202,7 @@ const styles = StyleSheet.create({
         height: windowSize.height
     },
     header: {
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
         flex: .5,
         // backgroundColor: 'transparent'
@@ -225,7 +250,7 @@ const styles = StyleSheet.create({
       color: '#D8D8D8'
     },
     whiteFont: {
-      color: '#FFF'
+      color: '#ffff80'
     },
     circles: {
       flexDirection: 'row',

@@ -4,6 +4,8 @@ var realm = require('../Model/model.js');
 import React, { Component } from 'react';
 var Login = require('../setup/setup')
 var EditProfile = require('./editProfile');
+import Theme from '../Theme/Theme';
+
 import { 
   Container, 
   Header, 
@@ -51,8 +53,8 @@ class Profile extends Component {
   }
   render() {
     return (
-      <Container>
-        <Header>
+      <Container theme={Theme}>
+        <Header theme={Theme}>
           <Button transparent onPress={() => {this._editProfile()}}>
               Edit
           </Button>
@@ -62,23 +64,23 @@ class Profile extends Component {
           </Button>
         </Header>
 
-        <Content>
+        <Content theme={Theme}>
    
           <Image style={styles.modalImage} source={{uri: this.props.user.image}}  />
-          <H3 style={styles.header}> {this.props.user.displayname}
+          <H3> {this.props.user.displayname}
         
           </H3>
           
-            <Text >
-            Position: <Text style={styles.bold}>        {this.props.user.position}</Text>
+            <Text theme={Theme}>
+            Position: <Text>        {this.props.user.position}</Text>
             </Text>
 
             <Text >
-            Full name: <Text style={styles.bold}>       {this.props.user.fullname}</Text>
+            Full name: <Text>       {this.props.user.fullname}</Text>
             </Text>
 
             <Text >
-            Description: <Text style={styles.bold}>      {this.props.user.briefdesc}</Text>
+            Description: <Text>      {this.props.user.briefdesc}</Text>
             </Text>
             
         </Content>
@@ -90,11 +92,12 @@ class Profile extends Component {
 
 const styles = StyleSheet.create({
     header : {
-        marginLeft: -5,
-        marginTop: 5,
+        flex: 1,
+        flexDirection: 'row',
         marginBottom: (Platform.OS==='ios') ? -7 : 0,
         lineHeight: 24,
-        color: '#5357b6'
+        color: '#5357b6',
+        alignItems: 'center',
     },
     modalImage: {
         resizeMode: 'contain',
