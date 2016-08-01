@@ -1,8 +1,6 @@
 'use strict';
 var realm = require('../Model/model.js');
 
-import { replaceRoute } from '../actions/route';
-
 import React, { Component } from 'react';
 import { 
   Container, 

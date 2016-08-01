@@ -56,15 +56,38 @@ const MatchSchema = {
   }
 };
 
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema], schemaVersion: 6});
+const RequestSchema = {
+  name: 'Request',
+  primaryKey: 'id',
+  properties: { 
+    id: 'int',
+    hometeam: 'string',
+    awayteam: {type: 'string', optional: true},
+    time: {type: 'string', optional: true},
+    venue: {type: 'string', optional: true},
+    additionalCondition: {type: 'string', optional: true},
+    
+  }
+};
+
+
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,RequestSchema], schemaVersion: 7});
 // realm.write(() => {
 
-//   realm.create('Match',{ 
-//     id: 7,
-//     hometeam: 'Chealsea FC',
-//     awayteam: 'Arsenal FC',
-//     state: 'coming',
-//     time: '25th June',
+//   // realm.create('Match',{ 
+//   //   id: 7,
+//   //   hometeam: 'Chealsea FC',
+//   //   awayteam: 'Arsenal FC',
+//   //   state: 'coming',
+//   //   time: '25th June',
+    
+//   // })
+//   realm.create('Request',{ 
+//     id: 2,
+//     hometeam: 'Chelsea FC',
+//     time: '13pm 26th June',
+//     venue: 'Sân Hàng Đẫy',
+//     aditionalCondition: 'Đi cọ sát là chủ ',
     
 //   })
 // });

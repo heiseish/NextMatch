@@ -206,25 +206,35 @@ class YourTeam extends Component {
   } else {
     return (
        <Container>
-        <Header>
-          <Title></Title>
-        </Header>
 
         <Content>
-        <View style={{alignItems:'center', justifyContent: 'center', flex: 0.5}}>
-        <H3 style={styles.header}> Oh it seems that you don't have a team now
-        </H3>
-        <Button block rounded primary onPress={() => {this._joinTeam()}}>
-          Join 
-        </Button>
-        <Text> a team </Text>
+        <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
+          <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
+        
 
-        <Text> Or </Text>
+          <View style={{height: 200, paddingTop: 150, marginTop:10}}>
+          <H3 style={styles.font}> Oh it seems that you don't have a team yet
+          </H3>
+          </View>
 
-        <Button block rounded success onPress={() => {this._createTeam()}}>
-          Create 
-        </Button>
-        <Text> a new team now !</Text>
+
+          <Button block rounded primary onPress={() => {this._joinTeam()}}>
+           Join 
+          </Button>
+
+          <View style={{height: 90, alignItems:'center', justifyContent: 'center', flexDirection:'row'}}>
+          <View style={styles.separator}/>
+          <View style={{width: 30}}><H3 style={styles.font}> Or </H3></View>
+          <View style={styles.separator}/>
+          </View>
+
+          <Button block rounded warning onPress={() => {this._createTeam()}}>
+            Create 
+          </Button>
+          <View style={{marginTop:10}}>
+          <H3 style={styles.font}> a new team now !</H3>
+          </View>
+
         </View>
 
 
@@ -279,6 +289,19 @@ const styles = StyleSheet.create({
     height: 30,
     alignItems: 'center',
     
+  },
+  font: {
+    fontWeight: '300', 
+    color: '#FFF', 
+    alignItems:'center', 
+    justifyContent: 'center',
+    fontStyle: 'italic',
+    fontSize: 21, 
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#dddddd',
+    width: 100
   },
   
 });

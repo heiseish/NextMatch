@@ -41,18 +41,13 @@ class Login extends Component{
 			progress: 0,
       indeterminate: true,
       size: 80,
-      showsText: true
+      showsText: true,
+ 
 		};
 		this.onClickLogin = this.onClickLogin.bind(this);
     this.onClickSignup = this.onClickSignup.bind(this);
 		
 	}
-
-
- 
-        
- 
-	
 
 	onClickLogin(){
 		this.setState({ isLoading: true });
@@ -61,7 +56,12 @@ class Login extends Component{
 		let user = users.filtered('username == $0',this.state.username)[0];
 
 		if ((user) && user.password === this.state.password) {
-				this.setState({isLoading: false})
+				this.setState({
+          isLoading: false,
+          username: '',
+          password: '',
+        })
+     
 				this.props.navigator.push({
             title: 'Main',
 						name: "TabBar",
@@ -86,11 +86,6 @@ class Login extends Component{
   }
 
 	render() {
-		
-
-
-
-
 		return (
 			
 
@@ -98,11 +93,11 @@ class Login extends Component{
 
 			<Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
 			<View style={styles.header}>
-			<Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
+			<Image style={styles.mark} source={{uri: 'https://i.imgur.com/da4G0Io.png'}} />
 			</View>
 			<View style={styles.inputs}>
 			<View style={styles.inputContainer}>
-			<Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
+			<Image style={styles.inputUsername} source={{uri: 'https://i.imgur.com/iVVVMRX.png'}}/>
 			<TextInput 
 			style={[styles.input, styles.whiteFont]}
 			placeholder="Username"
@@ -112,7 +107,7 @@ class Login extends Component{
 			/>
 			</View>
 			<View style={styles.inputContainer}>
-			<Image style={styles.inputPassword} source={{uri: 'http://i.imgur.com/ON58SIG.png'}}/>
+			<Image style={styles.inputPassword} source={{uri: 'https://i.imgur.com/ON58SIG.png'}}/>
 			<TextInput
 			password={true}
 			style={[styles.input, styles.whiteFont]}
