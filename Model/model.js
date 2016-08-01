@@ -60,12 +60,11 @@ let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema]
 // realm.write(() => {
 
 //   realm.create('Match',{ 
-//     id: 6,
-//     hometeam: 'Phuc',
-//     awayteam: 'Giang',
-//     state: 'finished',
-//     hometeamscore: 1,
-//     awayteamscore: 69,
+//     id: 7,
+//     hometeam: 'Chealsea FC',
+//     awayteam: 'Arsenal FC',
+//     state: 'coming',
+//     time: '25th June',
     
 //   })
 // });

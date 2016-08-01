@@ -51,6 +51,12 @@ class Profile extends Component {
 
     })
   }
+
+  _returnImage(){
+    if (this.props.user.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png';
+    else return this.props.user.image;
+  }
+
   render() {
     return (
       <Container theme={Theme}>
@@ -66,7 +72,7 @@ class Profile extends Component {
 
         <Content theme={Theme}>
    
-          <Image style={styles.modalImage} source={{uri: this.props.user.image}}  />
+          <Image style={styles.modalImage} source={{uri: this._returnImage()}}  />
           <H3> {this.props.user.displayname}
         
           </H3>

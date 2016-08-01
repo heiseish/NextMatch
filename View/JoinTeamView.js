@@ -78,6 +78,12 @@ class JoinTeamView extends Component {
     })
 
   }
+
+  _returnImage(team){
+    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png';
+    else return team.image;
+  }
+
   render(){
     return(
       <Container>
@@ -93,7 +99,7 @@ class JoinTeamView extends Component {
         <Content>
         <List dataArray={this.state.results.teams} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
-        <Thumbnail square size={80} source={{uri: team.image}} />        
+        <Thumbnail square size={80} source={{uri: this._returnImage(team)}} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.teamname}</Text></Text>
         <Text style={{color:'#007594'}}>{team.teamdescription}</Text>    
         <Text note>Score: <Text note style={{marginTop: 5}}>{team.rankpoint}</Text></Text>    

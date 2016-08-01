@@ -10,23 +10,22 @@ import {
   Text,
   Icon,
   Button,
+  List,
+  ListItem,
+  Content,
+
 } from 'native-base';
 import {
   StyleSheet,
   View,
   Image,
 } from 'react-native';
-import { ListView } from 'realm/react-native';
-import Theme from '../Theme/Theme';
 
  
 class Match extends Component {
   constructor(props) {
     super(props);
-    var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1.id !== r2.id});
     this.state = {
-      dataSource: dataSource.cloneWithRows(this.returnArrayMatches())
     };
   }
 
@@ -34,54 +33,49 @@ class Match extends Component {
     var arr = [];
     let matches = realm.objects('Match').filtered('state = "finished"');
     matches.forEach(function(current,i,Team){
-      arr.push(matches[i]);
+      arr.push(current);
     })
     return (arr)
 
   }
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    return team.image;
+    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return team.image;
   }
 
-  renderHeader(){
-    return(
-      <Container>
-        <Header theme={Theme} style={{bottom: 20}}>
-          <Title> Match History </Title>
-        </Header>
-      </Container>
-      );
-  }
-
-  renderRow(rowData, sectionID, rowID) {
-    return (
-      <View>
-        <View style={{flex: 1, flexDirection: 'row', marginLeft: 20, marginRight:20, marginTop: 20}}>
-          <View style={{width: 130, height: 80, left: 0}} >
-            <Thumbnail square size={60} source={{uri: this.returnTeamImage(rowData.hometeam)}} />
-          </View>
-          <View style={{width: 130, height: 80}}>
-            <Text style={{fontWeight: '600', color: '#46ee4b', right : 25, top: 15, marginLeft: -5}}>{rowData.hometeam}  {rowData.hometeamscore} - {rowData.awayteamscore}  {rowData.awayteam}</Text>
-          </View>
-          <View style={{width: 130, height: 80, right: 0}}>
-            <Image style={styles.image} source={{uri: this.returnTeamImage(rowData.awayteam)}} />
-          </View>
-          
-      </View>
-      <View style={styles.separator}/>
-      </View>
-    );
-  }
+  
+  
  
   render() {
     return (
 
 
-      <ListView
-        renderHeader={this.renderHeader}
-        dataSource={this.state.dataSource}
-        renderRow={this.renderRow.bind(this)}/>
+      
+      <Container>
+      <Header>
+      <Title> Match History </Title>
+      </Header>
+
+      <Content>
+      {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches()} renderRow={(match) =>  
+      <ListItem> 
+      <View style={{flex: 1, flexDirection: 'row', marginLeft: 0, marginRight:0, marginTop: 20}}>
+      <View style={{width: 60, height: 60, left: 0, }} >
+      <Thumbnail square size={60} source={{uri: this.returnTeamImage(match.hometeam)}} />
+      </View>
+      <View style={{width: 200, height: 60}}>
+      <Text style={{fontWeight: '600', color: '#46ee4b', marginLeft: 20}}>{match.hometeam}  {match.hometeamscore} - {match.awayteamscore}  {match.awayteam}</Text>
+      </View>
+      <View style={{width: 60, height: 60, right: 0}}>
+      <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+      </View>
+      </View>
+
+      </ListItem>  
+      }> </List> }
+      </Content>
+      </Container>
     );
   }
 }

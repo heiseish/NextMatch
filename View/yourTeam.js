@@ -63,8 +63,16 @@ class YourTeam extends Component {
   }
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    return team.image;
+    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return team.image;
   }
+
+  returnPlayerImage(player){
+    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return player.image;
+  }
+
+
   returnArrayPlayer(){
     var arrPlayer = [];
     let matchesHome = realm.objects('User').filtered('team == $0',this.props.user.team);
@@ -77,19 +85,21 @@ class YourTeam extends Component {
 
   }
 
-  returnArrayMatches(){
+  returnArrayMatches(state){
     var arr = [];
     let matchesHome = realm.objects('Match').filtered('hometeam == $0',this.props.user.team);
-    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team)
+    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team);
     matchesHome.forEach(function(current,i,Team){
-      arr.push(matchesHome[i]);
+      if (current.state === state) arr.push(current);
     })
     matchesAway.forEach(function(current,i,Team){
-      arr.push(matchesAway[i]);
+      if (current.state === state) arr.push(current);
     })
     return (arr)
 
   }
+
+
 
   render() {
     // var profilepic = this.props.user.image ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
@@ -101,7 +111,7 @@ class YourTeam extends Component {
         <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/b6/c3/51/b6c351202bcb0d11022d09247881d17f.jpg'}} />
         <View style={styles.containerTop}>
           <View style={{width: 80, height: 80, left: 0}} >
-            <Image style={styles.modalImage} source={{uri: team.image}}  />
+            <Image style={styles.modalImage} source={{uri: this.returnTeamImage(team.teamname)}}  />
           </View>
           <View style={{width: 200, height: 80, right:0, paddingLeft: 10}} >
             <H3 style={styles.header}> {team.teamname}
@@ -112,30 +122,33 @@ class YourTeam extends Component {
             </Text>
           </View>
         </View>
-    
-        <Title>History</Title>
+
         
-        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches()} renderRow={(match) =>               
+        <Title>Upcoming match</Title>
+        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches('coming')} renderRow={(match) =>               
           <ListItem> 
 
           <View style={styles.containerTop}>
 
-          <View style={{width: 130, height: 20, left: 0}} >
+          <View style={{width: 30, height: 50, left: 0, }} >
           <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
           </View>
-          <View style={{width: 130, height: 20}}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: -5}}>{match.hometeam} {match.hometeamscore}-{match.awayteamscore} {match.awayteam}</Text>
+          <View style={{width: 280, height: 50}}>
+          <Text style={{fontWeight: '300', color: '#cc00cc', marginLeft: 98}}>{match.time}</Text>
+          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} - {match.awayteam}</Text>
           </View>
-          <View style={{width: 130, height: 20, right: 0}}>
+          <View style={{width: 30, height: 50, right: 0}}>
           <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
           </View> 
           </View>
    
           </ListItem>                            
         }> </List> }
+      
+        
 
 
-        <View style={{marginTop:10}}>
+       
         <Title>Team Rosters</Title>
         {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayPlayer()} renderRow={(player) =>               
           <ListItem> 
@@ -143,22 +156,53 @@ class YourTeam extends Component {
           <View style={styles.containerTop}>
 
           <View style={{width: 80, height: 20, left: 0}} >
-          <Thumbnail square size={30} source={{uri: player.image}} />
+          <Thumbnail square size={30} source={{uri: this.returnPlayerImage(player)}} />
           </View>
           <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: -5}}>{player.displayname}   {player.position}</Text>
+          <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>
           </View>
           
           </View>
    
           </ListItem>                            
         }> </List> }
-          </View>
+      
+
+      
+          <Title>History</Title>
         
+        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches('finished')} renderRow={(match) =>               
+          <ListItem> 
+
+          <View style={styles.containerTop}>
+
+          <View style={{width: 30, height: 20, left: 0, }} >
+          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
+          </View>
+          <View style={{width: 280, height: 20}}>
+          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} {match.hometeamscore}-{match.awayteamscore} {match.awayteam}</Text>
+          </View>
+          <View style={{width: 30, height: 20, right: 0}}>
+          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+          </View> 
+          </View>
+   
+          </ListItem>                            
+        }> </List> }
+       
             
         </Content>
       </Container>
     );
+
+
+
+
+
+
+
+
+
   } else {
     return (
        <Container>
@@ -182,6 +226,8 @@ class YourTeam extends Component {
         </Button>
         <Text> a new team now !</Text>
         </View>
+
+
           
           
             
@@ -198,11 +244,13 @@ class YourTeam extends Component {
 
 
 const styles = StyleSheet.create({
+    container: {
+      height: 200,
+
+    },
     containerTop: {
       flex: 1,
       flexDirection: 'row', 
-      marginLeft: 20, 
-      marginRight:20, 
       marginTop: 5,
       backgroundColor: 'transparent',
     },
