@@ -27,12 +27,14 @@ import {
   Platform,
   View,
   Image,
+  Dimensions,
 } from 'react-native';
 import Theme from '../Theme/Theme';
+var windowSize = Dimensions.get('window');
 
 
 
-
+// <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/236x/3c/94/29/3c9429a602f4241c10da7e25fa4bc621.jpg'}} />
 
 
 
@@ -115,6 +117,8 @@ class Ranking extends Component {
       </Header>
 
       <Content>
+       
+
       {this.state.loading? <Spinner /> : <List dataArray={this.state.results.teams} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
         <Thumbnail square size={80} source={{uri: this._returnImage(team)}} />        
@@ -172,6 +176,13 @@ const styles = StyleSheet.create({
         marginBottom: (Platform.OS==='ios') ? -7 : 0,
         lineHeight: 24,
         color: '#5357b6'
+    },
+    bg: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: windowSize.width,
+        height: windowSize.height
     },
     modalImage: {
         resizeMode: 'contain',

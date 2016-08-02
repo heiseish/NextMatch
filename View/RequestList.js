@@ -50,11 +50,12 @@ class RequestList extends Component {
                 request: this.returnRequest()
             }
     }
+
   }
 
   returnRequest(){
     var arr = [];
-    let results = realm.objects('Request');
+    let results = realm.objects('Request').filtered('hometeam != $0',this.props.user.team);
     results.forEach(function(current,i,Team){
       arr.push(current);
     })
@@ -164,7 +165,7 @@ class RequestList extends Component {
         <H3 style={styles.header}> {this.state.selectedItem.hometeam}
         </H3>
         <Text style={styles.negativeMargin} >
-        : <Text style={styles.bold}>{this.state.selectedItem.time}@{this.state.selectedItem.venue}</Text>
+        Time: <Text style={styles.bold}>{this.state.selectedItem.time}@{this.state.selectedItem.venue}</Text>
         </Text>
         <Text style={styles.negativeMargin} >
         Description: <Text style={styles.bold}>{this.state.selectedItem.additionalCondition}</Text>

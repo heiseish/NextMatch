@@ -25,8 +25,9 @@ import {
   Platform,
   View,
   Image,
+  Dimensions,
 } from 'react-native';
-
+var windowSize = Dimensions.get('window');
 
 
 
@@ -59,8 +60,8 @@ class Profile extends Component {
 
   render() {
     return (
-      <Container theme={Theme}>
-        <Header theme={Theme}>
+      <Container>
+        <Header >
           <Button transparent onPress={() => {this._editProfile()}}>
               Edit
           </Button>
@@ -70,25 +71,28 @@ class Profile extends Component {
           </Button>
         </Header>
 
-        <Content theme={Theme}>
-   
-          <Image style={styles.modalImage} source={{uri: this._returnImage()}}  />
-          <H3> {this.props.user.displayname}
-        
-          </H3>
-          
-            <Text theme={Theme}>
-            Position: <Text>        {this.props.user.position}</Text>
+        <Content >
+        <View style={styles.container}>
+          <Image style={styles.bg} source={{uri: 'https://3.bp.blogspot.com/-azG_Uh0T0qY/UOurj61nv0I/AAAAAAAACi0/YZZzOem_vRo/s1600/football-hd-wallpaper-soccer-iphone-5-wallpapers-06.jpg'}} />
+          <View style= {styles.header}>
+            <View style ={{width: 100, marginRight: 0}}>
+            <Image style={styles.modalImage} source={{uri: this._returnImage()}}  />
+            </View>
+            <View style ={{width: 300, marginLeft: 10, marginTop: 20}}>
+            <Text style={styles.subjectFont}>
+            Position: <Text style={styles.whiteFont}>        {this.props.user.position}</Text>
             </Text>
 
-            <Text >
-            Full name: <Text>       {this.props.user.fullname}</Text>
+            <Text style={styles.subjectFont}>
+            Full name: <Text style={styles.whiteFont}>       {this.props.user.fullname}</Text>
             </Text>
 
-            <Text >
-            Description: <Text>      {this.props.user.briefdesc}</Text>
+            <Text style={styles.subjectFont}>
+            Description: <Text style={styles.whiteFont}>      {this.props.user.briefdesc}</Text>
             </Text>
-            
+            </View>
+          </View>
+          </View>
         </Content>
       </Container>
        
@@ -97,22 +101,38 @@ class Profile extends Component {
 }
 
 const styles = StyleSheet.create({
-    header : {
-        flex: 1,
-        flexDirection: 'row',
-        marginBottom: (Platform.OS==='ios') ? -7 : 0,
-        lineHeight: 24,
-        color: '#5357b6',
-        alignItems: 'center',
-    },
-    modalImage: {
-        resizeMode: 'contain',
-        height: 200
-    },
-    bold: {
-        fontWeight: '600'
-    },
-  
+  container: {
+    alignItems:'center', 
+    justifyContent: 'center', 
+    flex: 1, 
+    flexDirection: 'column',
+    backgroundColor: 'transparent'
+  },
+  bg: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: windowSize.width,
+    height: windowSize.height
+  },
+  header:{
+    flexDirection: 'row',
+  },
+  modalImage: {
+    resizeMode: 'contain',
+    height: 100,
+    width: 100,
+  },
+  bold: {
+    fontWeight: '600'
+  },
+  subjectFont: {
+      color: '#007594'
+  },
+  whiteFont: {
+      color: '#FFF',
+      fontWeight: '300',
+  },
 });
 
 module.exports = Profile;

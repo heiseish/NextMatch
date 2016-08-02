@@ -108,7 +108,7 @@ class YourTeam extends Component {
     return (
       <Container>
         <Content>
-        <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/b6/c3/51/b6c351202bcb0d11022d09247881d17f.jpg'}} />
+        <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
         <View style={styles.containerTop}>
           <View style={{width: 80, height: 80, left: 0}} >
             <Image style={styles.modalImage} source={{uri: this.returnTeamImage(team.teamname)}}  />
@@ -265,6 +265,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'transparent',
     },
     bg: {
+      marginTop: -33,
         position: 'absolute',
         left: 0,
         top: 0,
