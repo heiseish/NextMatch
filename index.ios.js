@@ -58,7 +58,7 @@ export default class NextMatch extends Component {
   }
 }
 
-
+console.disableYellowBox = true;
 
 
 // <AppNavigator /*store={this.props.store}*/ />

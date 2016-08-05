@@ -4,7 +4,6 @@ var realm = require('../Model/model.js');
 import React, { Component } from 'react';
 var Login = require('../setup/setup')
 var EditProfile = require('./editProfile');
-import Theme from '../Theme/Theme';
 
 import { 
   Container, 
@@ -93,6 +92,7 @@ class Profile extends Component {
             </View>
           </View>
           </View>
+          
         </Content>
       </Container>
        
@@ -101,12 +101,20 @@ class Profile extends Component {
 }
 
 const styles = StyleSheet.create({
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
   container: {
     alignItems:'center', 
     justifyContent: 'center', 
     flex: 1, 
     flexDirection: 'column',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    marginTop: -15,
   },
   bg: {
     position: 'absolute',

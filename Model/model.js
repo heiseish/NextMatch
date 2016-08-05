@@ -52,6 +52,7 @@ const MatchSchema = {
     time: {type: 'string', optional: true},
     hometeamscore: {type: 'int', optional: true},
     awayteamscore: {type: 'int', optional: true},
+    ytvideo: {type: 'string', optional: true},
     
   }
 };
@@ -71,7 +72,7 @@ const RequestSchema = {
 };
 
 
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,RequestSchema], schemaVersion: 7});
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,RequestSchema], schemaVersion: 9});
 // realm.write(() => {
 
 //   // realm.create('Match',{ 
