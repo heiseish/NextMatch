@@ -24,7 +24,10 @@ const UserSchema = {
 const ReviewSchema = {
   name: 'Review',
   properties: {
-    review: 'int',
+    team: 'string',
+    point: 'double',
+    comment: {type: 'string', optional: true},
+    reviewer: 'string',
   }
 };
 
@@ -37,7 +40,9 @@ const TeamSchema = {
     image: {type: 'string', optional: true},
     rankpoint: {type: 'int', default: 0},
     teamdescription: {type: 'string', optional: true},
-    review: {type: 'list', objectType: 'Review'},
+    // review: {type: 'list', objectType: 'Review'},
+    winrate: {type: 'int', default: 0},
+    matches: {type: 'int', default: 0}
   }
 };
 
@@ -72,25 +77,32 @@ const RequestSchema = {
 };
 
 
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,RequestSchema], schemaVersion: 9});
-// realm.write(() => {
 
-//   // realm.create('Match',{ 
-//   //   id: 7,
-//   //   hometeam: 'Chealsea FC',
-//   //   awayteam: 'Arsenal FC',
-//   //   state: 'coming',
-//   //   time: '25th June',
+
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,RequestSchema], schemaVersion: 13});
+// let TeamSelected = realm.objects('Team').filtered('teamname == "Arsenal FC"')[0];
+// let reviewList = TeamSelected.review
+// realm.write(() => {
+  
+//   reviewList.push({review: 4, comment: 'Đá hay. Đến đúng giờ', reviewer: 'Chelsea FC'});
+//   reviewList.push({review: 3.5, comment: 'Quá bá', reviewer: 'MU FC'});
+
+// // //   // realm.create('Match',{ 
+// // //   //   id: 7,
+// // //   //   hometeam: 'Chealsea FC',
+// // //   //   awayteam: 'Arsenal FC',
+// // //   //   state: 'coming',
+// // //   //   time: '25th June',
     
-//   // })
-//   realm.create('Request',{ 
-//     id: 2,
-//     hometeam: 'Chelsea FC',
-//     time: '13pm 26th June',
-//     venue: 'Sân Hàng Đẫy',
-//     aditionalCondition: 'Đi cọ sát là chủ ',
+// // //   // })
+// // //   realm.create('Request',{ 
+// // //     id: 2,
+// // //     hometeam: 'Chelsea FC',
+// // //     time: '13pm 26th June',
+// // //     venue: 'Sân Hàng Đẫy',
+// // //     aditionalCondition: 'Đi cọ sát là chủ ',
     
-//   })
+// // //   })
 // });
 
 

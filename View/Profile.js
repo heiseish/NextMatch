@@ -72,7 +72,7 @@ class Profile extends Component {
 
         <Content >
         <View style={styles.container}>
-          <Image style={styles.bg} source={{uri: 'https://3.bp.blogspot.com/-azG_Uh0T0qY/UOurj61nv0I/AAAAAAAACi0/YZZzOem_vRo/s1600/football-hd-wallpaper-soccer-iphone-5-wallpapers-06.jpg'}} />
+          
           <View style= {styles.header}>
             <View style ={{width: 100, marginRight: 0}}>
             <Image style={styles.modalImage} source={{uri: this._returnImage()}}  />
@@ -99,7 +99,7 @@ class Profile extends Component {
     );
   }
 }
-
+// <Image style={styles.bg} source={{uri: 'https://3.bp.blogspot.com/-azG_Uh0T0qY/UOurj61nv0I/AAAAAAAACi0/YZZzOem_vRo/s1600/football-hd-wallpaper-soccer-iphone-5-wallpapers-06.jpg'}} />
 const styles = StyleSheet.create({
   backgroundVideo: {
     position: 'absolute',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
       color: '#007594'
   },
   whiteFont: {
-      color: '#FFF',
+      color: '#331a00',
       fontWeight: '300',
   },
 });

@@ -15,6 +15,7 @@
     "react-native-code-push": "^1.13.5-beta",
     "react-native-gifted-chat": "0.0.2",
     "react-native-progress": "^3.0.1",
+    "react-native-star-rating": "^1.0.6",
     "react-native-video": "^0.8.0",
     "react-native-youtube": "^0.7.2",
     "react-redux": "^4.4.5",
