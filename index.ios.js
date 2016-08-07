@@ -3,25 +3,12 @@
 const {AppRegistry} = require('react-native');
 const Login = require('./setup/setup.js')
 
-import CodePush from 'react-native-code-push';
-// import AppNavigator from './setup/AppNavigator';
+
 import React, { Component } from 'react';
 import { NavigatorIOS, Text,AppState } from 'react-native';
 
-export default class NextMatch extends Component {
-  componentDidMount() {
-        AppState.addEventListener('change', this.handleAppStateChange);
-    }
+export default class NextMatchReborn extends Component {
 
-    componentWillUnmount() {
-        AppState.removeEventListener('change', this.handleAppStateChange);
-    }
-
-    handleAppStateChange(state:string) {
-        if (state === 'active') {
-            CodePush.sync({installMode: CodePush.InstallMode.IMMEDIATE});
-        }
-    }
   renderScene(route, navigator) {
         switch (route.name) {
             case 'Login':
@@ -63,6 +50,6 @@ console.disableYellowBox = true;
 
 // <AppNavigator /*store={this.props.store}*/ />
 
-AppRegistry.registerComponent('NextMatch',() => NextMatch);
+AppRegistry.registerComponent('NextMatchReborn',() => NextMatchReborn);
 
 // 

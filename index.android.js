@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-class NextMatch extends Component {
+class NextMatchReborn extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('NextMatch', () => NextMatch);
+AppRegistry.registerComponent('NextMatchReborn', () => NextMatchReborn);

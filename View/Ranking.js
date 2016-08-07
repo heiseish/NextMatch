@@ -1,7 +1,7 @@
 'use strict';
 var realm = require('../Model/model.js');
 
-import { replaceRoute } from '../actions/route';
+
 import StarRating from 'react-native-star-rating';
 import React, { Component } from 'react';
 import { 
@@ -29,7 +29,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import Theme from '../Theme/Theme';
+
 var windowSize = Dimensions.get('window');
 
 //string interpolation for NSPredicate
@@ -137,7 +137,7 @@ class Ranking extends Component {
 
   render() {
     return (
-      <Container theme={Theme}>
+      <Container>
       <Header searchBar rounded>                            
       <InputGroup>                        
       <Icon name="ios-search" />                        

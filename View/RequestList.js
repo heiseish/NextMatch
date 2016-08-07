@@ -1,7 +1,7 @@
 'use strict';
 var realm = require('../Model/model.js');
 
-import { replaceRoute } from '../actions/route';
+
 
 import React, { Component } from 'react';
 import { 
@@ -29,7 +29,7 @@ import {
   Image,
   AlertIOS,
 } from 'react-native';
-import Theme from '../Theme/Theme';
+
 
 
 

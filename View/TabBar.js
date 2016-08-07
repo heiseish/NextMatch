@@ -82,7 +82,7 @@ class TabBar extends Component{
       </Icon.TabBarItem>
 
       <Icon.TabBarItem
-        title="Get Match"
+        title="Play"
         iconName="ios-football-outline"
         selectedIconName="ios-football"
         selected={this.state.selectedTab === 'GetMatch'}
@@ -95,7 +95,7 @@ class TabBar extends Component{
       </Icon.TabBarItem>
 
       <Icon.TabBarItem
-      title="Your Profile"
+      title="Profile"
       iconName="ios-man-outline"
       selectedIconName="ios-man"
       
@@ -109,7 +109,7 @@ class TabBar extends Component{
       </Icon.TabBarItem>
 
       <Icon.TabBarItem
-        title="Your Team"
+        title="Team"
         iconName="ios-document-outline"
       selectedIconName="ios-document"
         selected={this.state.selectedTab === 'yourTeam'}

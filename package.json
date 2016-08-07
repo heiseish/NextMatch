@@ -1,25 +1,17 @@
 {
-  "name": "NextMatch",
+  "name": "NextMatchReborn",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "art": "^0.10.0",
-    "code-push-cli": "^1.12.1-beta",
-    "moment": "^2.13.0",
-    "native-base": "^0.5.2",
+    "native-base": "^0.5.4",
     "react": "15.2.1",
     "react-native": "0.30.0",
-    "react-native-code-push": "^1.13.5-beta",
-    "react-native-gifted-chat": "0.0.2",
-    "react-native-progress": "^3.0.1",
+    "react-native-image-picker": "^0.21.5",
+    "react-native-scrollable-tab-view": "^0.5.3",
     "react-native-star-rating": "^1.0.6",
-    "react-native-video": "^0.8.0",
-    "react-native-youtube": "^0.7.2",
-    "react-redux": "^4.4.5",
-    "realm": "^0.14.1",
-    "redux": "^3.5.2"
+    "realm": "^0.14.2"
   }
 }

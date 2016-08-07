@@ -5,7 +5,7 @@ var CreateTeamView = require('./CreateTeamView');
 var RequestList = require('./RequestList');
 var CreateRequest = require('./CreateRequest');
 
-import { replaceRoute } from '../actions/route';
+
 
 import React, { Component } from 'react';
 import { 

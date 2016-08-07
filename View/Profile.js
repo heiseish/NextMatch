@@ -25,9 +25,9 @@ import {
   View,
   Image,
   Dimensions,
+
 } from 'react-native';
 var windowSize = Dimensions.get('window');
-
 
 
 class Profile extends Component {

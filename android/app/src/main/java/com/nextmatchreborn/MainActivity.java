@@ -1,8 +1,7 @@
-package com.nextmatch;
+package com.nextmatchreborn;
 
 import com.facebook.react.ReactActivity;
-import com.brentvatne.RCTVideo.ReactVideoPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
+import com.imagepicker.ImagePickerPackage;
 import com.microsoft.codepush.react.CodePush;
 import io.realm.react.RealmReactPackage;
 
@@ -14,6 +13,6 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "NextMatch";
+        return "NextMatchReborn";
     }
 }

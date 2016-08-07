@@ -3,8 +3,7 @@ var realm = require('../Model/model.js');
 var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
 
-import { replaceRoute } from '../actions/route';
-
+import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
   Container, 
@@ -61,6 +60,8 @@ class YourTeam extends Component {
         passProps: {user: this.props.user}
     });
   }
+  
+
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
     if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
@@ -71,33 +72,7 @@ class YourTeam extends Component {
     if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
     else return player.image;
   }
-
-
-  returnArrayPlayer(){
-    var arrPlayer = [];
-    let matchesHome = realm.objects('User').filtered('team == $0',this.props.user.team);
-
-    matchesHome.forEach(function(current,i,Team){
-      arrPlayer.push(matchesHome[i]);
-    })
   
-    return (arrPlayer)
-
-  }
-
-  returnArrayMatches(state){
-    var arr = [];
-    let matchesHome = realm.objects('Match').filtered('hometeam == $0',this.props.user.team);
-    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team);
-    matchesHome.forEach(function(current,i,Team){
-      if (current.state === state) arr.push(current);
-    })
-    matchesAway.forEach(function(current,i,Team){
-      if (current.state === state) arr.push(current);
-    })
-    return (arr)
-
-  }
 
 
 
@@ -122,84 +97,17 @@ class YourTeam extends Component {
             </Text>
           </View>
         </View>
+        <View style={{flex:1,height:300, marginTop: 40}}>
 
-        
-        <Title>Upcoming match</Title>
-        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches('coming')} renderRow={(match) =>               
-          <ListItem> 
-
-          <View style={styles.containerTop}>
-
-          <View style={{width: 30, height: 50, left: 0, }} >
-          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
-          </View>
-          <View style={{width: 280, height: 50}}>
-          <Text style={{fontWeight: '300', color: '#cc00cc', marginLeft: 98}}>{match.time}</Text>
-          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} - {match.awayteam}</Text>
-          </View>
-          <View style={{width: 30, height: 50, right: 0}}>
-          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
-          </View> 
-          </View>
-   
-          </ListItem>                            
-        }> </List> }
-      
-        
-
-
-       
-        <Title>Team Rosters</Title>
-        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayPlayer()} renderRow={(player) =>               
-          <ListItem> 
-
-          <View style={styles.containerTop}>
-
-          <View style={{width: 80, height: 20, left: 0}} >
-          <Thumbnail square size={30} source={{uri: this.returnPlayerImage(player)}} />
-          </View>
-          <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>
-          </View>
-          
-          </View>
-   
-          </ListItem>                            
-        }> </List> }
-      
-
-      
-          <Title>History</Title>
-        
-        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches('finished')} renderRow={(match) =>               
-          <ListItem> 
-
-          <View style={styles.containerTop}>
-
-          <View style={{width: 30, height: 20, left: 0, }} >
-          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
-          </View>
-          <View style={{width: 280, height: 20}}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} {match.hometeamscore}-{match.awayteamscore} {match.awayteam}</Text>
-          </View>
-          <View style={{width: 30, height: 20, right: 0}}>
-          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
-          </View> 
-          </View>
-   
-          </ListItem>                            
-        }> </List> }
-       
-            
+        <ScrollableTabView style={{marginTop:10}}>
+          <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} />
+          <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user}/>
+          <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user}/>
+        </ScrollableTabView>
+        </View>
         </Content>
       </Container>
     );
-
-
-
-
-
-
 
 
 
@@ -246,6 +154,179 @@ class YourTeam extends Component {
       );
 
     }
+  }
+}
+
+class UpcomingMatch extends Component{
+  constructor(props){
+    super(props)
+  }
+  returnTeamImage(teamname){
+    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
+    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return team.image;
+  }
+
+  returnPlayerImage(player){
+    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return player.image;
+  }
+  
+returnArrayMatches(state){
+    var arr = [];
+    let matchesHome = realm.objects('Match').filtered('hometeam == $0',this.props.user.team);
+    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team);
+    matchesHome.forEach(function(current,i,Team){
+      if (current.state === state) arr.push(current);
+    })
+    matchesAway.forEach(function(current,i,Team){
+      if (current.state === state) arr.push(current);
+    })
+    return (arr)
+
+  }
+  
+  render(){
+    return(
+      <Container>
+      <Content>
+       <List dataArray={this.returnArrayMatches('coming')} renderRow={(match) =>               
+          <ListItem> 
+
+          <View style={styles.containerTop}>
+
+          <View style={{width: 30, height: 50, left: 0, }} >
+          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
+          </View>
+          <View style={{width: 280, height: 50}}>
+          <Text style={{fontWeight: '300', color: '#cc00cc', marginLeft: 98}}>{match.time}</Text>
+          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} - {match.awayteam}</Text>
+          </View>
+          <View style={{width: 30, height: 50, right: 0}}>
+          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+          </View> 
+          </View>
+   
+          </ListItem>                            
+        }> </List> 
+            
+        </Content>
+      </Container>
+    );
+  }
+}
+
+class TeamRoster extends Component{
+  constructor(props){
+    super(props)
+  }
+  returnTeamImage(teamname){
+    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
+    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return team.image;
+  }
+
+  returnPlayerImage(player){
+    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return player.image;
+  }
+  
+  returnArrayPlayer(){
+    var arrPlayer = [];
+    let matchesHome = realm.objects('User').filtered('team == $0',this.props.user.team);
+
+    matchesHome.forEach(function(current,i,Team){
+      arrPlayer.push(matchesHome[i]);
+    })
+  
+    return (arrPlayer)
+
+  }
+
+  render(){
+    return(
+      <Container>
+      <Content>
+      <List dataArray={this.returnArrayPlayer()} renderRow={(player) =>               
+          <ListItem> 
+
+          <View style={styles.containerTop}>
+
+          <View style={{width: 80, height: 20, left: 0}} >
+          <Thumbnail square size={30} source={{uri: this.returnPlayerImage(player)}} />
+          </View>
+          <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
+          <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>
+          </View>
+          
+          </View>
+   
+          </ListItem>                            
+        }> </List> 
+       
+            
+        </Content>
+      </Container>
+    );
+  }
+}
+
+
+class TeamHistory extends Component{
+  constructor(props){
+    super(props)
+  }
+  returnTeamImage(teamname){
+    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
+    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return team.image;
+  }
+
+  returnPlayerImage(player){
+    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
+    else return player.image;
+  }
+
+  returnArrayMatches(state){
+    var arr = [];
+    let matchesHome = realm.objects('Match').filtered('hometeam == $0',this.props.user.team);
+    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team);
+    matchesHome.forEach(function(current,i,Team){
+      if (current.state === state) arr.push(current);
+    })
+    matchesAway.forEach(function(current,i,Team){
+      if (current.state === state) arr.push(current);
+    })
+    return (arr)
+
+  }
+  render(){
+    return(
+      <Container>
+      <Content>
+      <List dataArray={this.returnArrayMatches('finished')} renderRow={(match) =>               
+          <ListItem> 
+
+          <View style={styles.containerTop}>
+
+          <View style={{width: 30, height: 20, left: 0, }} >
+          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
+          </View>
+          <View style={{width: 280, height: 20}}>
+          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} {match.hometeamscore}-{match.awayteamscore} {match.awayteam}</Text>
+          </View>
+          <View style={{width: 30, height: 20, right: 0}}>
+          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+          </View> 
+          </View>
+   
+          </ListItem>                            
+        }> </List> 
+       
+            
+        </Content>
+      </Container>
+    );
   }
 }
 

@@ -4,7 +4,8 @@
 var TabBar = require("../View/TabBar");
 var realm = require('../Model/model.js');
 var Signup = require('./Signup');
-
+// var imagePicker = require('react-native-imagepicker');
+var UIImagePickerManager = require('NativeModules').UIImagePickerManager;
 
 import React, { Component } from 'react';
 import {
@@ -18,8 +19,9 @@ import {
   NvigatorIOS,
   TabBarIOS,
   AlertIOS,
+  CameraRoll,
+  ImagePickerIOS,
 } from 'react-native';
-import { replaceRoute } from '../actions/route';
 import {
   Button,
   Spinner,
@@ -42,6 +44,7 @@ class Login extends Component{
       indeterminate: true,
       size: 80,
       showsText: true,
+      images: [],
  
 		};
 		this.onClickLogin = this.onClickLogin.bind(this);
@@ -75,6 +78,27 @@ class Login extends Component{
           )
         this.setState({isLoading: false})
     }
+//      UIImagePickerManager.showImagePicker({
+//     'title': 'Selecione uma imagem para o perfil',
+//     'cancelButtonTitle': 'Cancelar',
+//     'takePhotoButtonTitle': 'Tirar foto...',
+//     'chooseFromLibraryButtonTitle': 'Escolher da galeria...'
+//   }, (type, response) => {
+
+//   if (type !== 'cancel') {
+//     var source;
+//     if (type === 'data') { // New photo taken -  response is the 64 bit encoded image data string
+//       source = {uri: 'data:image/jpeg;base64,' + response, isStatic: true};
+//     } else { // Selected from library - response is the URI to the local file asset
+//       source = {uri: response};
+//     }
+
+//     this.setState({avatarSource:source});
+//   } else {
+//     console.log('Cancel');
+//   }
+// });
+
 	}
   onClickSignup(){
     this.props.navigator.push({
@@ -90,7 +114,6 @@ class Login extends Component{
 			
 
 			<View style={styles.container}>
-
 			<Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
 			<View style={styles.header}>
 			<Image style={styles.mark} source={{uri: 'https://cdn0.iconfinder.com/data/icons/sports-and-fitness-flat-colorful-icons-svg/137/Sports_flat_round_colorful_simple_activities_athletic_colored-03-512.png'}} />
