@@ -2,7 +2,9 @@
 
 var realm = require('../Model/model.js');
 import React, { Component } from 'react';
-import { Container, Content, InputGroup, Input , Icon, Header, Title, Button} from 'native-base';
+import { Container, Content, InputGroup, Input , Icon, Header, Title, Button, Text} from 'native-base';
+import {View} from 'react-native';
+
 
 
 class EditProfile extends Component {
@@ -12,9 +14,11 @@ class EditProfile extends Component {
       fullname: this.props.user.fullname,
       displayname: this.props.user.displayname,
       position: this.props.user.position,
+      briefdesc: this.props.user.briefdesc,
         }
 
     }
+
 
     _goBack(){
         this.props.navigator.pop();
@@ -27,6 +31,7 @@ class EditProfile extends Component {
              user.fullname = this.state.fullname;
              user.displayname = this.state.displayname;
              user.position = this.state.position;
+             user.briefdesc = this.state.briefdesc;
         });
         this.props.navigator.pop();
     }
@@ -43,6 +48,8 @@ class EditProfile extends Component {
                     </Button>
                 </Header>
                 <Content>
+                    <Text>Full name</Text>
+                    <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-man" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your full name"
@@ -51,6 +58,8 @@ class EditProfile extends Component {
                                  />
                     </InputGroup>
 
+                    <Text>Display name</Text>
+                    <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-eye" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your displayname" 
@@ -61,12 +70,23 @@ class EditProfile extends Component {
 
                     </InputGroup>
 
-
+                    <Text>Position</Text>
+                    <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-football" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your position" 
                                 onChangeText={(position) => this.setState({position})}
                                 value={this.state.position}
+                                />
+                    </InputGroup>
+
+                    <Text>Brief Description about you</Text>
+                    <View style={{height:20}} />
+                    <InputGroup borderType="underline" >
+                        <Icon name="ios-information-circle" style={{color:'#384850'}}/>
+                        <Input placeholder="Enter your position" 
+                                onChangeText={(briefdesc) => this.setState({briefdesc})}
+                                value={this.state.briefdesc}
                                 />
                     </InputGroup>
                 </Content>

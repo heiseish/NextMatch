@@ -18,6 +18,7 @@ const UserSchema = {
             image: {type: 'string', optional: true},
             team: {type: 'string', optional:true},
             teamnumber: {type: 'int', optional: true},
+            leader: {type: 'bool', default: false},
             
         }
 };
@@ -29,6 +30,14 @@ const ReviewSchema = {
     point: 'double',
     comment: {type: 'string', optional: true},
     reviewer: 'string',
+  }
+};
+const PostSchema = {
+  name: 'Post',
+  properties: {
+    post: 'string',
+    poster: 'string',
+    date: 'string',
   }
 };
 
@@ -43,7 +52,9 @@ const TeamSchema = {
     teamdescription: {type: 'string', optional: true},
     // review: {type: 'list', objectType: 'Review'},
     winrate: {type: 'int', default: 0},
-    matches: {type: 'int', default: 0}
+    matches: {type: 'int', default: 0},
+    post: {type: 'list', objectType: 'Post'},
+    captain: {type: 'string', optional: true}
   }
 };
 
@@ -80,7 +91,7 @@ const RequestSchema = {
 
 
 
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,RequestSchema]});
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,PostSchema,RequestSchema],schemaVersion: 3});
 
 // realm.write(() => {
   

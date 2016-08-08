@@ -129,7 +129,7 @@ class RequestList extends Component {
 
   render() {
     return (
-      <Container theme={Theme}>
+      <Container>
       <Header searchBar rounded>                         
           <InputGroup>                        
             <Icon name="ios-search" />                        

@@ -94,19 +94,6 @@ class TabBar extends Component{
       {this.returnTeam() ? <YourTeam navigator={this.props.navigator} user={this.props.user}/> : <GetMatch navigator={this.props.navigator} user={this.props.user}/>}
       </Icon.TabBarItem>
 
-      <Icon.TabBarItem
-      title="Profile"
-      iconName="ios-man-outline"
-      selectedIconName="ios-man"
-      
-      selected={this.state.selectedTab === 'profile'}
-      onPress={() => {
-        this.setState({
-          selectedTab: 'profile',
-        });
-      }}>
-      <Profile navigator={this.props.navigator} user={this.props.user}/>
-      </Icon.TabBarItem>
 
       <Icon.TabBarItem
         title="Team"
@@ -121,6 +108,21 @@ class TabBar extends Component{
       <YourTeam navigator={this.props.navigator} user={this.props.user}/>
       </Icon.TabBarItem>
 
+
+      <Icon.TabBarItem
+      title="Profile"
+      iconName="ios-man-outline"
+      selectedIconName="ios-man"
+      
+      selected={this.state.selectedTab === 'profile'}
+      onPress={() => {
+        this.setState({
+          selectedTab: 'profile',
+        });
+      }}>
+      <Profile navigator={this.props.navigator} user={this.props.user}/>
+      </Icon.TabBarItem>
+      
       </TabBarIOS>
       );
   }

@@ -2,7 +2,7 @@
 var realm = require('../Model/model.js');
 var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
-
+var TeamPost = require('./TeamPost');
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
@@ -103,6 +103,7 @@ class YourTeam extends Component {
           <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} />
           <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user}/>
           <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user}/>
+          <TeamPost tabLabel="Team Post" navigator={this.props.navigator} user={this.props.user}/>
         </ScrollableTabView>
         </View>
         </Content>

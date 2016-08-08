@@ -4,6 +4,7 @@ var realm = require('../Model/model.js');
 import React, { Component } from 'react';
 var Login = require('../setup/setup')
 var EditProfile = require('./editProfile');
+var ProfileSearch = require('./ProfileSearch');
 
 import { 
   Container, 
@@ -25,13 +26,14 @@ import {
   View,
   Image,
   Dimensions,
-
+  PropTypes,
 } from 'react-native';
+import { Col, Row, Grid } from "react-native-easy-grid";
 var windowSize = Dimensions.get('window');
 
 
-class Profile extends Component {
 
+class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,6 +59,17 @@ class Profile extends Component {
     else return this.props.user.image;
   }
 
+  _search(){
+    this.props.navigator.push({
+        name: 'FindPlayer',
+        title: 'Find Players',
+        component: ProfileSearch,
+        passProps: {user: this.props.user}
+    });
+  }
+
+
+
   render() {
     return (
       <Container>
@@ -65,32 +78,40 @@ class Profile extends Component {
               Edit
           </Button>
           <Title>{this.props.user.displayname}</Title>
-          <Button transparent onPress={() => {this._logout()}}>
-              <Icon name="ios-power" />
+          <Button transparent onPress={() => {this._search()}}>
+              <Icon name="ios-search" />
           </Button>
         </Header>
 
         <Content >
         <View style={styles.container}>
           
-          <View style= {styles.header}>
-            <View style ={{width: 100, marginRight: 0}}>
+          <View>
+            
             <Image style={styles.modalImage} source={{uri: this._returnImage()}}  />
-            </View>
-            <View style ={{width: 300, marginLeft: 10, marginTop: 20}}>
-            <Text style={styles.subjectFont}>
-            Position: <Text style={styles.whiteFont}>        {this.props.user.position}</Text>
-            </Text>
+            <View >
 
-            <Text style={styles.subjectFont}>
-            Full name: <Text style={styles.whiteFont}>       {this.props.user.fullname}</Text>
-            </Text>
-
-            <Text style={styles.subjectFont}>
-            Description: <Text style={styles.whiteFont}>      {this.props.user.briefdesc}</Text>
-            </Text>
+            <Grid style={{alignSelf: 'center', width: 300}}>
+              <Col>
+                <Row><Text style={styles.subjectFont}>Position</Text></Row>
+                <Row><Text style={styles.subjectFont}>Full name</Text></Row>
+                <Row><Text style={styles.subjectFont}>Description</Text></Row>
+              </Col>
+              <Col style={{}}>
+                <Row><Text style={styles.whiteFont}>{this.props.user.position}</Text></Row>
+                <Row><Text style={styles.whiteFont}>{this.props.user.fullname}</Text></Row>
+                <Row><Text style={styles.whiteFont}>{this.props.user.briefdesc}</Text></Row>
+              </Col>
+              <Col></Col>
+            </Grid>
             </View>
           </View>
+          </View>
+
+          <View style={styles.containerBottom}>
+            <Button danger rounded block onPress={() => {this._logout()}}>
+                        <Icon name="ios-power" />
+            </Button>
           </View>
           
         </Content>
@@ -99,48 +120,42 @@ class Profile extends Component {
     );
   }
 }
+
+
+
 // <Image style={styles.bg} source={{uri: 'https://3.bp.blogspot.com/-azG_Uh0T0qY/UOurj61nv0I/AAAAAAAACi0/YZZzOem_vRo/s1600/football-hd-wallpaper-soccer-iphone-5-wallpapers-06.jpg'}} />
 const styles = StyleSheet.create({
-  backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
-  container: {
-    alignItems:'center', 
-    justifyContent: 'center', 
-    flex: 1, 
-    flexDirection: 'column',
-    backgroundColor: 'transparent',
-    marginTop: -15,
-  },
-  bg: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: windowSize.width,
-    height: windowSize.height
-  },
-  header:{
-    flexDirection: 'row',
-  },
+ 
   modalImage: {
     resizeMode: 'contain',
-    height: 100,
-    width: 100,
+    height: 200,
+    width: 200,
+    alignSelf:'center'
   },
   bold: {
     fontWeight: '600'
   },
   subjectFont: {
-      color: '#007594'
+      color: '#007594',
+      alignSelf: 'center',
   },
   whiteFont: {
       color: '#331a00',
       fontWeight: '300',
   },
+  container: {
+    flex: 1,
+    padding: 20,
+    // backgroundColor: 'black',
+  },
+  containerBottom: {
+    marginTop: 210,
+    width: 200,
+    alignItems: 'center',
+    alignSelf: 'center',
+  }
+ 
+
 });
 
 module.exports = Profile;
