@@ -30,8 +30,9 @@ class CreateTeamView extends Component {
             AlertIOS.alert('The name is already in use. Please use another one!')
         } else {
         realm.write(() => {
-             realm.create('Team',{id:4, teamname: this.state.teamname, teamdescription: this.state.teamdescription})
+             realm.create('Team',{id:5, teamname: this.state.teamname, teamdescription: this.state.teamdescription})
              user.team = this.state.teamname;
+             user.leader = true;
         });
 
         AlertIOS.alert('Your team has been successfully created');

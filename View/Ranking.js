@@ -72,9 +72,23 @@ class Ranking extends Component {
 
   }
 
+  returnTeamImage(teamname){
+    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+
+  }
+
   returnPlayerImage(player){
-    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return player.image;
+    if (player.imageStyle === 1) return require('../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
   }
 
   setModalVisible(visible, x) {
@@ -106,10 +120,7 @@ class Ranking extends Component {
     })
 
   }
-  _returnImage(team){
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png';
-    else return team.image;
-  }
+
 
   returnArrayPlayer(team){
     var arrPlayer = [];
@@ -151,7 +162,7 @@ class Ranking extends Component {
 
       {this.state.loading? <Spinner /> : <List dataArray={this.state.results.teams} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
-        <Thumbnail square size={80} source={{uri: this._returnImage(team)}} />        
+        <Thumbnail square size={80} source={this.returnTeamImage(team.teamname)} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.teamname}</Text></Text>
         <Text style={{color:'#007594'}}>{team.teamdescription}</Text>    
         <Text note>Score: <Text note style={{marginTop: 5}}>{team.rankpoint}</Text></Text>    
@@ -170,8 +181,9 @@ class Ranking extends Component {
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
-        <Image style={styles.modalImage} source={{uri: this._returnImage(this.state.selectedItem)}}  />
-
+        <View style={{alignItems: 'center'}}>
+        <Image style={styles.modalImage} source={this.returnTeamImage(this.state.selectedItem.teamname)}  />
+        </View>
         <View style={styles.cardView}>
 
         <View style={{width: 150, left: 0}}>
@@ -192,7 +204,7 @@ class Ranking extends Component {
             <View style={styles.containerTop}>
 
             <View style={{width: 30, height: 20, left: 0}} >
-            <Thumbnail square size={30} source={{uri: this.returnPlayerImage(player)}} />
+            <Thumbnail square size={30} source={this.returnPlayerImage(player)} />
             </View>
              <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
            <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>

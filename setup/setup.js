@@ -114,6 +114,7 @@ class Login extends Component{
 			
 
 			<View style={styles.container}>
+
 			<Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
 			<View style={styles.header}>
 			<Image style={styles.mark} source={{uri: 'https://cdn0.iconfinder.com/data/icons/sports-and-fitness-flat-colorful-icons-svg/137/Sports_flat_round_colorful_simple_activities_athletic_colored-03-512.png'}} />
@@ -131,6 +132,7 @@ class Login extends Component{
 			</View>
 			<View style={styles.inputContainer}>
 			<Image style={styles.inputPassword} source={{uri: 'https://i.imgur.com/ON58SIG.png'}}/>
+
 			<TextInput
 			password={true}
 			style={[styles.input, styles.whiteFont]}

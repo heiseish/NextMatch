@@ -39,10 +39,21 @@ class JoinTeamView extends Component {
       modalVisible: false,
       selectedItem: undefined,
       results: {
-                teams: []
+                teams: this.returnSortedTeam()
             }
     }
   }
+
+  returnSortedTeam(){
+    var arr = [];
+    let results = realm.objects('Team');
+    results.forEach(function(current,i,Team){
+      arr.push(current);
+    })
+    return (arr)
+
+  }
+
   setModalVisible(visible, x) {
         this.setState({
             modalVisible: visible,
@@ -78,8 +89,13 @@ class JoinTeamView extends Component {
   }
 
   _returnImage(team){
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png';
-    else return team.image;
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
   }
 
   render(){
@@ -97,7 +113,7 @@ class JoinTeamView extends Component {
         <Content>
         <List dataArray={this.state.results.teams} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
-        <Thumbnail square size={80} source={{uri: this._returnImage(team)}} />        
+        <Thumbnail square size={80} source={this._returnImage(team)} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.teamname}</Text></Text>
         <Text style={{color:'#007594'}}>{team.teamdescription}</Text>    
         <Text note>Score: <Text note style={{marginTop: 5}}>{team.rankpoint}</Text></Text>    
@@ -113,7 +129,7 @@ class JoinTeamView extends Component {
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
-        <Image style={styles.modalImage} source={{uri: this.state.selectedItem.image}}  />
+        <Image style={styles.modalImage} source={this._returnImage(this.state.selectedItem)}  />
         <H3 style={styles.header}> {this.state.selectedItem.teamname}
         </H3>
         <Text style={styles.negativeMargin} >

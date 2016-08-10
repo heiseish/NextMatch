@@ -3,6 +3,7 @@ var realm = require('../Model/model.js');
 var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
 var TeamPost = require('./TeamPost');
+var TeamSetting = require('./TeamSetting');
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
@@ -60,21 +61,39 @@ class YourTeam extends Component {
         passProps: {user: this.props.user}
     });
   }
+
+  _setting(){
+    this.props.navigator.push({
+        name: 'Setting',
+        title: 'Setting',
+        component: TeamSetting,
+        passProps: {user: this.props.user}
+    });
+
+  }
   
 
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return team.image;
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+
   }
 
   returnPlayerImage(player){
-    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return player.image;
+    if (player.imageStyle === 1) return require('../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
   }
   
 
-
+// <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
 
   render() {
     // var profilepic = this.props.user.image ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
@@ -83,10 +102,10 @@ class YourTeam extends Component {
     return (
       <Container>
         <Content>
-        <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
+        
         <View style={styles.containerTop}>
           <View style={{width: 80, height: 80, left: 0}} >
-            <Image style={styles.modalImage} source={{uri: this.returnTeamImage(team.teamname)}}  />
+            <Image style={styles.modalImage} source={this.returnTeamImage(team.teamname)}  />
           </View>
           <View style={{width: 200, height: 80, right:0, paddingLeft: 10}} >
             <H3 style={styles.header}> {team.teamname}
@@ -96,10 +115,16 @@ class YourTeam extends Component {
             <Text >Description: <Text style={styles.bold}>      {team.teamdescription}</Text>
             </Text>
           </View>
+          <View style={{width:30}}>
+          {this.props.user.leader ? <Button transparent onPress={() => {this._setting()}}>
+                        <Icon name="ios-settings" />
+                    </Button> : <View/>}
         </View>
+        </View>
+        
         <View style={{flex:1,height:300, marginTop: 40}}>
 
-        <ScrollableTabView style={{marginTop:10}}>
+        <ScrollableTabView style={{marginTop:30}}>
           <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} />
           <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user}/>
           <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user}/>
@@ -162,15 +187,23 @@ class UpcomingMatch extends Component{
   constructor(props){
     super(props)
   }
-  returnTeamImage(teamname){
+ returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return team.image;
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+
   }
 
   returnPlayerImage(player){
-    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return player.image;
+    if (player.imageStyle === 1) return require('../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
   }
   
 returnArrayMatches(state){
@@ -197,14 +230,14 @@ returnArrayMatches(state){
           <View style={styles.containerTop}>
 
           <View style={{width: 30, height: 50, left: 0, }} >
-          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
+          <Thumbnail square size={30} source={this.returnTeamImage(match.hometeam)} />
           </View>
           <View style={{width: 280, height: 50}}>
           <Text style={{fontWeight: '300', color: '#cc00cc', marginLeft: 98}}>{match.time}</Text>
           <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} - {match.awayteam}</Text>
           </View>
           <View style={{width: 30, height: 50, right: 0}}>
-          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+          <Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
           </View> 
           </View>
    
@@ -223,13 +256,21 @@ class TeamRoster extends Component{
   }
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return team.image;
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+
   }
 
   returnPlayerImage(player){
-    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return player.image;
+    if (player.imageStyle === 1) return require('../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
   }
   
   returnArrayPlayer(){
@@ -254,7 +295,7 @@ class TeamRoster extends Component{
           <View style={styles.containerTop}>
 
           <View style={{width: 80, height: 20, left: 0}} >
-          <Thumbnail square size={30} source={{uri: this.returnPlayerImage(player)}} />
+          <Thumbnail square size={30} source={this.returnPlayerImage(player)} />
           </View>
           <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
           <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>
@@ -279,13 +320,21 @@ class TeamHistory extends Component{
   }
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return team.image;
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+
   }
 
   returnPlayerImage(player){
-    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return player.image;
+    if (player.imageStyle === 1) return require('../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
   }
 
   returnArrayMatches(state){
@@ -311,13 +360,13 @@ class TeamHistory extends Component{
           <View style={styles.containerTop}>
 
           <View style={{width: 30, height: 20, left: 0, }} >
-          <Thumbnail square size={30} source={{uri: this.returnTeamImage(match.hometeam)}} />
+          <Thumbnail square size={30} source={this.returnTeamImage(match.hometeam)} />
           </View>
           <View style={{width: 280, height: 20}}>
           <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} {match.hometeamscore}-{match.awayteamscore} {match.awayteam}</Text>
           </View>
           <View style={{width: 30, height: 20, right: 0}}>
-          <Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+          <Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
           </View> 
           </View>
    

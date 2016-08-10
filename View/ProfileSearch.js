@@ -65,8 +65,10 @@ class ProfileSearch extends Component {
   }
 
   returnPlayerImage(player){
-    if (player.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-    else return player.image;
+    if (player.imageStyle === 1) return require('../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
   }
 
   setModalVisible(visible, x) {
@@ -128,7 +130,7 @@ class ProfileSearch extends Component {
 
       {this.state.loading? <Spinner /> : <List dataArray={this.state.results.players} renderRow={(player) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, player)} > 
-        <Thumbnail square size={80} source={{uri: this.returnPlayerImage(player)}} />        
+        <Thumbnail square size={80} source={this.returnPlayerImage(player)} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{player.team}</Text></Text>
         <Text style={{color:'#007594'}}></Text>    
         <Text note>Position: <Text note style={{marginTop: 5}}>{player.position}</Text></Text>    
@@ -147,8 +149,9 @@ class ProfileSearch extends Component {
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
-        <Image style={styles.modalImage} source={{uri: this.returnPlayerImage(this.state.selectedItem)}}  />
-
+        <View style={{alignItems: 'center'}}>
+        <Image style={styles.modalImage} source={this.returnPlayerImage(this.state.selectedItem)}  />
+        </View>
         <Grid style={{alignSelf: 'center', width: 300}}>
               <Col>
                 <Row><Text style={styles.subjectFont}>Position</Text></Row>

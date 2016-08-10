@@ -72,10 +72,16 @@ class Upcoming extends Component {
 
 	}
 	returnTeamImage(teamname){
-		let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-		if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png'; 
-		else return team.image;
-	}
+    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+
+  }
 
 	returnVideoId(url){
 		var id = url.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
@@ -90,13 +96,13 @@ class Upcoming extends Component {
 				<ListItem onPress={()=>this.setModalVisible(true, match)}> 
 				<View style={{flex: 1, flexDirection: 'row', marginLeft: 0, marginRight:0, marginTop: 20}}>
 				<View style={{width: 60, height: 60, left: 0, }} >
-				<Thumbnail square size={60} source={{uri: this.returnTeamImage(match.hometeam)}} />
+				<Thumbnail square size={60} source={this.returnTeamImage(match.hometeam)} />
 				</View>
 				<View style={{width: 230, height: 60}}>
 				<Text style={{fontWeight: '600', color: '#996633', marginLeft: 20, marginTop: 10}}>{match.hometeam}  -  {match.awayteam}</Text>
 				</View>
 				<View style={{width: 60, height: 60, right: 0}}>
-				<Image style={styles.image} source={{uri: this.returnTeamImage(match.awayteam)}} />
+				<Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
 				</View>
 				</View>
 
@@ -116,13 +122,13 @@ class Upcoming extends Component {
 				<View style={styles.containerTop}>
 
 				<View style={{width: 80, height: 80, left: 0, }} >
-				<Thumbnail square size={80} source={{uri: this.returnTeamImage(this.state.selectedItem.hometeam)}} />
+				<Thumbnail square size={80} source={this.returnTeamImage(this.state.selectedItem.hometeam)} />
 				</View>
 				<View style={{width: 200, height: 80}}>
 				<Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 20, marginTop: 20,}}>{this.state.selectedItem.hometeam} - {this.state.selectedItem.awayteam}</Text>
 				</View>
 				<View style={{width: 80, height: 80, right: 0}}>
-				<Image style={{width: 80, height: 80}} source={{uri: this.returnTeamImage(this.state.selectedItem.awayteam)}} />
+				<Image style={{width: 80, height: 80}} source={this.returnTeamImage(this.state.selectedItem.awayteam)} />
 				</View>
 				</View>
 				<View style={styles.negativeMargin}>

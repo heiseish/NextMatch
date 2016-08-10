@@ -120,8 +120,13 @@ class RequestList extends Component {
   }
   _returnImage(request){
     let team = realm.objects('Team').filtered('teamname == $0',request.hometeam)[0];
-    if (team.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png';
-    else return team.image;
+    if (team.imageStyle === 1) return require('../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../imgTeam/7.png');
   }
   _goBack(){
     this.props.navigator.pop();
@@ -142,7 +147,7 @@ class RequestList extends Component {
       <Content>
       {this.state.loading? <Spinner /> : <List dataArray={this.state.results.request} renderRow={(request) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
-        <Thumbnail square size={80} source={{uri: this._returnImage(request)}} />        
+        <Thumbnail square size={80} source={this._returnImage(request)} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.hometeam}</Text></Text>
         <Text style={{color:'#007594'}}>{request.additionalCondition}</Text>    
         <Text note>Time: <Text note style={{marginTop: 5}}>{request.time}@{request.venue}</Text></Text>    
@@ -161,7 +166,7 @@ class RequestList extends Component {
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
-        <Image style={styles.modalImage} source={{uri: this._returnImage(this.state.selectedItem)}}  />
+        <Image style={styles.modalImage} source={this._returnImage(this.state.selectedItem)}  />
         <H3 style={styles.header}> {this.state.selectedItem.hometeam}
         </H3>
         <Text style={styles.negativeMargin} >

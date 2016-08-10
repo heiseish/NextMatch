@@ -54,11 +54,6 @@ class Profile extends Component {
     })
   }
 
-  _returnImage(){
-    if (this.props.user.image === '') return 'https://i0.wp.com/assets.plan.io/images/default_avatar.png';
-    else return this.props.user.image;
-  }
-
   _search(){
     this.props.navigator.push({
         name: 'FindPlayer',
@@ -66,6 +61,13 @@ class Profile extends Component {
         component: ProfileSearch,
         passProps: {user: this.props.user}
     });
+  }
+
+  returnUserImg(){
+    if (this.props.user.imageStyle === 1) return require('../imgUser/1.png');
+    if (this.props.user.imageStyle === 2) return require('../imgUser/2.jpg');
+    if (this.props.user.imageStyle === 3) return require('../imgUser/3.jpg');
+    if (this.props.user.imageStyle === 4) return require('../imgUser/4.jpg');
   }
 
 
@@ -88,7 +90,7 @@ class Profile extends Component {
           
           <View>
             
-            <Image style={styles.modalImage} source={{uri: this._returnImage()}}  />
+            <Image style={styles.modalImage} source={this.returnUserImg()}  />
             <View >
 
             <Grid style={{alignSelf: 'center', width: 300}}>
