@@ -13,6 +13,9 @@ import {
   Image,
   Dimensions,
   AlertIOS,
+  PickerIOS,
+  TouchableHighlight,
+  Modal,
 } from 'react-native';
 import {
   Button,
@@ -22,8 +25,14 @@ import {
   Header,
   Title,
   Icon,
+  CardItem,
+  Card,
 } from 'native-base';
+var PickerItemIOS = PickerIOS.Item;
+
+var {FBLogin, FBLoginManager} = require('react-native-facebook-login');
 var windowSize = Dimensions.get('window');
+var showPositions = [{position: 'Striker'},{position: 'Midfielder'}, {position:'Center Back'}, {position:'Goal Keeper'}];
 
 class Signup extends Component{
   constructor(props) {
@@ -34,15 +43,21 @@ class Signup extends Component{
       passwordConf: '',
       // isLoggedIn: false,
       fullname: '',
-      position: '',
+      position: 'Position(Optional)',
       displayname: '',
       isLoading: false,
+      modal: false,
+      positionIndex:0,
+     
     }
     this.onClickSignUp = this.onClickSignUp.bind(this);
   }
   _return(){
     this.props.navigator.pop();
   }
+
+
+
   onClickSignUp(){
     this.setState({isLoading: true})
     let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
@@ -68,6 +83,9 @@ class Signup extends Component{
       this.setState({isLoading: false})
     } else {
       realm.write(() => {
+        if (this.state.position === 'Position(Optional)'){
+          this.setState({position: ''})
+        }
 
         realm.create('User',{
             id:    3,
@@ -88,7 +106,10 @@ class Signup extends Component{
     }
   }
 
+ 
+
   render() {
+    var _this = this;
 
     return (
       <Container>
@@ -165,26 +186,51 @@ class Signup extends Component{
       </View>
       <View style={styles.inputContainer}>
       <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
-      <TextInput 
-      style={[styles.input, styles.whiteFont]}
-      placeholder="Which position do you play? (Optional)"
-      placeholderTextColor="#FFF"
-      onChangeText={(position) => this.setState({position})}
-      value={this.state.position}
-      />
+
+
+      <TouchableHighlight style={[styles.input, styles.whiteFont]} underlayColor="transparent" onPress={ () => this.setState({modal: true}) }>
+       <Text style={{color: 'white'}}>{this.state.position}</Text>
+     </TouchableHighlight>
+
+     <Modal
+      animationType="slide"
+      transparent={false}
+      visible={this.state.modal}
+      onRequestClose={() => {alert("Modal has been closed.")}}
+      >
+      <Card>
+      <CardItem>
+      <PickerIOS
+          selectedValue={this.state.position}
+          onValueChange={(position) => this.setState({position, positionIndex: showPositions[position]})}>
+          {Object.keys(showPositions).map((position) => (
+            <PickerItemIOS
+              key={position}
+              value={showPositions[position].position}
+              label={showPositions[position].position}
+            />
+          ))}
+        </PickerIOS>
+        <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+            this.setState({modal: false})
+          }}>Choose</Button>
+          </CardItem>
+          </Card>
+      </Modal> 
 
       </View>
-      {this.state.isLoading ? <Spinner /> : <Button block warning onPress={this.onClickSignUp}>
+      <Button block warning onPress={this.onClickSignUp}>
       Sign Up
-      </Button>}
+      </Button>
       </View>
-      
+
       </View>
       </Content>
       </Container>
       );
   }
 };
+
 
 
 
@@ -259,7 +305,11 @@ const styles = StyleSheet.create({
     progress: {
       margin: 10,
     },
-    
+    separator: {
+      height: 1,
+      backgroundColor: '#dddddd',
+      width: 100
+    },
 })
 
 

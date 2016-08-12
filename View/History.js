@@ -1,7 +1,7 @@
 'use strict';
 
 var realm = require('../Model/model.js');
-// import YouTube from 'react-native-youtube';
+import YouTube from 'react-native-youtube';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
@@ -61,8 +61,8 @@ class History extends Component {
 	}
 
 	returnVideo(match){
-		if (match.ytvideo === '') return undefined;
-		else return match.ytvideo;
+		if (match.ytvideo) return true;
+		else return false;
 
 	}
 
@@ -137,12 +137,32 @@ class History extends Component {
 				</View>
 				</View>
 				<View style={styles.negativeMargin}>
+
 				<Text style={{paddingTop: 50, fontSize:10, fontWeight : '600'}}>
 				Tỉ số chung cuộc: <Text style={styles.score}>   {this.state.selectedItem.hometeamscore} - {this.state.selectedItem.awayteamscore}</Text>
 				</Text>
 				<Text style={{fontSize:10, fontWeight : '600'}}>
 				Thời gian: <Text style={styles.time}>{this.state.selectedItem.time}</Text>
 				</Text>
+
+				{this.returnVideo(this.state.selectedItem) ? <YouTube
+					ref="youtubePlayer"
+  			videoId={this.returnVideoId(this.state.selectedItem.ytvideo)} // The YouTube video ID
+  			play={false}           // control playback of video with true/false
+  			hidden={false}        // control visiblity of the entire view
+  			playsInline={true}    // control whether the video should play inline
+  			loop={false}          // control whether the video should loop when ended
+
+  			onReady={(e)=>{this.setState({isReady: true})}}
+  			onChangeState={(e)=>{this.setState({status: e.state})}}
+  			onChangeQuality={(e)=>{this.setState({quality: e.quality})}}
+  			onError={(e)=>{this.setState({error: e.error})}}
+  			onProgress={(e)=>{this.setState({currentTime: e.currentTime, duration: e.duration})}}
+
+  			style={{alignSelf: 'stretch', height: 300, backgroundColor: 'black', marginVertical: 10}}
+  			/> : <View/>}
+
+
 				<Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
 					this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
 				}}>
@@ -162,22 +182,7 @@ class History extends Component {
   		);
 	}
 }
-// {this.returnVideo(this.state.selectedItem) ? <YouTube
-// 					ref="youtubePlayer"
-//   			videoId="KVZ-P-ZI6W4" // The YouTube video ID
-//   			play={true}           // control playback of video with true/false
-//   			hidden={false}        // control visiblity of the entire view
-//   			playsInline={true}    // control whether the video should play inline
-//   			loop={false}          // control whether the video should loop when ended
 
-//   			onReady={(e)=>{this.setState({isReady: true});AlertIOS.alert('Nice')}}
-//   			onChangeState={(e)=>{this.setState({status: e.state})}}
-//   			onChangeQuality={(e)=>{this.setState({quality: e.quality})}}
-//   			onError={(e)=>{this.setState({error: e.error})}}
-//   			onProgress={(e)=>{this.setState({currentTime: e.currentTime, duration: e.duration})}}
-
-//   			style={{alignSelf: 'stretch', height: 300, backgroundColor: 'black', marginVertical: 10}}
-//   			/> : <View/>}
 
   			
 var styles = StyleSheet.create({

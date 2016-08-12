@@ -6,7 +6,7 @@ import { Container, Content, InputGroup, Input , Icon, Header, Title, Button} fr
 import {AlertIOS} from 'react-native';
 
 
-class CreateRequest extends Component {
+class Challenge extends Component {
     constructor(props) {
     super(props);
     this.state = {
@@ -14,6 +14,7 @@ class CreateRequest extends Component {
       venue: '',
       additionalDescription: '',
       user: this.props.user,
+
 
       }
 
@@ -26,10 +27,10 @@ class CreateRequest extends Component {
     _Save(){
 
         realm.write(() => {
-             realm.create('Request',{id:3, hometeam: this.props.user.team, time: this.state.time, venue: this.state.venue, additionalCondition: this.state.additionalDescription})
+             realm.create('Request',{id:4, hometeam: this.props.user.team, awayteam: this.props.awayteam.teamname, time: this.state.time, venue: this.state.venue, additionalCondition: this.state.additionalDescription})
         });
 
-        AlertIOS.alert('Your request has been successfully created');
+        AlertIOS.alert('You have challenged the team. Beware!');
         this.props.navigator.pop();
        
     }
@@ -79,4 +80,4 @@ class CreateRequest extends Component {
     }
 }
 
-module.exports = CreateRequest;
+module.exports = Challenge;

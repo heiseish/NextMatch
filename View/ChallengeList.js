@@ -37,7 +37,7 @@ import {
 
 
 
-class RequestList extends Component {
+class ChallengeList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -55,7 +55,7 @@ class RequestList extends Component {
 
   returnRequest(){
     var arr = [];
-    let results = realm.objects('Request').filtered('hometeam != $0',this.props.user.team);
+    let results = realm.objects('Request').filtered('awayteam == $0',this.props.user.team);
     results.forEach(function(current,i,Team){
       arr.push(current);
     })
@@ -83,13 +83,13 @@ class RequestList extends Component {
             selectedItem: x
         });
         this.search();
-        AlertIOS.alert('You have successfully accepted request from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
+        AlertIOS.alert('You have successfully accepted challenge from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
         
   }
 
   _Alert(){
     AlertIOS.alert(
-          'Are you sure that you want to accept the offer?',
+          'Are you sure that you want to accept the challenge?',
           'Once accepted two teams must proceed to match up.',
          [
          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
@@ -139,13 +139,9 @@ class RequestList extends Component {
   render() {
     return (
       <Container>
-      <Header searchBar rounded>                         
-          <InputGroup>                        
-            <Icon name="ios-search" />                        
-            <Input placeholder="Search" value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
-            <Icon name="logo-steam" />
-          </InputGroup>                    
-          <Button transparent onPress={() => {this._goBack()}}>Cancel</Button>                
+      <Header rounded>                         
+          <Title> Challenge List </Title>                 
+          <Button transparent onPress={() => {this._goBack()}}>Back</Button>                
         </Header>
 
       <Content>
@@ -184,7 +180,7 @@ class RequestList extends Component {
           <View style={{width: 170}}>
           <Button success style={{alignSelf: 'center'}} onPress={() => {
             this._Alert()
-          }}>Accept Request</Button>
+          }}>Accept Challenge</Button>
           </View>
           <View style={{width: 170}}>
           <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
@@ -238,4 +234,4 @@ const styles = StyleSheet.create({
 
 
 
-module.exports = RequestList;
+module.exports = ChallengeList;

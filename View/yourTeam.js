@@ -4,6 +4,8 @@ var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
 var TeamPost = require('./TeamPost');
 var TeamSetting = require('./TeamSetting');
+var ChallengeList = require('./ChallengeList');
+// import IconBadge from 'react-native-icon-badge';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
@@ -22,7 +24,8 @@ import {
   H1,
   List,
   ListItem,
-  Thumbnail
+  Thumbnail,
+  Badge,
 } from 'native-base';
 import {
   Modal,
@@ -71,7 +74,20 @@ class YourTeam extends Component {
     });
 
   }
+
+  _openChallengeBox(){
+    this.props.navigator.push({
+        name: 'Challenge',
+        title: 'Challenge',
+        component: ChallengeList,
+        passProps: {user: this.props.user}
+    });
+  }
   
+  countChallenges(){
+    return realm.objects('Request').filtered('awayteam == $0',this.props.user.team).length;
+
+  }
 
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
@@ -115,12 +131,27 @@ class YourTeam extends Component {
             <Text >Description: <Text style={styles.bold}>      {team.teamdescription}</Text>
             </Text>
           </View>
-          <View style={{width:30}}>
-          {this.props.user.leader ? <Button transparent onPress={() => {this._setting()}}>
-                        <Icon name="ios-settings" />
-                    </Button> : <View/>}
-        </View>
-        </View>
+          
+          {this.props.user.leader ? <View style={{width:30}}>
+          <Button transparent onPress={() => {this._setting()}}>
+          <Icon name="ios-settings" />
+          </Button>
+          </View> : <View/>}
+          
+
+
+          {this.props.user.leader ? <View style={{marginLeft: 10, width:40}}>
+          <Button transparent onPress={() => {this._openChallengeBox()}}>
+          <Icon name="ios-mail" badgeValue={2} />
+          </Button>
+          <Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge>
+          </View> : <View/>}
+
+
+
+          </View>
+        
+   
         
         <View style={{flex:1,height:300, marginTop: 40}}>
 

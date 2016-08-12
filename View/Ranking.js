@@ -28,7 +28,9 @@ import {
   View,
   Image,
   Dimensions,
+  AlertIOS,
 } from 'react-native';
+var Challenge = require('./Challenge');
 
 var windowSize = Dimensions.get('window');
 
@@ -50,8 +52,8 @@ class Ranking extends Component {
       selectedItem: undefined,
       isLoading: false,
       results: {
-                teams: this.returnSortedTeam()
-            }
+        teams: this.returnSortedTeam()
+      }
     }
   }
 
@@ -92,15 +94,15 @@ class Ranking extends Component {
   }
 
   setModalVisible(visible, x) {
-        this.setState({
-            modalVisible: visible,
-            selectedItem: x
-        });
+    this.setState({
+      modalVisible: visible,
+      selectedItem: x
+    });
   }
   toggleCheck() {
-        this.setState({
-            check1 : !this.state.check1
-        })
+    this.setState({
+      check1 : !this.state.check1
+    })
   }
 
   search() {
@@ -110,13 +112,13 @@ class Ranking extends Component {
     });
     let teams = realm.objects('Team').filtered('teamname CONTAINS $0',this.state.search);
     teams.forEach(function(current,i,Team){
-        arr.push(current);
+      arr.push(current);
     })
     this.setState({
-        loading: false,
-        results:{
-          teams: arr,
-        }
+      loading: false,
+      results:{
+        teams: arr,
+      }
     })
 
   }
@@ -129,18 +131,51 @@ class Ranking extends Component {
     players.forEach(function(current,i,Team){
       arrPlayer.push(current);
     })
-  
+
     return (arrPlayer)
 
   }
 
   returnReview(team){
     var arrReview = [];
-   let reviews = realm.objects('Review').filtered('team == $0',team.teamname);
-   reviews.forEach(function(current,i,Team){
+    let reviews = realm.objects('Review').filtered('team == $0',team.teamname);
+    reviews.forEach(function(current,i,Team){
       arrReview.push(current);
     })
     return (arrReview)
+  }
+
+  setModalInvisibleAndProceed(visible, x, request) {
+        
+        if (this.state.selectedItem.teamname === this.props.user.team){
+          AlertIOS.alert('Dude you cannot challenge your own team!');
+        } else{
+          this.setState({
+            modalVisible: visible,
+            selectedItem: x
+        });
+        AlertIOS.alert('Please fill in the detail of the challenge');
+        this.props.navigator.push({
+          title: 'Create Challenge',
+          name: 'CreateChallenge',
+          component: Challenge,
+          passProps: {user: this.props.user, awayteam: this.state.selectedItem},
+        })
+        }
+
+        
+        
+  }
+
+  _Alert(){
+    AlertIOS.alert(
+          'Are you sure that you want to challenge the team?',
+          'There is no turning back from this if the other team accepts the challenge!',
+         [
+         {text: 'On second thought NO!', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+         {text: 'Bring it on', onPress: () => this.setModalInvisibleAndProceed(!this.state.modalVisible, this.state.selectedItem, this.state.selectedItem)},
+         ],
+         );
   }
 
 
@@ -158,7 +193,7 @@ class Ranking extends Component {
       </Header>
 
       <Content>
-       
+
 
       {this.state.loading? <Spinner /> : <List dataArray={this.state.results.teams} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
@@ -187,66 +222,77 @@ class Ranking extends Component {
         <View style={styles.cardView}>
 
         <View style={{width: 150, left: 0}}>
-         <H3 style={styles.header}> {this.state.selectedItem.teamname}</H3>
-          <Text style={styles.negativeMargin} >
-          Rank Point: <Text style={styles.bold}>{this.state.selectedItem.rankpoint}</Text>
-          </Text>
-          <Text style={styles.negativeMargin} >
-          Description: <Text style={styles.bold}>{this.state.selectedItem.teamdescription}</Text>
-          </Text>
+        <H3 style={styles.header}> {this.state.selectedItem.teamname}</H3>
+        <Text style={styles.negativeMargin} >
+        Rank Point: <Text style={styles.bold}>{this.state.selectedItem.rankpoint}</Text>
+        </Text>
+        <Text style={styles.negativeMargin} >
+        Description: <Text style={styles.bold}>{this.state.selectedItem.teamdescription}</Text>
+        </Text>
         </View>
 
         <View style={{width: 240, right: 0}}>
-          <Title>Team Rosters</Title>
-          {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayPlayer(this.state.selectedItem)} renderRow={(player) =>               
+        <Title>Team Rosters</Title>
+        {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayPlayer(this.state.selectedItem)} renderRow={(player) =>               
           <ListItem> 
 
-            <View style={styles.containerTop}>
+          <View style={styles.containerTop}>
 
-            <View style={{width: 30, height: 20, left: 0}} >
-            <Thumbnail square size={30} source={this.returnPlayerImage(player)} />
-            </View>
-             <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
-           <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>
-           </View>
-          
-           </View>
-
-            </ListItem>                            
-           }> </List> }
+          <View style={{width: 30, height: 20, left: 0}} >
+          <Thumbnail square size={30} source={this.returnPlayerImage(player)} />
           </View>
+          <View style={{width: 70, height: 20, }}>
+          <Text style={{fontWeight: '600', color: '#cc00cc', paddingLeft: 10, alignSelf:'center'}}>{player.displayname} </Text>
+          </View>
+          <View style={{width: 100, height: 20,  }}>
+          <Text style={{fontWeight: '600', color: '#cc00cc', alignSelf: 'center', marginBottom: 20}}>{player.position} </Text>
+          </View>
+          
+          </View>
+
+          </ListItem>                            
+        }> </List> }
+        </View>
 
         </View>
         <View style={styles.cardBelow}>
-          <H3 style={{alignSelf: 'center'}}>Review</H3>
+        <H3 style={{alignSelf: 'center'}}>Review</H3>
 
-          <List dataArray={this.returnReview(this.state.selectedItem)} renderRow={(review) =>               
+        <List dataArray={this.returnReview(this.state.selectedItem)} renderRow={(review) =>               
           <ListItem style={{height:100,}}> 
-            <View>
-            <StarRating 
-            disabled={true}
-            emptyStar={'ios-star-outline'}
-            fullStar={'ios-star'}
-            halfStar={'ios-star-half'}
-            iconSet={'Ionicons'}
-            maxStars={5}
-            rating={review.point}
-            starColor={'green'}
-            />
-            <Text>{review.comment}</Text>
-            <Text note style={{fontWeight: '100'}}>    {review.reviewer}</Text> 
-            </View>
+          <View>
+          <StarRating 
+          disabled={true}
+          emptyStar={'ios-star-outline'}
+          fullStar={'ios-star'}
+          halfStar={'ios-star-half'}
+          iconSet={'Ionicons'}
+          maxStars={5}
+          rating={review.point}
+          starColor={'green'}
+          />
+          <Text>{review.comment}</Text>
+          <Text note style={{fontWeight: '100'}}>    {review.reviewer}</Text> 
+          </View>
 
-            </ListItem>                            
-           }> </List> 
+          </ListItem>                            
+        }> </List> 
 
         </View>
 
-        <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
-          this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
-        }}>
-        Go Back
-        </Button>
+        <View style={styles.buttons}>
+          <View style={{width: 170}}>
+          <Button success style={{alignSelf: 'center'}} onPress={() => {
+            this._Alert()
+          }}>Challenge</Button>
+          </View>
+          <View style={{width: 170}}>
+          <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+            this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+          }}>Back</Button>
+          </View>
+
+        </View>
         </CardItem>
       }
       </Card>
@@ -259,46 +305,45 @@ class Ranking extends Component {
       </Container>
 
       );
-  }
+}
 }
 
 const styles = StyleSheet.create({
   containerTop: {
-      flex: 1,
-      flexDirection: 'row', 
-      marginTop: 5,
-      backgroundColor: 'transparent',
-      marginLeft: 0,
-    },
-    cardView: {
-      flexDirection: 'row',
-      flex: 1,
-      height: 110,
-    },
-    header : {
-        marginLeft: -5,
-        marginTop: 5,
-        marginBottom: (Platform.OS==='ios') ? -7 : 0,
-        lineHeight: 24,
-        color: '#5357b6'
-    },
-    modalImage: {
-        resizeMode: 'contain',
-        height: 200
-    },
-    bold: {
-        fontWeight: '600'
-    },
-    negativeMargin: {
-        // marginBottom: -10
-        marginTop: 10,
-    },
-    // cardBelow: {
-    //   width: windowSize.width,
-    //   alignSelf: 'center',
-    //   height: 150,
-    //   color: 'black',
-    // }
+    flex: 1,
+    flexDirection: 'row', 
+    marginTop: 5,
+    backgroundColor: 'transparent',
+    marginLeft: 0,
+  },
+  cardView: {
+    flexDirection: 'row',
+    flex: 1,
+    height: 110,
+  },
+  header : {
+    marginLeft: -5,
+    marginTop: 5,
+    marginBottom: (Platform.OS==='ios') ? -7 : 0,
+    lineHeight: 24,
+    color: '#5357b6'
+  },
+  modalImage: {
+    resizeMode: 'contain',
+    height: 200
+  },
+  bold: {
+    fontWeight: '600'
+  },
+  negativeMargin: {
+
+    marginTop: 10,
+  },
+
+  buttons:{
+    flexDirection: 'row',
+    marginTop: 50,
+  },
 });
 
 

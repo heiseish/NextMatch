@@ -133,7 +133,7 @@ returnUserImg(){
                     <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-information-circle" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your position" 
+                        <Input placeholder="Tell people about yourself" 
                                 onChangeText={(briefdesc) => this.setState({briefdesc})}
                                 value={this.state.briefdesc}
                                 />

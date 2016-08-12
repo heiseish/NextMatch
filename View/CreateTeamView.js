@@ -35,7 +35,7 @@ class CreateTeamView extends Component {
              user.leader = true;
         });
 
-        AlertIOS.alert('Your team has been successfully created');
+        AlertIOS.alert('Your team has been successfully created. You have automatically been assigned as the team captain');
         this.props.navigator.pop();
         }
     }
