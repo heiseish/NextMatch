@@ -19,6 +19,7 @@ const UserSchema = {
             team: {type: 'string', optional: true},
             teamnumber: {type: 'int', optional: true},
             leader: {type: 'bool', default: false},
+            email: 'string',
             
         }
 };
@@ -41,6 +42,25 @@ const PostSchema = {
   }
 };
 
+
+const UserSmsSchema={
+  name: 'user',
+  properties: {
+    _id: 'int',
+    name: 'string',
+    avatar: 'string',
+  }
+}
+const MessagesSchema = {
+  name: 'Messages',
+  properties: {
+    _id: 'int',
+    text: 'string',
+    createdAt: {type: 'date', default: new Date()},
+    user: {type:'user'},
+  }
+};
+
 const TeamSchema = {
   name: 'Team',
   primaryKey: 'id',
@@ -54,7 +74,8 @@ const TeamSchema = {
     winrate: {type: 'int', default: 0},
     matches: {type: 'int', default: 0},
     post: {type: 'list', objectType: 'Post'},
-    captain: {type: 'string', optional: true}
+    captain: {type: 'string', optional: true},
+    messages: {type:'list', objectType: 'Messages'}
   }
 };
 
@@ -91,10 +112,20 @@ const RequestSchema = {
 
 
 
-let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,PostSchema,RequestSchema],schemaVersion: 8});
+let realm = new Realm({schema: [UserSchema,TeamSchema, ReviewSchema,MatchSchema,PostSchema,RequestSchema,MessagesSchema,UserSmsSchema],schemaVersion: 14});
 
 // realm.write(() => {
-//   realm.creat(''{})
+//   let TeamMsm = realm.objects('Team').filtered('teamname == "Facebook FC"')[0].messages;
+  
+//   TeamMsm.push({
+//   _id: 1,
+//     text: 'Are you building a chat app?',
+//     createdAt: new Date(Date.UTC(2016, 7, 30, 17, 20, 0)),
+//     user: {
+//       _id: 1,
+//       name: 'React Native',
+//     },
+//   })
 
   
  

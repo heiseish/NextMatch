@@ -57,7 +57,7 @@ class GetMatch  extends Component{
 
         <Content>
         <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
-          <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
+          <Image style={styles.bg} source={require('../imgBackground/background.jpg')} />
         
 
           <View style={{height: 200, paddingTop: 150, marginTop:10}}>

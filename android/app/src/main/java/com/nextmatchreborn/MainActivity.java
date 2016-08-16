@@ -1,6 +1,8 @@
 package com.nextmatchreborn;
 
 import com.facebook.react.ReactActivity;
+import com.auth0.lock.react.LockReactPackage;
+import com.magus.fblogin.FacebookLoginPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.microsoft.codepush.react.CodePush;
 import io.realm.react.RealmReactPackage;

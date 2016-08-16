@@ -66,12 +66,7 @@ class CreateTeamView extends Component {
                                 onChangeText={(teamdescription) => this.setState({teamdescription})}
                                 value={this.state.teamdescription}
                                 />
-
-
-                    </InputGroup>
-
-
-                    
+                        </InputGroup>
                 </Content>
             </Container>
         );

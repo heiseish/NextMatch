@@ -1,130 +1,248 @@
 'use strict';
 
 var realm = require('../Model/model.js');
-import React, { Component } from 'react';
+
+import React,{Component} from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  Image
+
+} from 'react-native';
+
+import { GiftedChat, Actions, Bubble} from 'react-native-gifted-chat';
+import CustomActions from './CustomActions';
+import CustomView from './CustomView';
 import { 
   Container, 
   Header, 
   Title, 
-  Content, 
-  Text, 
-  InputGroup, 
-  Input, 
-  Icon, 
-  Button ,
-  List,
-  ListItem,
-  H3,
+  Button,
+  Icon,
+  Content,
 } from 'native-base';
-import {
-  Modal,
-  StyleSheet,
-  Platform,
-  View,
-  Image,
-  Dimensions,
-  AlertIOS,
-} from 'react-native';
-import Swipeout from 'react-native-swipeout';
+
+var reverse = function(arr) {
+ var result = [],
+ ii = arr.length;
+ for (var i = ii - 1;i !== 0;i--) {
+   result.push(arr[i]);
+ }
+ return result;
+}
 
 
+class TeamPost extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      messages: [],
+      loadEarlier: true,
+      typingText: null,
+      isLoadingEarlier: false,
+    };
 
-function getDate(){
-  var today = new Date();
-  var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
+    this._isMounted = false;
+    this.onSend = this.onSend.bind(this);
 
-    if(dd<10) {
-      dd='0'+dd
-    } 
-
-    if(mm<10) {
-      mm='0'+mm
-    } 
-
-    today = mm+'/'+dd+'/'+yyyy;
-    return today;
+    // this.renderCustomActions = this.renderCustomActions.bind(this);
+    this.renderBubble = this.renderBubble.bind(this);
+    this.renderFooter = this.renderFooter.bind(this);
+    // this.onLoadEarlier = this.onLoadEarlier.bind(this);
+     // this.renderAvatar = this.renderAvatar.bind(this);
+    this._isAlright = null;
   }
 
-  class TeamPost extends Component{
-    constructor(props){
-      super(props)
-      this.state= {
-        post: '',
-      }
-    }
-    _post(){
-      realm.write(() => {
-       realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0].post.push({post: this.state.post, poster: this.props.user.displayname, date: getDate()})
+
+
+  componentWillMount() {
+    this._isMounted = true;
+    if ((realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0].messages) && realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0].messages.length > 0){
+      this.setState(() => {
+        return {
+         messages: reverse(realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0].messages)
+       };
      });
-      this.setState({
-        post: '',
-      })
-      AlertIOS.alert('Posted!');
-    }
-
-    editPost(){
-
-    }
-    deletePost(){
+    } else {
+      this.setState(() => {
+        return {
+         messages: []
+       };
+     });
 
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  // onLoadEarlier() {
+  //   this.setState((previousState) => {
+  //     return {
+  //       isLoadingEarlier: true,
+  //     };
+  //   });
+
+  //   setTimeout(() => {
+  //     if (this._isMounted === true) {
+  //       this.setState((previousState) => {
+  //         return {
+  //           messages: GiftedChat.prepend(previousState.messages, require('./data/old_messages.js')),
+  //           loadEarlier: false,
+  //           isLoadingEarlier: false,
+  //         };
+  //       });
+  //     }
+  //   }, 1000); // simulating network
+  // }
+
+  goBack(){
+    this.props.navigator.pop();
+  }
+
+  
 
 
-    render(){
-      var swipeoutBtns = [
-      {
-        text: 'Edit',
-        onPress: this.editPost(),
-        backgroundColor: 'yellow',
-        color: 'white',
-        
-      },
-      {
-        text: 'Delete',
-        onPress: this.deletePost(),
-        backgroundColor: 'red',
-        color: 'white',
-      }
-      ]
-      return(
-        <Container>
-        <Content>
-        <View style={{flexDirection: 'row'}}>
-        <View style={{width: 340}}>
-        <InputGroup borderType="underline" >
-        <Icon name="ios-chatboxes" style={{color:'#384850'}}/>
-        <Input placeholder="Type your post"
-        onChangeText={(post) => this.setState({post})}
-        value={this.state.post}
-        />
-        </InputGroup>
-        </View>
-        <View style={{width:50}}>
-        <Button rounded onPress={() => {this._post()}}>
-        <Icon name="ios-send" />
-        </Button>
-        </View>
+  onSend(messages = []) {
+    realm.write(() => {
+      let TeamMsm = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0].messages;
 
-        </View>
-        <View >
-        <List dataArray={realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0].post} renderRow={(post) =>               
-          <ListItem> 
-          <View>
-          <Swipeout right={swipeoutBtns} backgroundColor='white'>
-          <H3 style={{fontWeight: '300', color: '#000080'}}> {post.post} </H3>
-          <Text style={{alignSelf: 'flex-end'}}>{post.poster}</Text>
-          </Swipeout>
-          </View>
-          </ListItem>                            
-        }> </List> 
-        </View>
+        TeamMsm.push({
+          _id: TeamMsm.length,
+          text: messages[0].text,
+          user: {
+            _id: this.props.user.id,
+            name: this.props.user.displayname,
+            avatar: this.getAvatar()
+          },
+        })
+     
 
-        </Content>
-        </Container>
+      this.componentWillMount();
+
+    });
+
+
+  }
+  // renderCustomActions(props) {
+  //   if (Platform.OS === 'ios') {
+  //     return (
+  //       <CustomActions
+  //         {...props}
+  //       />
+  //     );
+  //   }
+  //   const options = {
+  //     'Action 1': (props) => {
+  //       alert('option 1');
+  //     },
+  //     'Action 2': (props) => {
+  //       alert('option 2');
+  //     },
+  //     'Cancel': () => {},
+  //   };
+  //   return (
+  //     <Actions
+  //       {...props}
+  //       options={options}
+  //     />
+  //   );
+  // }
+  //   renderCustomView(props) {
+  //   return (
+  //     <CustomView
+  //       {...props}
+  //     />
+  //   );
+  // }
+
+  
+ 
+
+
+  renderBubble(props) {
+    return (
+      <Bubble
+      {...props}
+      wrapperStyle={{
+        left: {
+          backgroundColor: '#f0f0f0',
+        }
+      }}
+      />
+      );
+  }
+
+
+  renderFooter(props) {
+    if (this.state.typingText) {
+      return (
+        <View style={styles.footerContainer}>
+        <Text style={styles.footerText}>
+        {this.state.typingText}
+        </Text>
+        </View>
         );
     }
+    return null;
   }
 
-  module.exports = TeamPost;
+  getAvatar(){
+    if (this.props.user.imageStyle === 1) return 'https://i.imgur.com/MbaeK8b.png'
+    if (this.props.user.imageStyle === 2) return "https://i.imgur.com/LxkRAlL.jpg"
+    if (this.props.user.imageStyle === 3) return "http://i.imgur.com/TqiBS0l.jpg"
+    if (this.props.user.imageStyle === 4) return "http://i.imgur.com/KuRAxYI.jpg"
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+      <Header>
+      <Button transparent onPress={()=> {this.goBack()}}>
+      <Icon name="ios-arrow-back"/>
+      </Button>
+      <Title>Group Chat</Title>
+      </Header>
+
+      <GiftedChat
+      messages={this.state.messages}
+      onSend={this.onSend}
+      // loadEarlier={this.state.loadEarlier}
+      onLoadEarlier={this.onLoadEarlier}
+      isLoadingEarlier={this.state.isLoadingEarlier}
+
+      user={{
+        _id: this.props.user.id,
+      }}
+
+      renderBubble={this.renderBubble}
+      renderFooter={this.renderFooter}
+      // renderAvatar={this.renderAvatar}
+      />
+      </View>
+
+      );
+  }
+}
+
+const styles = StyleSheet.create({
+  footerContainer: {
+    marginTop: 5,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#aaa',
+  },
+  container: {
+    flex: 1,
+    
+  },
+});
+
+module.exports= TeamPost;

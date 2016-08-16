@@ -1,7 +1,7 @@
 'use strict';
 
 const {AppRegistry} = require('react-native');
-const Login = require('./setup/setup.js')
+const Login = require('./setup/login.js')
 
 
 import React, { Component } from 'react';

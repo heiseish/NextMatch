@@ -9,10 +9,10 @@ var UIImagePickerManager = require('NativeModules').UIImagePickerManager;
 
 import React, { Component } from 'react';
 import {
-	StyleSheet,
-	Text,
-	View,
-	TextInput,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
   Image,
   Dimensions,
   TouchableHighlight,
@@ -33,46 +33,46 @@ var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACS
 
 
 class Login extends Component{
-	constructor(props) {
-		super(props);
-		this.state = {
-			username:'', 
-			password:'',
-			// isLoggedIn: false,
-			isLoading: false,
-			progress: 0,
+  constructor(props) {
+    super(props);
+    this.state = {
+      username:'', 
+      password:'',
+      // isLoggedIn: false,
+      isLoading: false,
+      progress: 0,
       indeterminate: true,
       size: 80,
       showsText: true,
       images: [],
  
-		};
-		this.onClickLogin = this.onClickLogin.bind(this);
+    };
+    this.onClickLogin = this.onClickLogin.bind(this);
     this.onClickSignup = this.onClickSignup.bind(this);
-		
-	}
+    
+  }
 
-	onClickLogin(){
-		this.setState({ isLoading: true });
-		this.setState({ progress:0 });
-		let users = realm.objects('User');
-		let user = users.filtered('username == $0',this.state.username)[0];
+  onClickLogin(){
+    this.setState({ isLoading: true });
+    this.setState({ progress:0 });
+    let users = realm.objects('User');
+    let user = users.filtered('username == $0',this.state.username)[0];
 
-		if ((user) && user.password === this.state.password) {
-				this.setState({
+    if ((user) && user.password === this.state.password) {
+        this.setState({
           isLoading: false,
           username: '',
           password: '',
         })
      
-				this.props.navigator.push({
+        this.props.navigator.push({
             title: 'Main',
-						name: "TabBar",
+            name: "TabBar",
             component: TabBar,
             passProps: {user:user,selectedTab:'profile'},
-				});
+        });
       
-		} else {
+    } else {
         AlertIOS.alert(
             'Your ussername-password pair is incorrect! Please try again'
           )
@@ -99,7 +99,7 @@ class Login extends Component{
 //   }
 // });
 
-	}
+  }
   onClickSignup(){
     this.props.navigator.push({
         name: 'Signup',
@@ -109,57 +109,56 @@ class Login extends Component{
   
   }
 
-	render() {
-		return (
-			
+  render() {
+    return (
+      
 
-			<View style={styles.container}>
+      <View style={styles.container}>
 
-			<Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
-			<View style={styles.header}>
-			<Image style={styles.mark} source={{uri: 'https://cdn0.iconfinder.com/data/icons/sports-and-fitness-flat-colorful-icons-svg/137/Sports_flat_round_colorful_simple_activities_athletic_colored-03-512.png'}} />
-			</View>
-			<View style={styles.inputs}>
-			<View style={styles.inputContainer}>
-			<Image style={styles.inputUsername} source={{uri: 'https://i.imgur.com/iVVVMRX.png'}}/>
-			<TextInput 
-			style={[styles.input, styles.whiteFont]}
-			placeholder="Username"
-			placeholderTextColor="#FFF"
-			onChangeText={(username) => this.setState({username})}
-			value={this.state.username}
-			/>
-			</View>
-			<View style={styles.inputContainer}>
-			<Image style={styles.inputPassword} source={{uri: 'https://i.imgur.com/ON58SIG.png'}}/>
+      <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
+      <View style={styles.header}>
+      <Image style={styles.mark} source={{uri: 'https://cdn0.iconfinder.com/data/icons/sports-and-fitness-flat-colorful-icons-svg/137/Sports_flat_round_colorful_simple_activities_athletic_colored-03-512.png'}} />
+      </View>
+      <View style={styles.inputs}>
+      <View style={styles.inputContainer}>
+      <Image style={styles.inputUsername} source={{uri: 'https://i.imgur.com/iVVVMRX.png'}}/>
+      <TextInput 
+      style={[styles.input, styles.whiteFont]}
+      placeholder="Username"
+      placeholderTextColor="#FFF"
+      onChangeText={(username) => this.setState({username})}
+      value={this.state.username}
+      />
+      </View>
+      <View style={styles.inputContainer}>
+      <Image style={styles.inputPassword} source={{uri: 'https://i.imgur.com/ON58SIG.png'}}/>
 
-			<TextInput
-			password={true}
-			style={[styles.input, styles.whiteFont]}
-			placeholder="Pasword"
-			placeholderTextColor="#FFF"
-			onChangeText={(password) => this.setState({password})}
-			value={this.state.password}
-			/>
-			</View>
-			<View style={styles.forgotContainer}>
-			<Text style={styles.greyFont}>Forgot Password</Text>
-			</View>
-			</View>
+      <TextInput
+      password={true}
+      style={[styles.input, styles.whiteFont]}
+      placeholder="Pasword"
+      placeholderTextColor="#FFF"
+      onChangeText={(password) => this.setState({password})}
+      value={this.state.password}
+      />
+      </View>
+      <View style={styles.forgotContainer}>
+      <Text style={styles.greyFont}>Forgot Password</Text>
+      </View>
+      </View>
       {this.state.isLoading ? <Spinner /> : <Button block warning onPress={this.onClickLogin}>
         <Icon name="ios-football-outline" style={{fontSize: 31, color: 'green'}} />
         Sign in
-			</Button>}
+      </Button>}
 
-			<View style={styles.signup}>
-			<Text style={styles.greyFont}>Don't have an account?</Text><TouchableHighlight onPress={this.onClickSignup}><Text style={styles.whiteFont}> Sign Up</Text></TouchableHighlight>
-			</View>
-			</View>
-			);
-	}
+      <View style={styles.signup}>
+      <Text style={styles.greyFont}>Don't have an account?</Text><TouchableHighlight onPress={this.onClickSignup}><Text style={styles.whiteFont}> Sign Up</Text></TouchableHighlight>
+      </View>
+      </View>
+      );
+  }
 };
-
-	
+  
 const styles = StyleSheet.create({
     container: {
       flexDirection: 'column',
@@ -234,11 +233,11 @@ const styles = StyleSheet.create({
       color: '#FFF'
     },
     circles: {
-    	flexDirection: 'row',
-    	alignItems: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     progress: {
-    	margin: 10,
+      margin: 10,
     },
     
 })

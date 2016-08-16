@@ -122,7 +122,7 @@ class ProfileSearch extends Component {
       <Icon name="ios-search" />                        
       <Input placeholder="Search" value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
       </InputGroup>                    
-      <Button transparent onPress={()=>this._goback()}>Go Back</Button>                
+      <Button transparent onPress={()=>this._goback()}>Back</Button>                
       </Header>
 
       <Content>
@@ -131,8 +131,8 @@ class ProfileSearch extends Component {
       {this.state.loading? <Spinner /> : <List dataArray={this.state.results.players} renderRow={(player) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, player)} > 
         <Thumbnail square size={80} source={this.returnPlayerImage(player)} />        
-        <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{player.team}</Text></Text>
-        <Text style={{color:'#007594'}}></Text>    
+        <Text>Name: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{player.displayname}</Text></Text>
+        <Text>Team: <Text style={{color:'#007594'}}>{player.team}</Text></Text>
         <Text note>Position: <Text note style={{marginTop: 5}}>{player.position}</Text></Text>    
         </ListItem>                            
       }> </List> }

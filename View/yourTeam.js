@@ -5,7 +5,7 @@ var CreateTeamView = require('./CreateTeamView');
 var TeamPost = require('./TeamPost');
 var TeamSetting = require('./TeamSetting');
 var ChallengeList = require('./ChallengeList');
-// import IconBadge from 'react-native-icon-badge';
+
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
@@ -83,7 +83,15 @@ class YourTeam extends Component {
         passProps: {user: this.props.user}
     });
   }
-  
+  _openTeamPost(){
+    this.props.navigator.push({
+        name: 'TeamChat',
+        title: 'TeamChat',
+        component: TeamPost,
+        passProps: {user: this.props.user}
+    });
+  }
+
   countChallenges(){
     return realm.objects('Request').filtered('awayteam == $0',this.props.user.team).length;
 
@@ -130,6 +138,7 @@ class YourTeam extends Component {
             </Text>
             <Text >Description: <Text style={styles.bold}>      {team.teamdescription}</Text>
             </Text>
+
           </View>
           
           {this.props.user.leader ? <View style={{width:30}}>
@@ -147,19 +156,23 @@ class YourTeam extends Component {
           <Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge>
           </View> : <View/>}
 
-
+          
+         
+       
 
           </View>
+          <Button style={{alignSelf: 'flex-end', marginRight: 10}} success rounded onPress={() => {this._openTeamPost()}}>
+            <Icon name="ios-chatbubbles" />
+          </Button>
         
    
         
-        <View style={{flex:1,height:300, marginTop: 40}}>
+        <View style={{flex:1,height:300, marginTop: 5}}>
 
         <ScrollableTabView style={{marginTop:30}}>
           <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} />
           <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user}/>
           <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user}/>
-          <TeamPost tabLabel="Team Post" navigator={this.props.navigator} user={this.props.user}/>
         </ScrollableTabView>
         </View>
         </Content>
@@ -174,7 +187,7 @@ class YourTeam extends Component {
 
         <Content>
         <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
-          <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
+          <Image style={styles.bg} source={require('../imgBackground/background.jpg')} />
         
 
           <View style={{height: 200, paddingTop: 150, marginTop:10}}>
@@ -213,6 +226,7 @@ class YourTeam extends Component {
     }
   }
 }
+
 
 class UpcomingMatch extends Component{
   constructor(props){
