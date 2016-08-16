@@ -19,6 +19,10 @@ class CreateRequest extends Component {
 
     }
 
+    ComponentDidMount(){
+        
+    }
+
     _goBack(){
         this.props.navigator.pop();
     }

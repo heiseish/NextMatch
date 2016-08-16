@@ -58,28 +58,72 @@ class Login extends Component{
         logged: true,
       })
       if (this.state.profile.email){
-      let users = realm.objects('User');
-      let user = users.filtered('email == $0',this.state.profile.email)[0];
+        let users = realm.objects('User');
+        let user = users.filtered('email == $0',this.state.profile.email)[0];
+
+        if (user){
+
+          this.props.navigator.push({
+            title: 'Main',
+            name: "TabBar",
+            component: TabBar,
+            passProps: {user:user,selectedTab:'profile'},
+          });
+        } else {
+          realm.write(() => {
 
 
-      this.props.navigator.push({
-        title: 'Main',
-        name: "TabBar",
-        component: TabBar,
-        passProps: {user:user,selectedTab:'profile'},
-      });
-    } else if (this.state.profile.name){
-      let users = realm.objects('User');
-      let user = users.filtered('fullname == $0',this.state.profile.name)[0];
+            realm.create('User',{
+              id:    3,
+              username: this.state.username,
+              password: this.state.password,
+              fullname: this.state.fullname,
+              displayname: this.state.displayname,
+              position: this.state.position || '',
+            })
+          });
+
+          let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
+          this.props.navigator.push({
+            title: "Main",
+            component: TabBar,
+            passProps: {user: user},
+          });
+        }
+      } else if (this.state.profile.name){
+        let users = realm.objects('User');
+        let user = users.filtered('fullname == $0',this.state.profile.name)[0];
+
+        if (user){
+
+          this.props.navigator.push({
+            title: 'Main',
+            name: "TabBar",
+            component: TabBar,
+            passProps: {user:user,selectedTab:'profile'},
+          });
+        } else {
+          realm.write(() => {
 
 
-      this.props.navigator.push({
-        title: 'Main',
-        name: "TabBar",
-        component: TabBar,
-        passProps: {user:user,selectedTab:'profile'},
-      });
-    }
+            realm.create('User',{
+              id:    3,
+              username: this.state.username,
+              password: this.state.password,
+              fullname: this.state.fullname,
+              displayname: this.state.displayname,
+              position: this.state.position || '',
+            })
+          });
+
+          this.props.navigator.push({
+            title: 'Main',
+            name: "TabBar",
+            component: TabBar,
+            passProps: {user:user,selectedTab:'profile'},
+          });
+        }
+      }
     });
   }
 
