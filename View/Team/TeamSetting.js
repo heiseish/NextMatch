@@ -1,6 +1,6 @@
 'use strict';
 
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 import React, { Component } from 'react';
 import { Container, Content, InputGroup, Input , Icon, Header, Title, Button, Text,Card,CardItem,} from 'native-base';
 import {View, StyleSheet, Image, TouchableOpacity,Modal,Dimensions, AlertIOS} from 'react-native';
@@ -8,14 +8,13 @@ var Swiper = require('react-native-swiper');
 var windowSize = Dimensions.get('window');
 
 
-class EditProfile extends Component {
+
+class TeamSetting extends Component {
     constructor(props) {
     super(props);
     this.state = {
-      fullname: this.props.user.fullname,
-      displayname: this.props.user.displayname,
-      position: this.props.user.position,
-      briefdesc: this.props.user.briefdesc,
+      teamname: this.returnInfo('teamname'),
+      description: this.returnInfo('teamdescription'),
       radio1 : true,
       check1: false,
       modalVisible: false,
@@ -24,18 +23,20 @@ class EditProfile extends Component {
         }
 
     }
+
+    returnInfo(info){
+      let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
+      return team[info];
+    }
     _goBack(){
         this.props.navigator.pop();
     }
 
     _Save(){
-        let users = realm.objects('User');
-        let user = users.filtered('username == $0',this.props.user.username)[0];
+        let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
         realm.write(() => {
-             user.fullname = this.state.fullname;
-             user.displayname = this.state.displayname;
-             user.position = this.state.position;
-             user.briefdesc = this.state.briefdesc;
+             team.teamname = this.state.teamname;
+             team.teamdescription = this.state.description;
         });
         this.props.navigator.pop();
     }
@@ -62,7 +63,7 @@ class EditProfile extends Component {
     })
   }
   _setProfile(imgStyle){
-    let user = realm.objects('User').filtered('username == $0',this.props.user.username)[0];
+    let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
     realm.write(() => {
        user.imageStyle = imgStyle;
    });
@@ -74,68 +75,58 @@ class EditProfile extends Component {
     AlertIOS.alert('Profile picture set successfully!');
 }
 
-returnUserImg(){
-    if (this.props.user.imageStyle === 1) return require('../imgUser/1.png');
-    if (this.props.user.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (this.props.user.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (this.props.user.imageStyle === 4) return require('../imgUser/4.jpg');
+returnTeamImage(teamname){
+    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
+
   }
 
     render() {
+      let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
+  
         return (
             <Container>
                 <Header>
                     <Button transparent onPress={() => {this._goBack()}}>
                         <Icon name="ios-arrow-back" />
                     </Button>
-                    <Title>Edit Profile</Title>
+                    <Title>Setting</Title>
                     <Button transparent onPress={() => {this._Save()}}>
                         <Icon name="ios-done-all" />
                     </Button>
                 </Header>
                 <Content>
                     <TouchableOpacity onPress={() => {this._changeImage()}}>
-                        <Image style={styles.modalImage} source={this.returnUserImg()}  />
+                        <Image style={styles.modalImage} source={this.returnTeamImage(this.props.user.team)}  />
                     </TouchableOpacity>
-                    <Text style={{color: '#000099'}}>Full name</Text>
-                    <View style={{height:20}} />
-                    <InputGroup borderType="underline" >
-                        <Icon name="ios-man" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your full name"
-                                onChangeText={(fullname) => this.setState({fullname})}
-                                value={this.state.fullname}
-                                 />
-                    </InputGroup>
+                   
 
-                    <Text style={{color: '#000099'}}>Display name</Text>
+                    <Text style={{color: '#000099'}}>Team name</Text>
                     <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-eye" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your displayname" 
-                                onChangeText={(displayname) => this.setState({displayname})}
-                                value={this.state.displayname}
+                                onChangeText={(teamname) => this.setState({teamname})}
+                                value={this.state.teamname}
                                 />
 
 
                     </InputGroup>
 
-                    <Text style={{color: '#000099'}}>Position</Text>
-                    <View style={{height:20}} />
-                    <InputGroup borderType="underline" >
-                        <Icon name="ios-football" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your position" 
-                                onChangeText={(position) => this.setState({position})}
-                                value={this.state.position}
-                                />
-                    </InputGroup>
 
                     <Text style={{color: '#000099'}}>Brief Description about you</Text>
                     <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-information-circle" style={{color:'#384850'}}/>
-                        <Input placeholder="Tell people about yourself" 
-                                onChangeText={(briefdesc) => this.setState({briefdesc})}
-                                value={this.state.briefdesc}
+                        <Input placeholder="Enter your position" 
+                                onChangeText={(description) => this.setState({description})}
+                                value={this.state.description}
                                 />
                     </InputGroup>
 
@@ -148,7 +139,7 @@ returnUserImg(){
                     <Swiper style={styles.wrapper} showsButtons={true} dot={<View style={{backgroundColor:'#ccffcc', width: 8, height: 8,borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}>
                         <View style={styles.slide1}>
                             <View style={styles.picShowcase}>
-                                <Image style={styles.showcase} source={require('../imgUser/2.jpg')}/>
+                                <Image style={styles.showcase} source={require('../../imgTeam/2.jpg')}/>
                             </View>
                             <View style={{flexDirection: 'row', marginTop: 350}}> 
                                 <View style={{width:50}}>
@@ -171,7 +162,7 @@ returnUserImg(){
                         </View>
                         <View style={styles.slide2}>
                             <View style={styles.picShowcase}>
-                                <Image style={styles.showcase} source={require('../imgUser/3.jpg')}/>
+                                <Image style={styles.showcase} source={require('../../imgTeam/3.png')}/>
                             </View>
                             <View style={{flexDirection: 'row', marginTop: 350}}> 
                                 <View style={{width:50}}>
@@ -193,7 +184,7 @@ returnUserImg(){
                          </View>
                          <View style={styles.slide3}>
                             <View style={styles.picShowcase}>
-                                <Image style={styles.showcase} source={require('../imgUser/4.jpg')}/>
+                                <Image style={styles.showcase} source={require('../../imgTeam/4.png')}/>
                             </View>
                             <View style={{flexDirection: 'row', marginTop: 350}}> 
                                 <View style={{width:50}}>
@@ -212,7 +203,76 @@ returnUserImg(){
 
                                 
                             </View>
+                            </View>
+
+                            <View style={styles.slide4}>
+                            <View style={styles.picShowcase}>
+                                <Image style={styles.showcase} source={require('../../imgTeam/5.png')}/>
+                            </View>
+                            <View style={{flexDirection: 'row', marginTop: 350}}> 
+                                <View style={{width:50}}>
+                                    <Button large rounded block transparent onPress={() => {this._exitModal()}}>
+                                        <Icon name="ios-exit-outline" style={{color: '#FFF'}} />
+                                    </Button>
+                                </View>
+                                <View style={{width:200}}>
+                                </View>
+                                <View style={{width: 50}}>
+                                    <Button large rounded block transparent onPress={() => {this._setProfile(5)}}>
+                                        <Icon name="ios-checkmark-circle-outline" style={{color: '#FFF'}}/>
+                                    </Button>
+                                </View>
+                                
+
+                                
+                            </View>
+
                         </View>
+                        <View style={styles.slide5}>
+                            <View style={styles.picShowcase}>
+                                <Image style={styles.showcase} source={require('../../imgTeam/6.jpg')}/>
+                            </View>
+                            <View style={{flexDirection: 'row', marginTop: 350}}> 
+                                <View style={{width:50}}>
+                                    <Button large rounded block transparent onPress={() => {this._exitModal()}}>
+                                        <Icon name="ios-exit-outline" style={{color: '#FFF'}} />
+                                    </Button>
+                                </View>
+                                <View style={{width:200}}>
+                                </View>
+                                <View style={{width: 50}}>
+                                    <Button large rounded block transparent onPress={() => {this._setProfile(6)}}>
+                                        <Icon name="ios-checkmark-circle-outline" style={{color: '#FFF'}}/>
+                                    </Button>
+                                </View>
+                                
+
+                                
+                            </View>
+                         </View>
+                         <View style={styles.slide6}>
+                            <View style={styles.picShowcase}>
+                                <Image style={styles.showcase} source={require('../../imgTeam/7.png')}/>
+                            </View>
+                            <View style={{flexDirection: 'row', marginTop: 350}}> 
+                                <View style={{width:50}}>
+                                    <Button large rounded block transparent onPress={() => {this._exitModal()}}>
+                                        <Icon name="ios-exit-outline" style={{color: '#FFF'}}/>
+                                    </Button>
+                                </View>
+                                <View style={{width:200}}>
+                                </View>
+                                <View style={{width: 50}}>
+                                    <Button large rounded block transparent onPress={() => {this._setProfile(7)}}>
+                                        <Icon name="ios-checkmark-circle-outline" style={{color: '#FFF'}}/>
+                                    </Button>
+                                </View>
+                                
+
+                                
+                            </View>
+                        </View>
+                        
                     </Swiper>
                   </Modal>
 
@@ -251,6 +311,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#003300',
   },
+  slide4: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000',
+
+  },
+  slide5: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#001a00',
+  },
+  slide6: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#003300',
+  },
   text: {
     color: '#fff',
     fontSize: 30,
@@ -271,4 +350,4 @@ const styles = StyleSheet.create({
     alignItems: 'center'}
 })
 
-module.exports = EditProfile;
+module.exports = TeamSetting;

@@ -1,11 +1,12 @@
 'use strict';
 
-
 var TabBar = require("../View/TabBar");
 var realm = require('../Model/model.js');
 var Signup = require('./Signup');
-// var imagePicker = require('react-native-imagepicker');
-var UIImagePickerManager = require('NativeModules').UIImagePickerManager;
+var SignIn = require('../Model/SignIn');
+var firebase = require('../Model/firebase');
+var ForgetPassword =require('./ForgetPassword');
+// var user = require('../Model/user');
 
 import React, { Component } from 'react';
 import {
@@ -16,11 +17,7 @@ import {
   Image,
   Dimensions,
   TouchableHighlight,
-  NvigatorIOS,
-  TabBarIOS,
   AlertIOS,
-  CameraRoll,
-  ImagePickerIOS,
 } from 'react-native';
 import {
   Button,
@@ -29,77 +26,51 @@ import {
 } from 'native-base';
 var windowSize = Dimensions.get('window');
 
-var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACSR7JhAAADtUlEQVR4Ac3YA2Bj6QLH0XPT1Fzbtm29tW3btm3bfLZtv7e2ObZnms7d8Uw098tuetPzrxv8wiISrtVudrG2JXQZ4VOv+qUfmqCGGl1mqLhoA52oZlb0mrjsnhKpgeUNEs91Z0pd1kvihA3ULGVHiQO2narKSHKkEMulm9VgUyE60s1aWoMQUbpZOWE+kaqs4eLEjdIlZTcFZB0ndc1+lhB1lZrIuk5P2aib1NBpZaL+JaOGIt0ls47SKzLC7CqrlGF6RZ09HGoNy1lYl2aRSWL5GuzqWU1KafRdoRp0iOQEiDzgZPnG6DbldcomadViflnl/cL93tOoVbsOLVM2jylvdWjXolWX1hmfZbGR/wjypDjFLSZIRov09BgYmtUqPQPlQrPapecLgTIy0jMgPKtTeob2zWtrGH3xvjUkPCtNg/tm1rjwrMa+mdUkPd3hWbH0jArPGiU9ufCsNNWFZ40wpwn+62/66R2RUtoso1OB34tnLOcy7YB1fUdc9e0q3yru8PGM773vXsuZ5YIZX+5xmHwHGVvlrGPN6ZSiP1smOsMMde40wKv2VmwPPVXNut4sVpUreZiLBHi0qln/VQeI/LTMYXpsJtFiclUN+5HVZazim+Ky+7sAvxWnvjXrJFneVtLWLyPJu9K3cXLWeOlbMTlrIelbMDlrLenrjEQOtIF+fuI9xRp9ZBFp6+b6WT8RrxEpdK64BuvHgDk+vUy+b5hYk6zfyfs051gRoNO1usU12WWRWL73/MMEy9pMi9qIrR4ZpV16Rrvduxazmy1FSvuFXRkqTnE7m2kdb5U8xGjLw/spRr1uTov4uOgQE+0N/DvFrG/Jt7i/FzwxbA9kDanhf2w+t4V97G8lrT7wc08aA2QNUkuTfW/KimT01wdlfK4yEw030VfT0RtZbzjeMprNq8m8tnSTASrTLti64oBNdpmMQm0eEwvfPwRbUBywG5TzjPCsdwk3IeAXjQblLCoXnDVeoAz6SfJNk5TTzytCNZk/POtTSV40NwOFWzw86wNJRpubpXsn60NJFlHeqlYRbslqZm2jnEZ3qcSKgm0kTli3zZVS7y/iivZTweYXJ26Y+RTbV1zh3hYkgyFGSTKPfRVbRqWWVReaxYeSLarYv1Qqsmh1s95S7G+eEWK0f3jYKTbV6bOwepjfhtafsvUsqrQvrGC8YhmnO9cSCk3yuY984F1vesdHYhWJ5FvASlacshUsajFt2mUM9pqzvKGcyNJW0arTKN1GGGzQlH0tXwLDgQTurS8eIQAAAABJRU5ErkJggg==';
-
-
 class Login extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      username:'', 
+      email:'', 
       password:'',
       // isLoggedIn: false,
       isLoading: false,
-      progress: 0,
-      indeterminate: true,
-      size: 80,
-      showsText: true,
-      images: [],
- 
+      // progress: 0,
+      // indeterminate: true,
+      // size: 80,
+      // showsText: true,
+      // images: [],
+      
     };
-    this.onClickLogin = this.onClickLogin.bind(this);
-    this.onClickSignup = this.onClickSignup.bind(this);
-    
+    // this.onClickLogin = this.onClickLogin.bind(this);
   }
 
   onClickLogin(){
-    this.setState({ isLoading: true });
-    this.setState({ progress:0 });
-    let users = realm.objects('User');
-    let user = users.filtered('username == $0',this.state.username)[0];
+    this.setState({isLoading:true})
 
-    if ((user) && user.password === this.state.password) {
-        this.setState({
-          isLoading: false,
-          username: '',
-          password: '',
-        })
-     
-        this.props.navigator.push({
-            title: 'Main',
-            name: "TabBar",
+    SignIn(this.state.email,this.state.password,function(err,user){
+      if (err) {
+        AlertIOS.alert(err.message);
+        this.setState({isLoading:false})
+      } else {
+        if (!user.emailVerified) {
+          AlertIOS.alert('Please verify your email first!');
+          this.setState({isLoading:false})
+        }
+        else {
+          
+          this.setState({email:'',password:'',isLoading:false})
+          this.props.navigator.push({
+            name: 'Main',
+            title: "Main",
             component: TabBar,
-            passProps: {user:user,selectedTab:'profile'},
-        });
+            passProps: {user:user,selectedTab: 'profile'}
+          });
+        }
+      }
+    }.bind(this))
       
-    } else {
-        AlertIOS.alert(
-            'Your ussername-password pair is incorrect! Please try again'
-          )
-        this.setState({isLoading: false})
-    }
-//      UIImagePickerManager.showImagePicker({
-//     'title': 'Selecione uma imagem para o perfil',
-//     'cancelButtonTitle': 'Cancelar',
-//     'takePhotoButtonTitle': 'Tirar foto...',
-//     'chooseFromLibraryButtonTitle': 'Escolher da galeria...'
-//   }, (type, response) => {
-
-//   if (type !== 'cancel') {
-//     var source;
-//     if (type === 'data') { // New photo taken -  response is the 64 bit encoded image data string
-//       source = {uri: 'data:image/jpeg;base64,' + response, isStatic: true};
-//     } else { // Selected from library - response is the URI to the local file asset
-//       source = {uri: response};
-//     }
-
-//     this.setState({avatarSource:source});
-//   } else {
-//     console.log('Cancel');
-//   }
-// });
-
   }
+
   onClickSignup(){
     this.props.navigator.push({
         name: 'Signup',
@@ -109,29 +80,38 @@ class Login extends Component{
   
   }
 
+  forgetPassword(){
+    this.props.navigator.push({
+        name: 'forgetPassword',
+        title: 'Forget Password',
+        component: ForgetPassword,
+    });
+  }
+
   render() {
     return (
       
 
       <View style={styles.container}>
 
-      <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/a3/03/3c/a3033c8b069b102dd3b1f15c56f9c541.jpg'}} />
+      <Image style={styles.bg} source={require('../imgBackground/field.jpg')} />
       <View style={styles.header}>
-      <Image style={styles.mark} source={{uri: 'https://cdn0.iconfinder.com/data/icons/sports-and-fitness-flat-colorful-icons-svg/137/Sports_flat_round_colorful_simple_activities_athletic_colored-03-512.png'}} />
+      <Image style={styles.mark} source={require('../imgBackground/ball.png')} />
       </View>
       <View style={styles.inputs}>
       <View style={styles.inputContainer}>
-      <Image style={styles.inputUsername} source={{uri: 'https://i.imgur.com/iVVVMRX.png'}}/>
+      <Image style={styles.inputUsername} source={require('../imgBackground/line1.png')}/>
       <TextInput 
       style={[styles.input, styles.whiteFont]}
-      placeholder="Username"
+      placeholder="Email"
       placeholderTextColor="#FFF"
-      onChangeText={(username) => this.setState({username})}
-      value={this.state.username}
+      onChangeText={(email) => this.setState({email})}
+      value={this.state.email}
       />
       </View>
       <View style={styles.inputContainer}>
-      <Image style={styles.inputPassword} source={{uri: 'https://i.imgur.com/ON58SIG.png'}}/>
+      <Image style={styles.inputPassword} source={require('../imgBackground/line2.png')}/>
+
 
       <TextInput
       password={true}
@@ -143,16 +123,17 @@ class Login extends Component{
       />
       </View>
       <View style={styles.forgotContainer}>
+      <TouchableHighlight onPress={()=>{this.forgetPassword()}}>
       <Text style={styles.greyFont}>Forgot Password</Text>
+      </TouchableHighlight>
       </View>
       </View>
-      {this.state.isLoading ? <Spinner /> : <Button block warning onPress={this.onClickLogin}>
+      {this.state.isLoading ? <Spinner /> : <Button block warning onPress={()=>{this.onClickLogin()}}>
         <Icon name="ios-football-outline" style={{fontSize: 31, color: 'green'}} />
         Sign in
       </Button>}
-
       <View style={styles.signup}>
-      <Text style={styles.greyFont}>Don't have an account?</Text><TouchableHighlight onPress={this.onClickSignup}><Text style={styles.whiteFont}> Sign Up</Text></TouchableHighlight>
+      <Text style={styles.greyFont}>Don't have an account?</Text><TouchableHighlight onPress={()=>{this.onClickSignup()}}><Text style={styles.whiteFont}> Sign Up</Text></TouchableHighlight>
       </View>
       </View>
       );

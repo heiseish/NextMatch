@@ -1,6 +1,6 @@
 'use strict';
 
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 import React, { Component } from 'react';
 import { Container, Content, InputGroup, Input , Icon, Header, Title, Button} from 'native-base';
 import {AlertIOS} from 'react-native';
@@ -52,6 +52,7 @@ class CreateTeamView extends Component {
                     </Button>
                 </Header>
                 <Content>
+                
                     <InputGroup borderType="underline" >
                         <Icon name="ios-football" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your team name here" 

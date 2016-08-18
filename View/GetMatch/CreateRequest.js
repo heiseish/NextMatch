@@ -1,12 +1,12 @@
 'use strict';
 
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 import React, { Component } from 'react';
 import { Container, Content, InputGroup, Input , Icon, Header, Title, Button} from 'native-base';
 import {AlertIOS} from 'react-native';
 
 
-class Challenge extends Component {
+class CreateRequest extends Component {
     constructor(props) {
     super(props);
     this.state = {
@@ -15,9 +15,12 @@ class Challenge extends Component {
       additionalDescription: '',
       user: this.props.user,
 
-
       }
 
+    }
+
+    ComponentDidMount(){
+        
     }
 
     _goBack(){
@@ -27,10 +30,10 @@ class Challenge extends Component {
     _Save(){
 
         realm.write(() => {
-             realm.create('Request',{id:4, hometeam: this.props.user.team, awayteam: this.props.awayteam.teamname, time: this.state.time, venue: this.state.venue, additionalCondition: this.state.additionalDescription})
+             realm.create('Request',{id:3, hometeam: this.props.user.team, time: this.state.time, venue: this.state.venue, additionalCondition: this.state.additionalDescription})
         });
 
-        AlertIOS.alert('You have challenged the team. Beware!');
+        AlertIOS.alert('Your request has been successfully created');
         this.props.navigator.pop();
        
     }
@@ -80,4 +83,4 @@ class Challenge extends Component {
     }
 }
 
-module.exports = Challenge;
+module.exports = CreateRequest;

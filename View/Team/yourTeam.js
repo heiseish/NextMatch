@@ -1,5 +1,5 @@
 'use strict';
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
 var TeamPost = require('./TeamPost');
@@ -99,21 +99,21 @@ class YourTeam extends Component {
 
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
   }
 
   returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
+    if (player.imageStyle === 1) return require('../../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
   }
   
 
@@ -126,7 +126,8 @@ class YourTeam extends Component {
     return (
       <Container>
         <Content>
-        
+
+        <View style={styles.container}>
         <View style={styles.containerTop}>
           <View style={{width: 80, height: 80, left: 0}} >
             <Image style={styles.modalImage} source={this.returnTeamImage(team.teamname)}  />
@@ -165,15 +166,17 @@ class YourTeam extends Component {
             <Icon name="ios-chatbubbles" />
           </Button>
         
-   
+        
         
         <View style={{flex:1,height:300, marginTop: 5}}>
+
 
         <ScrollableTabView style={{marginTop:30}}>
           <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} />
           <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user}/>
           <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user}/>
         </ScrollableTabView>
+        </View>
         </View>
         </Content>
       </Container>
@@ -187,7 +190,7 @@ class YourTeam extends Component {
 
         <Content>
         <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
-          <Image style={styles.bg} source={require('../imgBackground/background.jpg')} />
+          <Image style={styles.bg} source={require('../../imgBackground/background.jpg')} />
         
 
           <View style={{height: 200, paddingTop: 150, marginTop:10}}>
@@ -234,21 +237,21 @@ class UpcomingMatch extends Component{
   }
  returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
   }
 
   returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
+    if (player.imageStyle === 1) return require('../../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
   }
   
 returnArrayMatches(state){
@@ -301,21 +304,21 @@ class TeamRoster extends Component{
   }
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
   }
 
   returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
+    if (player.imageStyle === 1) return require('../../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
   }
   
   returnArrayPlayer(){
@@ -365,21 +368,21 @@ class TeamHistory extends Component{
   }
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
   }
 
   returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
+    if (player.imageStyle === 1) return require('../../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
   }
 
   returnArrayMatches(state){
@@ -431,7 +434,7 @@ class TeamHistory extends Component{
 
 const styles = StyleSheet.create({
     container: {
-      height: 200,
+      flex:1
 
     },
     containerTop: {

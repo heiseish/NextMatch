@@ -1,7 +1,7 @@
 'use strict';
 
-var realm = require('../Model/model.js');
-import YouTube from 'react-native-youtube';
+var realm = require('../../Model/model.js');
+// import YouTube from 'react-native-youtube';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
 import { 
@@ -30,7 +30,7 @@ import {
 } from 'react-native';
 var windowSize = Dimensions.get('window');
 
-class History extends Component {
+class Upcoming extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -60,15 +60,10 @@ class History extends Component {
 		})
 	}
 
-	returnVideo(match){
-		if (match.ytvideo) return true;
-		else return false;
-
-	}
 
 	returnArrayMatches(){
 		var arr = [];
-		let matches = realm.objects('Match').filtered('state = "finished"');
+		let matches = realm.objects('Match').filtered('state = "coming"');
 		matches.forEach(function(current,i,Team){
 			arr.push(current);
 		})
@@ -77,13 +72,13 @@ class History extends Component {
 	}
 	returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
   }
 
@@ -94,7 +89,6 @@ class History extends Component {
 	render(){
 		return (
 			<Container>
-
 			<Content>
 
 			{this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches()} renderRow={(match) =>  
@@ -104,7 +98,7 @@ class History extends Component {
 				<Thumbnail square size={60} source={this.returnTeamImage(match.hometeam)} />
 				</View>
 				<View style={{width: 230, height: 60}}>
-				<Text style={{fontWeight: '600', color: '#996633', marginLeft: 20, marginTop: 10}}>{match.hometeam}  {match.hometeamscore} - {match.awayteamscore}  {match.awayteam}</Text>
+				<Text style={{fontWeight: '600', color: '#996633', marginLeft: 20, marginTop: 10}}>{match.hometeam}  -  {match.awayteam}</Text>
 				</View>
 				<View style={{width: 60, height: 60, right: 0}}>
 				<Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
@@ -137,40 +131,18 @@ class History extends Component {
 				</View>
 				</View>
 				<View style={styles.negativeMargin}>
-
-				<Text style={{paddingTop: 50, fontSize:10, fontWeight : '600'}}>
-				Tỉ số chung cuộc: <Text style={styles.score}>   {this.state.selectedItem.hometeamscore} - {this.state.selectedItem.awayteamscore}</Text>
-				</Text>
 				<Text style={{fontSize:10, fontWeight : '600'}}>
 				Thời gian: <Text style={styles.time}>{this.state.selectedItem.time}</Text>
 				</Text>
-
-				{this.returnVideo(this.state.selectedItem) ? <YouTube
-					ref="youtubePlayer"
-  			videoId={this.returnVideoId(this.state.selectedItem.ytvideo)} // The YouTube video ID
-  			play={false}           // control playback of video with true/false
-  			hidden={false}        // control visiblity of the entire view
-  			playsInline={true}    // control whether the video should play inline
-  			loop={false}          // control whether the video should loop when ended
-
-  			onReady={(e)=>{this.setState({isReady: true})}}
-  			onChangeState={(e)=>{this.setState({status: e.state})}}
-  			onChangeQuality={(e)=>{this.setState({quality: e.quality})}}
-  			onError={(e)=>{this.setState({error: e.error})}}
-  			onProgress={(e)=>{this.setState({currentTime: e.currentTime, duration: e.duration})}}
-
-  			style={{alignSelf: 'stretch', height: 300, backgroundColor: 'black', marginVertical: 10}}
-  			/> : <View/>}
-
-
+				</View>
 				<Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
 					this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
 				}}>
 				Go Back
 				</Button>
-				
+	
 
-  			</View>
+  			
   			</CardItem>
   		}
   		</Card>
@@ -182,9 +154,6 @@ class History extends Component {
   		);
 	}
 }
-
-
-  			
 var styles = StyleSheet.create({
 	containerTop: {
       flex: 1,
@@ -221,10 +190,8 @@ var styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	negativeMargin: {
-        
+        height: 100,
     }
 });
 
-  	 	
-
-module.exports = History;
+module.exports = Upcoming;

@@ -1,8 +1,8 @@
 'use strict';
 
 const {AppRegistry} = require('react-native');
-const Login = require('./setup/login.js')
-
+const Login = require('./setup/setup.js')
+var GetStateUser = require('./Model/GetStateUser');
 
 import React, { Component } from 'react';
 import { NavigatorIOS, Text,AppState } from 'react-native';
@@ -21,11 +21,17 @@ export default class NextMatchReborn extends Component {
                 return <Ranking navigator={navigator} />;
             case 'editProfile':
                 return <EditProfile navigator={navigator} />;
+            case 'profile':
+                return <Profile navigator={navigator} />;
+            
             default :
                 return <Login navigator={navigator}  />;
         }
     }
   render() {
+   GetStateUser(function(err,user){
+    if(err) return(<Login/>);
+   })
 
 
     return (

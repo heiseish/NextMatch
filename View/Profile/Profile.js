@@ -1,10 +1,11 @@
 'use strict';
 
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 import React, { Component } from 'react';
-var Login = require('../setup/setup')
+var Login = require('../../setup/setup')
 var EditProfile = require('./editProfile');
 var ProfileSearch = require('./ProfileSearch');
+var SignOut = require('../../Model/SignOut');
 
 import { 
   Container, 
@@ -27,6 +28,7 @@ import {
   Image,
   Dimensions,
   PropTypes,
+  AlertIOS,
 } from 'react-native';
 import { Col, Row, Grid } from "react-native-easy-grid";
 var windowSize = Dimensions.get('window');
@@ -37,12 +39,17 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      
+      time: '',
     }
 
   }
   _logout(){
-    this.props.navigator.popToTop()
+    SignOut(function(err){
+      if (err) AlertIOS.alert(err)
+        else this.props.navigator.popToTop();
+    }.bind(this));
+
+  
   }
   _editProfile(){
     this.props.navigator.push({
@@ -64,10 +71,10 @@ class Profile extends Component {
   }
 
   returnUserImg(){
-    if (this.props.user.imageStyle === 1) return require('../imgUser/1.png');
-    if (this.props.user.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (this.props.user.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (this.props.user.imageStyle === 4) return require('../imgUser/4.jpg');
+    if (this.props.user.imageStyle === 1) return require('../../imgUser/1.png');
+    if (this.props.user.imageStyle === 2) return require('../../imgUser/2.jpg');
+    if (this.props.user.imageStyle === 3) return require('../../imgUser/3.jpg');
+    if (this.props.user.imageStyle === 4) return require('../../imgUser/4.jpg');
   }
 
 
@@ -86,6 +93,7 @@ class Profile extends Component {
         </Header>
 
         <Content >
+                    
         <View style={styles.container}>
           
           <View>

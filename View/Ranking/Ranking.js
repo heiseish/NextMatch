@@ -1,5 +1,5 @@
 'use strict';
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 
 
 import StarRating from 'react-native-star-rating';
@@ -76,21 +76,21 @@ class Ranking extends Component {
 
   returnTeamImage(teamname){
     let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
   }
 
   returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../imgUser/4.jpg');
+    if (player.imageStyle === 1) return require('../../imgUser/1.png');
+    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
+    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
+    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
   }
 
   setModalVisible(visible, x) {
@@ -300,7 +300,7 @@ class Ranking extends Component {
 
 
 
-
+      
       </Content>
       </Container>
 

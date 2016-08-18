@@ -1,5 +1,5 @@
 'use strict';
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 
 import React, { Component } from 'react';
 import { 
@@ -89,13 +89,13 @@ class JoinTeamView extends Component {
   }
 
   _returnImage(team){
-    if (team.imageStyle === 1) return require('../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../imgTeam/7.png');
+    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
+    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
+    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
+    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
+    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
+    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
+    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
   }
 
   render(){

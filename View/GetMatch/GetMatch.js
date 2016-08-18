@@ -1,7 +1,6 @@
 'use strict';
-var realm = require('../Model/model.js');
-var JoinTeamView = require ('./JoinTeamView');
-var CreateTeamView = require('./CreateTeamView');
+var realm = require('../../Model/model.js');
+
 var RequestList = require('./RequestList');
 var CreateRequest = require('./CreateRequest');
 
@@ -57,7 +56,7 @@ class GetMatch  extends Component{
 
         <Content>
         <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
-          <Image style={styles.bg} source={require('../imgBackground/background.jpg')} />
+          <Image style={styles.bg} source={require('../../imgBackground/background.jpg')} />
         
 
           <View style={{height: 200, paddingTop: 150, marginTop:10}}>

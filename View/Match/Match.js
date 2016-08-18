@@ -1,6 +1,6 @@
 'use strict';
 
-var realm = require('../Model/model.js');
+var realm = require('../../Model/model.js');
 var History = require('./History');
 var Upcoming = require('./Upcoming');
 var CalendarView = require('./CalendarView');
