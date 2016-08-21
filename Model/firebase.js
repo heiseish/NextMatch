@@ -9,9 +9,16 @@ const firebaseConfig = {
 };
 
 
-firebase.initializeApp(firebaseConfig);
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 
+
+
+
+
+
+
+// writeUserData('hung');
 // Create a reference with .ref() instead of new Firebase(url)
 
 
-module.exports =firebase;
+module.exports =firebaseApp;

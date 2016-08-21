@@ -4,6 +4,8 @@
 var TabBar = require("../View/TabBar");
 var realm = require('../Model/model.js');
 var Signup = require('./Signup');
+var grabUser = require('../Model/grabUser');
+var firebase = require('../Model/firebase');
 // var imagePicker = require('react-native-imagepicker');
 // var UIImagePickerManager = require('NativeModules').UIImagePickerManager;
 var Auth0Lock = require('react-native-lock');
@@ -31,7 +33,7 @@ import {
 } from 'native-base';
 var windowSize = Dimensions.get('window');
 
-var firebaseApp = require('./Model/firebase');
+
 
 class Login extends Component{
 	constructor(props) {
@@ -42,114 +44,42 @@ class Login extends Component{
       token: '',
 
     };
-		this.itemsRef = firebaseApp.database().ref();
+
 		
 	}
 
   componentDidMount() {
-    this.listenForItems(this.itemsRef);
+
   }
-  listenForItems(itemsRef) {
-    itemsRef.on('value', (snap) => {
 
-      // get children as an array
-      var items = [];
-      snap.forEach((child) => {
-        items.push({
-          title: child.val().title,
-          _key: child.key
-        });
-      });
-
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(items)
-      });
-
-    });
-  }
 
   openLogin(){
     lock.show({closable: true}, (err, profile, token) => {
       if (err) {
         console.log(err);
         return;
-      }
-      this.setState({
-        token: token,
-        profile: profile,
-        logged: true,
-      })
-      // login by email/gmail
-      if (this.state.profile.email){
-        let users = realm.objects('User');
-        let user = users.filtered('email == $0',this.state.profile.email)[0];
-
-        if (user){
-
-          this.props.navigator.push({
-            title: 'Main',
-            name: "TabBar",
-            component: TabBar,
-            passProps: {user:user,selectedTab:'profile'},
-          });
+      } else {
+        if(!profile.extraInfo.email_verified) {
+          AlertIOS.alert('Please verify your email before loggin in')
         } else {
-          realm.write(() => {
-
-
-            realm.create('User',{
-              id:    1,
-              username: this.state.profile.email,
-              password: 'giang',
-              fullname: 'Hello',
-              displayname: 'heisei',
-              position: this.state.position || '',
-              email: this.state.profile.email,
-            })
-
-          });
-
-          let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
-          this.props.navigator.push({
-            title: "Main",
-            component: TabBar,
-            passProps: {user: user},
-          });
-        }
-      } else if (this.state.profile.name){
-        let users = realm.objects('User');
-        let user = users.filtered('fullname == $0',this.state.profile.name)[0];
-
-        if (user){
-
-          this.props.navigator.push({
-            title: 'Main',
-            name: "TabBar",
-            component: TabBar,
-            passProps: {user:user,selectedTab:'profile'},
-          });
-        } else {
-          realm.write(() => {
-
-
-            realm.create('User',{
-              id:    3,
-              username: this.state.username,
-              password: this.state.password,
-              fullname: this.state.fullname,
-              displayname: this.state.displayname,
-              position: this.state.position || '',
-            })
-          });
-
-          this.props.navigator.push({
-            title: 'Main',
-            name: "TabBar",
-            component: TabBar,
-            passProps: {user:user,selectedTab:'profile'},
-          });
+          this.grabUserOrCreate(profile.userId,profile)
+    
         }
       }
     });
+  }
+
+  grabUserOrCreate(userId,profile){
+    grabUser(userId,profile,(err,user)=>{
+      if (user) {
+        this.props.navigator.push({
+              name: 'Main',
+              title: "Main",
+              component: TabBar,
+              passProps: {user:user,selectedTab: 'profile'}
+          });
+      }
+    })
   }
 
   openTouchId(){

@@ -6,7 +6,15 @@ var Signup = require('./Signup');
 var SignIn = require('../Model/SignIn');
 var firebase = require('../Model/firebase');
 var ForgetPassword =require('./ForgetPassword');
-// var user = require('../Model/user');
+var userRef= require('../Model/userRef');
+var grabUser = require('../Model/grabUser');
+var user = require('../Model/user');
+
+// since I can connect from multiple devices or browser tabs, we store each connection instance separately
+// any time that connectionsRef's value is null (i.e. has no children) I am offline
+
+
+
 
 import React, { Component } from 'react';
 import {
@@ -26,6 +34,9 @@ import {
 } from 'native-base';
 var windowSize = Dimensions.get('window');
 
+
+
+
 class Login extends Component{
   constructor(props) {
     super(props);
@@ -38,11 +49,62 @@ class Login extends Component{
       // indeterminate: true,
       // size: 80,
       // showsText: true,
-      // images: [],
+      // images: []
+      userRef: userRef,
       
     };
     // this.onClickLogin = this.onClickLogin.bind(this);
   }
+
+  componentDidMount(){
+        
+          
+        // this.listenForItem(this.state.userRef)
+
+    // Attach an asynchronous callback to read the data at our posts reference
+        
+        // var myConnectionsRef = firebase.database().ref('users/joe/connections');
+
+        // // stores the timestamp of my last disconnect (the last time I was seen online)
+        // var lastOnlineRef = firebase.database().ref('users/joe/lastOnline');
+
+      //   var connectedRef = firebase.database().ref('.info/connected');
+      //   connectedRef.on('value', function(snap) {
+      //   if (snap.val() === true) {
+      //     // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
+
+      //     // add this device to my connections list
+      //     // this value could contain info about the device or a timestamp too
+      //     // var con = myConnectionsRef.push(true);
+
+      //     // // when I disconnect, remove this device
+      //     // con.onDisconnect().remove();
+
+      //     // // when I disconnect, update the last time I was seen online
+      //     // lastOnlineRef.onDisconnect().set(firebase.database.ServerValue.TIMESTAMP);
+      //     // alert('connected')
+       
+      //     } else {
+            
+      //   }
+      // });
+
+  }
+
+  // listenForItem(ref,cb){
+  //   ref.on("value", (snapshot) => {
+  //         var item=''
+  //         console.log(snapshot.val().giang.name);
+  //         item=snapshot.val().giang.name;
+  //         this.setState({item:item})
+  //         // cb(null,item)
+        
+  //       }, function (errorObject) {
+  //         console.log("The read failed: " + errorObject.code);
+  //         // cb(errorObject);
+  //     });
+    
+  // }
 
   onClickLogin(){
     this.setState({isLoading:true})
@@ -57,14 +119,17 @@ class Login extends Component{
           this.setState({isLoading:false})
         }
         else {
+          alert('logged in')
+          grabUser(this.state.email,(err,user)=>{
+            this.setState({email:'',password:'',isLoading:false})
+            this.props.navigator.push({
+              name: 'Main',
+              title: "Main",
+              component: TabBar,
+              passProps: {user:user,selectedTab: 'profile'}
+            });
+          })
           
-          this.setState({email:'',password:'',isLoading:false})
-          this.props.navigator.push({
-            name: 'Main',
-            title: "Main",
-            component: TabBar,
-            passProps: {user:user,selectedTab: 'profile'}
-          });
         }
       }
     }.bind(this))
@@ -91,14 +156,18 @@ class Login extends Component{
   render() {
     return (
       
-
+      
       <View style={styles.container}>
-
+      
       <Image style={styles.bg} source={require('../imgBackground/field.jpg')} />
       <View style={styles.header}>
+      
       <Image style={styles.mark} source={require('../imgBackground/ball.png')} />
       </View>
       <View style={styles.inputs}>
+
+      <Text style={{color:'black'}}>{this.state.item}</Text>
+
       <View style={styles.inputContainer}>
       <Image style={styles.inputUsername} source={require('../imgBackground/line1.png')}/>
       <TextInput 
@@ -112,6 +181,7 @@ class Login extends Component{
       <View style={styles.inputContainer}>
       <Image style={styles.inputPassword} source={require('../imgBackground/line2.png')}/>
 
+      
 
       <TextInput
       password={true}
@@ -128,7 +198,7 @@ class Login extends Component{
       </TouchableHighlight>
       </View>
       </View>
-      {this.state.isLoading ? <Spinner /> : <Button block warning onPress={()=>{this.onClickLogin()}}>
+      {this.state.isLoading ? <Spinner color="red"/> : <Button block warning onPress={()=>{this.onClickLogin()}}>
         <Icon name="ios-football-outline" style={{fontSize: 31, color: 'green'}} />
         Sign in
       </Button>}

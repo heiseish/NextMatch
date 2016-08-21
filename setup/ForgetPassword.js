@@ -37,28 +37,26 @@ class ForgetPassword extends Component{
     super(props);
     this.state = {
       email:'',
-      password:'',
-      passwordConf: '',
       // isLoggedIn: false,
       
       isLoading: false,
-      user: user,
    }
 }
   _return(){
     this.props.navigator.pop();
   }
-  onClickSignUp(){
+  
+  reset(){
     this.setState({
       isLoading: true
     });
-    ChangePassword(email,(function(error,user){
+    ChangePassword(this.state.email,(function(error,user){
       if (error) {
         AlertIOS.alert(error);
         this.setState({isLoading:false})
       } else {
         this.setState({isLoading:false})
-        AlertIOS.alert('Please check your email to change the passwrod. Thank you');
+        AlertIOS.alert('Please check your email to change the password. Thank you');
         this.props.navigator.pop();
       }
     }.bind(this)));

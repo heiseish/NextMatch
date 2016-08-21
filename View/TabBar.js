@@ -23,21 +23,25 @@ class TabBar extends Component{
       selectedTab:this.props.selectedTab,
       notifCount: 0,
       presses:0,
-      team: this.searchForTeam(),
-      user: this.returnUser(),
+      team: false,
+      user: {},
     };
    
   }
 
-  searchForTeam(){
+  componentDidMount(){
     let user = realm.objects('User').filtered('email == $0',this.props.user.email)[0];
-    if (user.team) return true
-    else return false;
-  
+    var team = false;
+    if ((user) && (user.team)) team = true
+    else team =  false;
+    this.setState({
+      team: team,
+      user: user
+
+    })
   }
-   returnUser(){
-    return realm.objects('User').filtered('email == $0',this.props.user.email)[0];
-   }
+
+  
   // _renderContent(page) {
   //   return (
   //     <page navigator={this.props.navigator} user={this.props.user}/>

@@ -4,7 +4,9 @@
 var TabBar = require("../View/TabBar");
 var firebase = require('../Model/firebase');
 var user = require('../Model/user');
-var SignUp = require('../Model/SignUp');
+var SignUp = require('../Model/SignUp'); 
+var userRef = require('../Model/userRef');
+var findLastUserId = require('../Model/findLastUserId');
 
 import React, { Component } from 'react';
 import {
@@ -36,14 +38,22 @@ class Signup extends Component{
     super(props);
     this.state = {
       email:'',
+      displayname: '',
       password:'',
       passwordConf: '',
       // isLoggedIn: false,
       
       isLoading: false,
       user: user,
+      userId: '',
    }
 }
+  componentDidMount(){
+    this.setState({userId: findLastUserId()});
+  }
+
+
+
   _return(){
     this.props.navigator.pop();
   }
@@ -51,8 +61,8 @@ class Signup extends Component{
     this.setState({
       isLoading: true
     });
-
-    SignUp(this.state.email,this.state.password,function(error,user){
+    // SignUp
+    SignUp(this.state.email,this.state.password,(error,user) => {
       if (error){
         switch(error.code){
 
@@ -73,17 +83,25 @@ class Signup extends Component{
           }
           this.setState({isLoading:false})
 
-      }else{
-        this.setState({isLoading:false})
-        AlertIOS.alert('Please verify your email before using. Thank you');
-        this.props.navigator.pop();
-      }
-    }.bind(this))
-        
-
+        } else {
+   
+            
+            this.setState({isLoading:false})
+            AlertIOS.alert('Please verify your email before using. Thank you');
+            this.props.navigator.pop();
+  
       
+          
 
 
+
+        }
+      })
+    userRef.push({
+              userId: findLastUserId(),
+              displayname: this.state.displayname,
+              email: this.state.email
+      })
   }
 
  
@@ -104,7 +122,7 @@ class Signup extends Component{
         <Icon name="ios-arrow-back-outline" style={{color: "#FFF"}}/>
       </Button>
       </View>
-
+      {this.state.isLoading ? <Spinner/> : <View/>}
 
       <View style={styles.inputs}>
       
@@ -119,6 +137,20 @@ class Signup extends Component{
       ref={component => this.email = component}
       />
       </View>
+
+      <View style={styles.inputContainer}>
+      <Image style={styles.inputUsername} source={require('../imgBackground/line1.png')}/>
+      <TextInput 
+      style={[styles.input, styles.whiteFont]}
+      placeholder="Enter your display name"
+      placeholderTextColor="#FFF"
+      onChangeText={(displayname) => this.setState({displayname})}
+      value={this.state.displayname}
+      ref={component => this.displayname = component}
+      />
+      </View>
+
+
       <View style={styles.inputContainer}>
       <Image style={styles.inputUsername} source={require('../imgBackground/line2.png')}/>
       <TextInput 
