@@ -29,11 +29,43 @@ import {
   Image,
   AlertIOS,
 } from 'react-native';
+import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 
 
 
+class MailBox extends Component {
+  constructor(props){
+    super(props);
+  }
 
+  goBack(){
+    this.props.navigator.pop();
+  }
+
+
+  render(){
+    return(
+      <View style={styles.container}>
+
+      
+
+      <ScrollableTabView style={styles.scrollview}>
+        
+        <ChallengeList tabLabel="Challenge" navigator={this.props.navigator} user={this.props.user} team={this.props.team} challenge={this.props.challenge} />
+
+        <RequestList tabLabel="Request to join" navigator={this.props.navigator} user={this.props.user} team={this.props.team} request={this.props.request} />
+        </ScrollableTabView>
+
+        <View style={styles.overlay}>
+        <Button transparent large  onPress={()=> {this.goBack()}}>
+              <Icon name="md-close-circle"/>
+        </Button>
+      </View>
+        </View>
+    );
+  }
+}
 
 
 
@@ -46,22 +78,12 @@ class ChallengeList extends Component {
       check1: false,
       modalVisible: false,
       selectedItem: undefined,
-      results: {
-                request: this.returnRequest()
-            }
+      challenge: this.props.challenge
     }
 
-  }
-
-  returnRequest(){
-    var arr = [];
-    let results = realm.objects('Request').filtered('awayteam == $0',this.props.user.team);
-    results.forEach(function(current,i,Team){
-      arr.push(current);
-    })
-    return (arr);
 
   }
+
 
   setModalVisible(visible, x) {
         this.setState({
@@ -71,18 +93,27 @@ class ChallengeList extends Component {
   }
 
   setModalInvisibleAndProceed(visible, x, request) {
-        
-        realm.write(() => {
-          let request = realm.objects('Request').filtered('id == $0',this.state.selectedItem.id)[0];
-          realm.create('Match',{id: 7, hometeam: request.hometeam, awayteam: this.props.user.team, time: request.time, state: 'coming'});
-          realm.delete(request);
+        let arr = this.state.challenge;
+        arr = arr.filter((x)=> x.name !== request.name)
+        this.setState({request: arr})
+
+        firebase.database().ref('teams/' + this.props.team.name + '/challenge/' + request.name).remove();
+        firebase.database().ref('match/' + request.time + request.abre + '-' + this.props.team.abre).set({
+          "awayteam" : this.props.team.name,
+          "awayteamabre" : this.props.team.abre,
+          "awayteamscore" : 0,
+          "hometeam" : request.name,
+          "hometeamabre" : request.abre,
+          "hometeamscore" : 0,
+          "state" : 'coming',
+          "time" : request.time,
+          'id': request.time + request.abre + '-' + this.props.team.abre
         })
 
         this.setState({
             modalVisible: visible,
             selectedItem: x
         });
-        this.search();
         AlertIOS.alert('You have successfully accepted challenge from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
         
   }
@@ -104,34 +135,7 @@ class ChallengeList extends Component {
         })
   }
 
-  search() {
-    let arr = [];       
-    this.setState({            
-      loading: true          
-    });
-    let requests = realm.objects('Request').filtered('hometeam CONTAINS $0',this.state.search);
-    request.forEach(function(current,i,Team){
-        arr.push(current
-          );
-    })
-    this.setState({
-        loading: false,
-        results:{
-          teams: arr,
-        }
-    })
 
-  }
-  _returnImage(request){
-    let team = realm.objects('Team').filtered('teamname == $0',request.hometeam)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
-  }
   _goBack(){
     this.props.navigator.pop();
   }
@@ -139,15 +143,11 @@ class ChallengeList extends Component {
   render() {
     return (
       <Container>
-      <Header rounded>                         
-          <Title> Challenge List </Title>                 
-          <Button transparent onPress={() => {this._goBack()}}>Back</Button>                
-        </Header>
 
       <Content>
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.results.request} renderRow={(request) =>               
+      {this.state.loading? <Spinner /> : <List dataArray={this.state.challenge} renderRow={(request) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
-        <Thumbnail square size={80} source={this._returnImage(request)} />        
+        <Thumbnail square size={80} source={{uri:request.picture}} />        
         <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.hometeam}</Text></Text>
         <Text style={{color:'#007594'}}>{request.additionalCondition}</Text>    
         <Text note>Time: <Text note style={{marginTop: 5}}>{request.time}@{request.venue}</Text></Text>    
@@ -166,7 +166,7 @@ class ChallengeList extends Component {
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
-        <Image style={styles.modalImage} source={this._returnImage(this.state.selectedItem)}  />
+        <Image style={styles.modalImage} source={{uri:this.state.selectedItem.picture}}  />
         <H3 style={styles.header}> {this.state.selectedItem.hometeam}
         </H3>
         <Text style={styles.negativeMargin} >
@@ -204,6 +204,129 @@ class ChallengeList extends Component {
   }
 }
 
+class RequestList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      search: '',
+      radio1 : true,
+      check1: false,
+      modalVisible: false,
+      selectedItem: undefined,
+      request: this.props.request,
+    }
+
+  }
+
+
+
+  setModalVisible(visible, x) {
+        this.setState({
+            modalVisible: visible,
+            selectedItem: x
+        });
+  }
+  
+
+
+
+  setModalInvisibleAndProceed(visible, x, request) {
+        let arr = this.state.request;
+        arr = arr.filter((x)=> x.userId !== request.userId)
+        this.setState({request: arr})
+        firebase.database().ref('teams/' + this.props.team.name + '/players/' + request.userId).set(request)
+        firebase.database().ref('teams/' + this.props.team.name + '/request/'  + request.nickname).remove()
+        this.setState({
+            modalVisible: visible,
+            selectedItem: x
+        });
+
+
+        
+        AlertIOS.alert('You have successfully accepted challenge from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
+
+  }
+
+  _Alert(){
+    AlertIOS.alert(
+          'Are you sure that you want to accept the player to your team?',
+          'Once accepted the player will join the team',
+         [
+         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+         {text: 'Yes', onPress: () => this.setModalInvisibleAndProceed(!this.state.modalVisible, this.state.selectedItem, this.state.selectedItem)},
+         ],
+         );
+  }
+
+  toggleCheck() {
+        this.setState({
+            check1 : !this.state.check1
+        })
+  }
+
+
+  _goBack(){
+    this.props.navigator.pop();
+  }
+
+  render() {
+    return (
+      <Container>
+
+      <Content>
+      {this.state.loading? <Spinner /> : <List dataArray={this.state.request} renderRow={(request) =>               
+        <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
+        <Thumbnail square size={80} source={{uri:request.picture}} />        
+        <Text>Name: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.nickname}</Text></Text>   
+        </ListItem>                            
+      }> </List> }
+
+
+
+
+      <Modal
+      animationType="slide"
+      transparent={false}
+      visible={this.state.modalVisible}
+      onRequestClose={() => {alert("Modal has been closed.")}}
+      >
+      <Card style={{paddingTop: 20}}>
+      {!this.state.selectedItem ? <View />
+        :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
+        <Image style={styles.modalImage} source={{uri:this.state.selectedItem.picture}}  />
+        <H3 style={styles.header}> {this.state.selectedItem.nickname}
+        </H3>
+        
+
+        <View style={styles.buttons}>
+          <View style={{width: 170}}>
+          <Button success style={{alignSelf: 'center'}} onPress={() => {
+            this._Alert()
+          }}>Accept Player</Button>
+          </View>
+          <View style={{width: 170}}>
+          <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+            this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+          }}>Back</Button>
+          </View>
+
+        </View>
+        </CardItem>
+      }
+      </Card>
+      </Modal>
+
+
+
+
+      </Content>
+      </Container>
+
+      );
+  }
+}
+
+
 const styles = StyleSheet.create({
     header : {
         marginLeft: -5,
@@ -215,7 +338,11 @@ const styles = StyleSheet.create({
     modalImage: {
         resizeMode: 'contain',
         height: 200,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        width:200
+    },
+    scrollview :{
+      marginTop: 15,
     },
     bold: {
         fontWeight: '600'
@@ -227,6 +354,21 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       marginTop: 50,
     },
+    container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  },
+  overlay: {
+    flex: 1,
+    position: 'absolute',
+    bottom:10,
+    left: 170,
+    backgroundColor: 'transparent',
+    width: 80, 
+    height: 80,
+  } 
 });
 
 
@@ -235,4 +377,4 @@ const styles = StyleSheet.create({
 
 
 
-module.exports = ChallengeList;
+module.exports = MailBox;

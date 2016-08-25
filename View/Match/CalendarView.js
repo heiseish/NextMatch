@@ -66,9 +66,9 @@ class CalendarView extends Component {
   }
 
   loadevents(){
-    var arr = [];
-    let matches = realm.objects('Match');
-    matches.forEach(function(current,i,Team){
+    let arr = [];
+
+    this.props.match.forEach(function(current,i,Team){
       arr.push(current.time);
     })
     return (arr)
@@ -84,39 +84,26 @@ class CalendarView extends Component {
   }
 
   returnArrayMatches(date){
-    var arr = [];
-    let matches = realm.objects('Match').filtered('time == $0',date);
-    matches.forEach(function(current,i,Team){
-      arr.push(current);
+    let arr = [];
+    this.props.match.forEach((current)=>{
+      if (current.time.search(date) != -1) arr.push(current);
     })
     return (arr)
   }
 
-  returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
-
-  }
-
-  returnDate(){
-    var arr = [];
-    let matches = realm.objects('Match');
-    matches.forEach(function(current,i,Team){
-      arr.push(current.time);
+  returnTeamImage(name){
+    var picture = ''
+    firebase.database().ref('teams/' + name).on('value',(snap)=>{
+      picture= snap.val().picture;
     })
-    return (arr)
+    return picture;
   }
+
 
   render(){
     return(
       <View style={styles.container}>
-      <View style={styles.overlay}>
+        <View style={styles.overlay}>
           <Header>
 
             <Button transparent onPress={()=> {this.goBack()}}>
@@ -145,26 +132,28 @@ class CalendarView extends Component {
           </View>
 
   
-          <View style={{height:300, width: windowSize.width, alignSelf: 'flex-end', bottom: 0, left:0, marginTop:470,}}>
+          <View style={{height:300, width: windowSize.width, alignSelf: 'flex-end', bottom: 0, left:0, marginTop:450,}}>
 
-          {this.state.isLoading? <Spinner /> : <List dataArray={this.returnArrayMatches(this.state.dateSelected)} renderRow={(match) =>  
+          <List dataArray={this.returnArrayMatches(this.state.dateSelected)} renderRow={(match) =>  
               <ListItem> 
               <View style={{flex: 1, flexDirection: 'row', marginLeft: 0, marginRight:0, marginTop: 20}}>
               <View style={{width: 60, height: 60, left: 0, }} >
-              <Thumbnail square size={60} source={this.returnTeamImage(match.hometeam)} />
+              <Thumbnail square size={60} source={{uri:this.returnTeamImage(match.hometeam)}} />
               </View>
               <View style={{width: 230, height: 60}}>
-              <Text style={{fontWeight: '600', color: '#996633', marginLeft: 20, marginTop: 10}}>{match.hometeam}  {match.hometeamscore} - {match.awayteamscore}  {match.awayteam}</Text>
-              </View>
+              {(match.state !== 'finished')?<Text style={{fontWeight: '600', color: '#996633', alignSelf:'center'}} >{match.time}@{match.venue}</Text>:
+              <Text style={{fontWeight: '600', color: '#996633', alignSelf:'center', marginTop: 10}}>{match.hometeamabre}  {match.hometeamscore} - {match.awayteamscore}  {match.awayteamabre}</Text>}
+               </View>
               <View style={{width: 60, height: 60, right: 0}}>
-              <Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
+              <Image style={styles.image} source={{uri:this.returnTeamImage(match.awayteam)}} />
               </View>
+             
               </View>
 
 
 
         </ListItem>  
-      }> </List> }
+      }></List>
       </View>
       </View>
     

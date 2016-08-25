@@ -6,16 +6,15 @@ import { Container, Content, InputGroup, Input , Icon, Header, Title, Button, Te
 import {View, StyleSheet, Image, TouchableOpacity,Modal,Dimensions, AlertIOS} from 'react-native';
 var Swiper = require('react-native-swiper');
 var windowSize = Dimensions.get('window');
+var firebase = require('../../Model/firebase');
 
 
 class EditProfile extends Component {
     constructor(props) {
     super(props);
     this.state = {
-      fullname: this.props.user.fullname,
-      displayname: this.props.user.displayname,
+      nickname: this.props.user.nickname,
       position: this.props.user.position,
-      briefdesc: this.props.user.briefdesc,
       radio1 : true,
       check1: false,
       modalVisible: false,
@@ -29,14 +28,10 @@ class EditProfile extends Component {
     }
 
     _Save(){
-        let users = realm.objects('User');
-        let user = users.filtered('username == $0',this.props.user.username)[0];
-        realm.write(() => {
-             user.fullname = this.state.fullname;
-             user.displayname = this.state.displayname;
-             user.position = this.state.position;
-             user.briefdesc = this.state.briefdesc;
-        });
+        var user = this.props.user;
+        user.nickname = this.state.nickname;
+        user.position = this.state.position;
+        firebase.database().ref('users/' + this.props.user.userId).update(user);
         this.props.navigator.pop();
     }
 
@@ -94,29 +89,17 @@ returnUserImg(){
                     </Button>
                 </Header>
                 <Content>
-                    <TouchableOpacity onPress={() => {this._changeImage()}}>
-                        <Image style={styles.modalImage} source={this.returnUserImg()}  />
+                    <TouchableOpacity /*onPress={() => this._changeImage()}*/>
+                        <Image style={styles.modalImage} source={{uri: this.props.user.picture}}/>
                     </TouchableOpacity>
-                    <Text style={{color: '#000099'}}>Full name</Text>
+                    <Text style={{color: '#000099'}}>Nickname</Text>
                     <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-man" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your full name"
-                                onChangeText={(fullname) => this.setState({fullname})}
-                                value={this.state.fullname}
-                                 />
-                    </InputGroup>
-
-                    <Text style={{color: '#000099'}}>Display name</Text>
-                    <View style={{height:20}} />
-                    <InputGroup borderType="underline" >
-                        <Icon name="ios-eye" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your displayname" 
-                                onChangeText={(displayname) => this.setState({displayname})}
-                                value={this.state.displayname}
-                                />
-
-
+                        <Input placeholder="Enter your desire nick name"
+                                onChangeText={(nickname) => this.setState({nickname})}
+                                value={this.state.nickname}
+                        />
                     </InputGroup>
 
                     <Text style={{color: '#000099'}}>Position</Text>
@@ -129,15 +112,6 @@ returnUserImg(){
                                 />
                     </InputGroup>
 
-                    <Text style={{color: '#000099'}}>Brief Description about you</Text>
-                    <View style={{height:20}} />
-                    <InputGroup borderType="underline" >
-                        <Icon name="ios-information-circle" style={{color:'#384850'}}/>
-                        <Input placeholder="Tell people about yourself" 
-                                onChangeText={(briefdesc) => this.setState({briefdesc})}
-                                value={this.state.briefdesc}
-                                />
-                    </InputGroup>
 
                     <Modal
                     animationType="slide"

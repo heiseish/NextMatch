@@ -70,12 +70,6 @@ class Profile extends Component {
     });
   }
 
-  returnUserImg(){
-    if (this.props.user.imageStyle === 1) return require('../../imgUser/1.png');
-    if (this.props.user.imageStyle === 2) return require('../../imgUser/2.jpg');
-    if (this.props.user.imageStyle === 3) return require('../../imgUser/3.jpg');
-    if (this.props.user.imageStyle === 4) return require('../../imgUser/4.jpg');
-  }
 
 
 
@@ -86,7 +80,7 @@ class Profile extends Component {
           <Button transparent onPress={() => {this._editProfile()}}>
               Edit
           </Button>
-          <Title>{this.props.user.displayname}</Title>
+          <Title>{this.props.user.nickname}</Title>
           <Button transparent onPress={() => {this._search()}}>
               <Icon name="ios-search" />
           </Button>
@@ -98,19 +92,15 @@ class Profile extends Component {
           
           <View>
             
-            <Image style={styles.modalImage} source={this.returnUserImg()}  />
+            <Image style={styles.modalImage} source={{uri:this.props.user.picture}}  />
             <View >
 
             <Grid style={{alignSelf: 'center', width: 300}}>
               <Col>
                 <Row><Text style={styles.subjectFont}>Position</Text></Row>
-                <Row><Text style={styles.subjectFont}>Full name</Text></Row>
-                <Row><Text style={styles.subjectFont}>Description</Text></Row>
               </Col>
               <Col style={{}}>
                 <Row><Text style={styles.whiteFont}>{this.props.user.position}</Text></Row>
-                <Row><Text style={styles.whiteFont}>{this.props.user.fullname}</Text></Row>
-                <Row><Text style={styles.whiteFont}>{this.props.user.briefdesc}</Text></Row>
               </Col>
               <Col></Col>
             </Grid>

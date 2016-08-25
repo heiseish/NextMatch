@@ -90,6 +90,13 @@ class Login extends Component{
       if (err) {
         console.log(err);
         return;
+      } else {
+        if(!profile.extraInfo.email_verified) {
+          AlertIOS.alert('Please verify your email before loggin in')
+        } else {
+          this.grabUserOrCreate(profile.userId,profile)
+    
+        }
       }
     });
   }

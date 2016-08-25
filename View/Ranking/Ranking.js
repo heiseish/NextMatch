@@ -51,47 +51,12 @@ class Ranking extends Component {
       modalVisible: false,
       selectedItem: undefined,
       isLoading: false,
-      results: {
-        teams: this.returnSortedTeam()
-      }
+     
     }
   }
 
-  compare(a,b) {
-    if (a.rankpoint > b.rankpoint)
-      return -1;
-    if (a.rankpoint < b.rankpoint)
-      return 1;
-    return 0;
-  }
-  returnSortedTeam(){
-    var arr = [];
-    let results = realm.objects('Team');
-    results.forEach(function(current,i,Team){
-      arr.push(current);
-    })
-    return (arr.sort(this.compare))
 
-  }
-
-  returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
-
-  }
-
-  returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
-  }
+  
 
   setModalVisible(visible, x) {
     this.setState({
@@ -111,7 +76,7 @@ class Ranking extends Component {
       loading: true          
     });
     let teams = realm.objects('Team').filtered('teamname CONTAINS $0',this.state.search);
-    teams.forEach(function(current,i,Team){
+    teams.players.forEach(function(current,i,Team){
       arr.push(current);
     })
     this.setState({
@@ -126,10 +91,10 @@ class Ranking extends Component {
 
   returnArrayPlayer(team){
     var arrPlayer = [];
-    let players= realm.objects('User').filtered('team == $0',team.teamname);
+    
 
-    players.forEach(function(current,i,Team){
-      arrPlayer.push(current);
+    team.players.forEach(function(current,i,Team){
+      arrPlayer.push(team.players);
     })
 
     return (arrPlayer)
@@ -138,9 +103,9 @@ class Ranking extends Component {
 
   returnReview(team){
     var arrReview = [];
-    let reviews = realm.objects('Review').filtered('team == $0',team.teamname);
-    reviews.forEach(function(current,i,Team){
-      arrReview.push(current);
+    
+    team.review.forEach(function(current,i,Team){
+      arrReview.push(team.review);
     })
     return (arrReview)
   }
@@ -184,22 +149,18 @@ class Ranking extends Component {
   render() {
     return (
       <Container>
-      <Header searchBar rounded>                            
-      <InputGroup>                        
-      <Icon name="ios-search" />                        
-      <Input placeholder="Search" value={this.state.search}  onChangeText={(text) => this.setState({search:text})} onSubmitEditing={()=>this.search()}/>                    
-      </InputGroup>                    
-      <Button transparent onPress={()=>this.search()}>Go</Button>                
+      <Header >                            
+        <Title>Hall of Fame</Title>        
       </Header>
 
       <Content>
 
 
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.results.teams} renderRow={(team) =>               
+      {this.state.loading? <Spinner /> : <List dataArray={this.props.ranks} renderRow={(team) =>               
         <ListItem button onPress={()=>this.setModalVisible(true, team)} > 
-        <Thumbnail square size={80} source={this.returnTeamImage(team.teamname)} />        
-        <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.teamname}</Text></Text>
-        <Text style={{color:'#007594'}}>{team.teamdescription}</Text>    
+        <Thumbnail square size={80} source={{uri:team.picture}} />        
+        <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{team.name}</Text></Text>
+        <Text style={{color:'#007594'}}>{team.description}</Text>    
         <Text note>Score: <Text note style={{marginTop: 5}}>{team.rankpoint}</Text></Text>    
         </ListItem>                            
       }> </List> }
@@ -209,7 +170,7 @@ class Ranking extends Component {
 
       <Modal
       animationType="slide"
-      transparent={false}
+      transparent={true}
       visible={this.state.modalVisible}
       onRequestClose={() => {alert("Modal has been closed.")}}
       >
@@ -217,17 +178,17 @@ class Ranking extends Component {
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
         <View style={{alignItems: 'center'}}>
-        <Image style={styles.modalImage} source={this.returnTeamImage(this.state.selectedItem.teamname)}  />
+        <Image style={styles.modalImage} source={{uri:this.state.selectedItem.picture}}  />
         </View>
         <View style={styles.cardView}>
 
         <View style={{width: 150, left: 0}}>
-        <H3 style={styles.header}> {this.state.selectedItem.teamname}</H3>
+        <H3 style={styles.header}> {this.state.selectedItem.name}</H3>
         <Text style={styles.negativeMargin} >
         Rank Point: <Text style={styles.bold}>{this.state.selectedItem.rankpoint}</Text>
         </Text>
         <Text style={styles.negativeMargin} >
-        Description: <Text style={styles.bold}>{this.state.selectedItem.teamdescription}</Text>
+        Description: <Text style={styles.bold}>{this.state.selectedItem.description}</Text>
         </Text>
         </View>
 
@@ -239,10 +200,10 @@ class Ranking extends Component {
           <View style={styles.containerTop}>
 
           <View style={{width: 30, height: 20, left: 0}} >
-          <Thumbnail square size={30} source={this.returnPlayerImage(player)} />
+          <Thumbnail square size={30} source={{uri:player.picture}} />
           </View>
           <View style={{width: 70, height: 20, }}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', paddingLeft: 10, alignSelf:'center'}}>{player.displayname} </Text>
+          <Text style={{fontWeight: '600', color: '#cc00cc', paddingLeft: 10, alignSelf:'center'}}>{player.nicknamename} </Text>
           </View>
           <View style={{width: 100, height: 20,  }}>
           <Text style={{fontWeight: '600', color: '#cc00cc', alignSelf: 'center', marginBottom: 20}}>{player.position} </Text>

@@ -2,9 +2,10 @@
 var realm = require('../../Model/model.js');
 var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
-var TeamPost = require('./TeamPost');
+// var TeamPost = require('./TeamPost');
 var TeamSetting = require('./TeamSetting');
-var ChallengeList = require('./ChallengeList');
+var MailBox = require('./ChallengeList');
+var matchRef = require('../../Model/matchRef');
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import React, { Component } from 'react';
@@ -33,198 +34,237 @@ import {
   Platform,
   View,
   Image,
-  Dimensions
+  Dimensions,
+  ListView,
+  RefreshControl,
+  ScrollView
 } from 'react-native';
 var windowSize = Dimensions.get('window');
 
- 
+
 class YourTeam extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      
+      team: this.props.team,
+      matchFinished:[],
+      matchComing: [],
+      challenge: [],
+      request: [],
+      gotMail:false,
     }
+
+  }
+  returnArrayMatches(state,cb){
+    let arr =[]
+    firebase.database().ref('match').once('value').then((snap)=>{
+      snap.forEach((child)=>{
+          if (child.val().awayteam === this.state.team.name && child.val().state === state) arr.push(child.val())
+          if (child.val().hometeam === this.state.team.name && child.val().state === state) arr.push(child.val())
+        })
+      
+      cb(null,arr)
+    })
+
+
+  }
+
+  returnMailBox(cb){
+    let arrChallenge = []
+    let arrRequest = []
+    let gotMail = false
+    firebase.database().ref('teams/' + this.props.team.name).once('value').then((snap)=>{
+      snap.child('challenge').forEach((child)=>{
+        arrChallenge.push(child.val())
+      })
+      snap.child('request').forEach((child)=>{
+        arrRequest.push(child.val())
+      })
+      if (arrChallenge.length > 0 || arrRequest.length > 0) gotMail = true;
+      cb(null,arrChallenge,arrRequest,gotMail)
+    })
+  }
+
+  componentDidMount(){
+    this.returnArrayMatches('finished',(err,arr)=>{
+      this.setState({matchFinished: arr})
+      // console.log(this.state.matchFinished)
+    })
+
+    this.returnArrayMatches('coming',(err,arr)=>{
+      this.setState({matchComing: arr})
+      // console.log(this.state.matchComing)
+    })
+
+    this.returnMailBox((err,arrChallenge,arrRequest,gotMail)=>{
+      this.setState({
+        challenge: arrChallenge,
+        request: arrRequest,
+        gotMail: gotMail
+
+      })
+      console.log(arrChallenge);
+      console.log(arrRequest);
+      console.log(gotMail)
+    });
+
 
   }
   _joinTeam(){
     this.props.navigator.push({
-        name: 'JoinTeam',
-        title: 'Join A Team',
-        component: JoinTeamView,
+      name: 'JoinTeam',
+      title: 'Join A Team',
+      component: JoinTeamView,
     });
   }
 
   _createTeam(){
     this.props.navigator.push({
-        name: 'CreatTeam',
-        title: 'Create New Team',
-        component: CreateTeamView,
-        passProps: {user: this.props.user}
+      name: 'CreatTeam',
+      title: 'Create New Team',
+      component: CreateTeamView,
+      passProps: {user: this.props.user}
     });
   }
 
   _setting(){
     this.props.navigator.push({
-        name: 'Setting',
-        title: 'Setting',
-        component: TeamSetting,
-        passProps: {user: this.props.user}
+      name: 'Setting',
+      title: 'Setting',
+      component: TeamSetting,
+      passProps: {user: this.props.user}
     });
 
   }
 
   _openChallengeBox(){
     this.props.navigator.push({
-        name: 'Challenge',
-        title: 'Challenge',
-        component: ChallengeList,
-        passProps: {user: this.props.user}
+      name: 'Challenge',
+      title: 'Challenge',
+      component: MailBox,
+      passProps: {user: this.props.user,challenge: this.state.challenge,request: this.state.request,team:this.props.team}
     });
   }
   _openTeamPost(){
     this.props.navigator.push({
-        name: 'TeamChat',
-        title: 'TeamChat',
-        component: TeamPost,
-        passProps: {user: this.props.user}
+      name: 'TeamChat',
+      title: 'TeamChat',
+      component: TeamPost,
+      passProps: {user: this.props.user}
     });
   }
 
   countChallenges(){
-    return realm.objects('Request').filtered('awayteam == $0',this.props.user.team).length;
+    return this.state.challenge.length + this.state.request.length
 
   }
 
-  returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
-  }
-
-  returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
-  }
-  
 
 // <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
 
-  render() {
+render() {
     // var profilepic = this.props.user.image ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
+
     if (this.props.user.team){
-    let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
-    return (
-      <Container>
-        <Content>
+
+      return (
+
 
         <View style={styles.container}>
         <View style={styles.containerTop}>
-          <View style={{width: 80, height: 80, left: 0}} >
-            <Image style={styles.modalImage} source={this.returnTeamImage(team.teamname)}  />
-          </View>
-          <View style={{width: 200, height: 80, right:0, paddingLeft: 10}} >
-            <H3 style={styles.header}> {team.teamname}
-            </H3>
-            <Text >Rankpoint: <Text style={styles.bold}>        {team.rankpoint}</Text>
-            </Text>
-            <Text >Description: <Text style={styles.bold}>      {team.teamdescription}</Text>
-            </Text>
+        <View style={{width: 80, height: 80, left: 0}} >
+        <Image style={styles.modalImage} source={{uri: this.state.team.picture}}  />
+        </View>
+        <View style={{width: 200, height: 80, right:0, paddingLeft: 10}} >
+        <H3 style={styles.header}> {this.state.team.name}
+        </H3>
+        <Text >Rankpoint: <Text style={styles.bold}>        {this.state.team.rankpoint}</Text>
+        </Text>
+        <Text >Description: <Text style={styles.bold}>      {this.state.team.description}</Text>
+        </Text>
 
-          </View>
-          
-          {this.props.user.leader ? <View style={{width:30}}>
-          <Button transparent onPress={() => {this._setting()}}>
-          <Icon name="ios-settings" />
-          </Button>
-          </View> : <View/>}
-          
+        </View>
+
+        {this.props.user.leader ? <View style={{width:30}}>
+        <Button transparent onPress={() => {this._setting()}}>
+        <Icon name="ios-settings" />
+        </Button>
+        </View> : <View/>}
+
+        {this.props.user.leader ? <View style={{marginLeft: 10, width:40}}>
+        <Button transparent onPress={() => {this._openChallengeBox()}}>
+        <Icon name="ios-mail" badgeValue={2} />
+        </Button>
+        {this.state.gotMail ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge> : <View/>}
+        </View> : <View/>}
 
 
-          {this.props.user.leader ? <View style={{marginLeft: 10, width:40}}>
-          <Button transparent onPress={() => {this._openChallengeBox()}}>
-          <Icon name="ios-mail" badgeValue={2} />
-          </Button>
-          <Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge>
-          </View> : <View/>}
-
-          
-         
-       
-
-          </View>
-          <Button style={{alignSelf: 'flex-end', marginRight: 10}} success rounded onPress={() => {this._openTeamPost()}}>
-            <Icon name="ios-chatbubbles" />
-          </Button>
         
-        
-        
-        <View style={{flex:1,height:300, marginTop: 5}}>
+
+        </View>
 
 
-        <ScrollableTabView style={{marginTop:30}}>
-          <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} />
-          <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user}/>
-          <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user}/>
+        <View style={{height:600,marginTop:0}}>
+
+
+        <ScrollableTabView>
+        <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} team={this.props.team} />
+        <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user} team={this.props.team} match={this.state.matchComing} />
+
+        <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user} team={this.props.team} match={this.state.matchFinished} />
         </ScrollableTabView>
         </View>
         </View>
-        </Content>
-      </Container>
-    );
+
+        );
 
 
 
-  } else {
-    return (
+
+    } else {
+      return (
        <Container>
 
-        <Content>
-        <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
-          <Image style={styles.bg} source={require('../../imgBackground/background.jpg')} />
-        
-
-          <View style={{height: 200, paddingTop: 150, marginTop:10}}>
-          <H3 style={styles.font}> Oh it seems that you don't have a team yet
-          </H3>
-          </View>
+       <Content>
+       <View style={{alignItems:'center', justifyContent: 'center', flex: 1, flexDirection: 'column'}}>
+       <Image style={styles.bg} source={require('../../imgBackground/background.jpg')} />
 
 
-          <Button block rounded primary onPress={() => {this._joinTeam()}}>
-           Join 
-          </Button>
-
-          <View style={{height: 90, alignItems:'center', justifyContent: 'center', flexDirection:'row'}}>
-          <View style={styles.separator}/>
-          <View style={{width: 30}}><H3 style={styles.font}> Or </H3></View>
-          <View style={styles.separator}/>
-          </View>
-
-          <Button block rounded warning onPress={() => {this._createTeam()}}>
-            Create 
-          </Button>
-          <View style={{marginTop:10}}>
-          <H3 style={styles.font}> a new team now !</H3>
-          </View>
-
-        </View>
+       <View style={{height: 200, paddingTop: 150, marginTop:10}}>
+       <H3 style={styles.font}> Oh it seems that you don't have a team yet
+       </H3>
+       </View>
 
 
-          
-          
-            
-        </Content>
-      </Container>
-      );
+       <Button block rounded primary onPress={() => {this._joinTeam()}}>
+       Join 
+       </Button>
+
+       <View style={{height: 90, alignItems:'center', justifyContent: 'center', flexDirection:'row'}}>
+       <View style={styles.separator}/>
+       <View style={{width: 30}}><H3 style={styles.font}> Or </H3></View>
+       <View style={styles.separator}/>
+       </View>
+
+       <Button block rounded warning onPress={() => {this._createTeam()}}>
+       Create 
+       </Button>
+       <View style={{marginTop:10}}>
+       <H3 style={styles.font}> a new team now !</H3>
+       </View>
+
+       </View>
+
+
+
+
+
+       </Content>
+       </Container>
+       );
 
     }
   }
@@ -233,103 +273,145 @@ class YourTeam extends Component {
 
 class UpcomingMatch extends Component{
   constructor(props){
-    super(props)
-  }
- returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
+    super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1.id !== row2.id});
+    this.state = {
+      dataSource: this.ds.cloneWithRows(this.props.match),
+      refreshing: false,
+    }
 
   }
-
-  returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
-  }
-  
-returnArrayMatches(state){
-    var arr = [];
-    let matchesHome = realm.objects('Match').filtered('hometeam == $0',this.props.user.team);
-    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team);
-    matchesHome.forEach(function(current,i,Team){
-      if (current.state === state) arr.push(current);
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this._refreshArray('finished',(err)=>{
+      if (!err) this.setState({refreshing:false})
     })
-    matchesAway.forEach(function(current,i,Team){
-      if (current.state === state) arr.push(current);
-    })
-    return (arr)
+
+    
 
   }
-  
+  _refreshArray(state,cb){
+   
+    this.returnArrayMatches('coming',(err,arr)=>{
+      if (!err)
+      this.setState({
+        refreshing: false,
+        dataSource: this.ds.cloneWithRows(arr)
+      })
+    })
+    
+
+
+  }
+
+  componentDidMount(){
+    this.returnArrayMatches('finished',(err)=>{
+      if (!err) console.log('good')
+    })
+    
+    
+  }
+
+
+
+  returnArrayMatches(state,cb){
+    let arr = []
+    firebase.database().ref('match').once('value').then((snap)=>{
+      snap.forEach((child)=>{
+        if (child.val().awayteam === this.props.team.name && child.val().state === state) arr.push(child.val())
+          if (child.val().hometeam === this.props.team.name && child.val().state === state) arr.push(child.val())
+        })
+      
+      cb(null,arr);
+    })
+
+
+  }
+
+  returnTeamImage(name){
+    var picture = ''
+    firebase.database().ref('teams/' + name).on('value',(snap)=>{
+      picture= snap.val().picture;
+    })
+    return picture;
+  }
+
+  renderRow(match) {
+    return (
+
+
+      <View>
+
+      <View style={styles.row}>
+
+      <View style={{width: 60, height: 70, left: 0}} >
+      <Thumbnail square size={50} source={{uri:this.returnTeamImage(match.hometeam)}} />
+      </View>
+      <View style={{width: 260, height: 70}}>
+      <Text style={{fontWeight: '600', color: '#77773c', alignSelf: 'center',marginTop:20}}>{match.hometeamabre}        {match.hometeamscore}-{match.awayteamscore}       {match.awayteamabre}</Text>
+      </View>
+      <View style={{width: 60, height: 70, right: 0}}>
+      <Image style={styles.image} source={{uri:this.returnTeamImage(match.awayteam)}} />
+      </View> 
+      
+      </View>
+      <View style={styles.rowSeparator}/>
+      </View>
+
+      );
+  }
+
+
   render(){
     return(
-      <Container>
-      <Content>
-       <List dataArray={this.returnArrayMatches('coming')} renderRow={(match) =>               
-          <ListItem> 
 
-          <View style={styles.containerTop}>
+     <ScrollView style={styles.scrollview} 
+     refreshControl={
+      <RefreshControl
+      refreshing={this.state.refreshing}
+      onRefresh={()=>{this._onRefresh()}}
+      />}>
+     <ListView
+     
 
-          <View style={{width: 30, height: 50, left: 0, }} >
-          <Thumbnail square size={30} source={this.returnTeamImage(match.hometeam)} />
-          </View>
-          <View style={{width: 280, height: 50}}>
-          <Text style={{fontWeight: '300', color: '#cc00cc', marginLeft: 98}}>{match.time}</Text>
-          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} - {match.awayteam}</Text>
-          </View>
-          <View style={{width: 30, height: 50, right: 0}}>
-          <Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
-          </View> 
-          </View>
-   
-          </ListItem>                            
-        }> </List> 
-            
-        </Content>
-      </Container>
-    );
+      dataSource={this.state.dataSource}
+      renderRow={this.renderRow.bind(this)}/>
+      </ScrollView>
+
+      
+      );
   }
 }
 
 class TeamRoster extends Component{
   constructor(props){
-    super(props)
-  }
-  returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
-
+    super(props);
+    this.state = {
+      players:[{sda:'sasd'}]
+    }
   }
 
-  returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
+  componentDidMount(){
+    this.setState({players: this.returnArrayPlayer()});
   }
+
   
   returnArrayPlayer(){
-    var arrPlayer = [];
-    let matchesHome = realm.objects('User').filtered('team == $0',this.props.user.team);
+    var arrPlayer =[]
 
-    matchesHome.forEach(function(current,i,Team){
-      arrPlayer.push(matchesHome[i]);
-    })
-  
-    return (arrPlayer)
+
+    firebase.database().ref('teams/' + this.props.team.name + '/players').on('value',(snap)=>{
+      snap.forEach((child)=>{
+       arrPlayer.push(child.val())
+     })
+
+     })
+
+    
+
+    console.log(arrPlayer)
+    
+    return(arrPlayer)
 
   }
 
@@ -337,136 +419,176 @@ class TeamRoster extends Component{
     return(
       <Container>
       <Content>
-      <List dataArray={this.returnArrayPlayer()} renderRow={(player) =>               
-          <ListItem> 
+      <List dataArray={this.state.players} renderRow={(player) =>               
+        <ListItem> 
 
-          <View style={styles.containerTop}>
+        <View style={styles.row}>
 
-          <View style={{width: 80, height: 20, left: 0}} >
-          <Thumbnail square size={30} source={this.returnPlayerImage(player)} />
-          </View>
-          <View style={{width: 200, height: 20, right:0, paddingLeft: 10 }}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.displayname}   {player.position}</Text>
-          </View>
-          
-          </View>
-   
-          </ListItem>                            
-        }> </List> 
-       
-            
-        </Content>
+        <View style={{width: 80, height: 40, left: 0}} >
+        <Thumbnail square size={40} source={{uri:player.picture}} />
+        </View>
+        <View style={{width: 200, height: 20, right:0, paddingLeft: 10,marginTop:10 }}>
+        <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.nickname}   {player.position}</Text>
+        </View>
+
+        </View>
+
+        </ListItem>                            
+      }> </List> 
+
+
+      </Content>
       </Container>
-    );
+      );
   }
 }
 
 
 class TeamHistory extends Component{
   constructor(props){
-    super(props)
-  }
-  returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
+    super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1.id !== row2.id});
+    this.state = {
+      dataSource: this.ds.cloneWithRows(this.props.match),
+      refreshing: false,
+    }
 
   }
-
-  returnPlayerImage(player){
-    if (player.imageStyle === 1) return require('../../imgUser/1.png');
-    if (player.imageStyle === 2) return require('../../imgUser/2.jpg');
-    if (player.imageStyle === 3) return require('../../imgUser/3.jpg');
-    if (player.imageStyle === 4) return require('../../imgUser/4.jpg');
-  }
-
-  returnArrayMatches(state){
-    var arr = [];
-    let matchesHome = realm.objects('Match').filtered('hometeam == $0',this.props.user.team);
-    let matchesAway = realm.objects('Match').filtered('awayteam == $0',this.props.user.team);
-    matchesHome.forEach(function(current,i,Team){
-      if (current.state === state) arr.push(current);
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this._refreshArray('finished',(err)=>{
+      if (!err) this.setState({refreshing:false})
     })
-    matchesAway.forEach(function(current,i,Team){
-      if (current.state === state) arr.push(current);
-    })
-    return (arr)
+
+    
 
   }
+  _refreshArray(state,cb){
+   
+    this.returnArrayMatches('finished',(err,arr)=>{
+      if (!err)
+      this.setState({
+        refreshing: false,
+        dataSource: this.ds.cloneWithRows(arr)
+      })
+    })
+    
+
+
+  }
+
+  componentDidMount(){
+    this.returnArrayMatches('finished',(err)=>{
+      if (!err) console.log('good')
+    })
+    
+    
+  }
+
+
+
+  returnArrayMatches(state,cb){
+    let arr = []
+    firebase.database().ref('match').once('value').then((snap)=>{
+      snap.forEach((child)=>{
+        if (child.val().awayteam === this.props.team.name && child.val().state === state) arr.push(child.val())
+          if (child.val().hometeam === this.props.team.name && child.val().state === state) arr.push(child.val())
+        })
+      
+      cb(null,arr);
+    })
+
+
+  }
+
+  returnTeamImage(name){
+    var picture = ''
+    firebase.database().ref('teams/' + name).on('value',(snap)=>{
+      picture= snap.val().picture;
+    })
+    return picture;
+  }
+
+  renderRow(match) {
+    return (
+      <View>
+
+      <View style={styles.row}>
+
+      <View style={{width: 60, height: 70, left: 0}} >
+      <Thumbnail square size={50} source={{uri:this.returnTeamImage(match.hometeam)}} />
+      </View>
+      <View style={{width: 260, height: 70}}>
+      <Text style={{fontWeight: '600', color: '#77773c', alignSelf: 'center',marginTop:20}}>{match.hometeamabre}        {match.hometeamscore}-{match.awayteamscore}       {match.awayteamabre}</Text>
+      </View>
+      <View style={{width: 60, height: 70, right: 0}}>
+      <Image style={styles.image} source={{uri:this.returnTeamImage(match.awayteam)}} />
+      </View> 
+      
+      </View>
+      <View style={styles.rowSeparator}/>
+      </View>
+      );
+  }
+
+
   render(){
     return(
-      <Container>
-      <Content>
-      <List dataArray={this.returnArrayMatches('finished')} renderRow={(match) =>               
-          <ListItem> 
+      <View style={styles.container}>
+     <ScrollView style={styles.scrollview} 
+     refreshControl={
+      <RefreshControl
+      refreshing={this.state.refreshing}
+      onRefresh={()=>{this._onRefresh()}}
+      />}>
+     <ListView
+     
 
-          <View style={styles.containerTop}>
+      dataSource={this.state.dataSource}
+      renderRow={this.renderRow.bind(this)}/>
+      </ScrollView>
+      </View>
 
-          <View style={{width: 30, height: 20, left: 0, }} >
-          <Thumbnail square size={30} source={this.returnTeamImage(match.hometeam)} />
-          </View>
-          <View style={{width: 280, height: 20}}>
-          <Text style={{fontWeight: '600', color: '#cc00cc', marginLeft: 55}}>{match.hometeam} {match.hometeamscore}-{match.awayteamscore} {match.awayteam}</Text>
-          </View>
-          <View style={{width: 30, height: 20, right: 0}}>
-          <Image style={styles.image} source={this.returnTeamImage(match.awayteam)} />
-          </View> 
-          </View>
-   
-          </ListItem>                            
-        }> </List> 
-       
-            
-        </Content>
-      </Container>
-    );
+      
+      );
   }
 }
 
 
 
 
-
 const styles = StyleSheet.create({
-    container: {
-      flex:1
+  container: {
+    flex:1
 
-    },
-    containerTop: {
-      flex: 1,
-      flexDirection: 'row', 
-      marginTop: 5,
-      backgroundColor: 'transparent',
-    },
-    bg: {
-      marginTop: -33,
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: windowSize.width,
-        height: windowSize.height
-    },
-    header : {
-        alignItems: 'center',
-        lineHeight: 24,
-        color: '#5357b6'
-    },
-    modalImage: {
-        resizeMode: 'contain',
-        width: 80,
-        height: 80,
-    },
-    bold: {
-        fontWeight: '600'
-    },
-    image:{
-    width: 30,
-    height: 30,
+  },
+  containerTop: {
+    flexDirection: 'row', 
+    height:80,
+    marginTop: 35,
+    marginBottom:0
+  },
+  row: {
+    flexDirection: 'row', 
+    height:72,
+  },
+
+  header : {
+    alignItems: 'center',
+    lineHeight: 24,
+    color: '#5357b6'
+  },
+  modalImage: {
+    resizeMode: 'contain',
+    width: 80,
+    height: 80,
+  },
+  bold: {
+    fontWeight: '600'
+  },
+  image:{
+    width: 50,
+    height: 50,
     alignItems: 'center',
     
   },
@@ -483,6 +605,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#dddddd',
     width: 100
   },
+  scrollview:{
+    height: 600,
+  },
+
+  rowSeparator: {
+    backgroundColor: '#009933',
+    height:1,
+    width: windowSize.width
+  }
   
 });
 

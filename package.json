@@ -21,6 +21,7 @@
     "react-native-star-rating": "^1.0.6",
     "react-native-swiper": "^1.4.8",
     "react-native-youtube": "^0.7.2",
+    "react-timer-mixin": "^0.13.3",
     "realm": "^0.14.2"
   }
 }

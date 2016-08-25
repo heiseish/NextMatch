@@ -4,15 +4,18 @@ var realm = require('../../Model/model.js');
 import React, { Component } from 'react';
 import { Container, Content, InputGroup, Input , Icon, Header, Title, Button} from 'native-base';
 import {AlertIOS} from 'react-native';
+var teamRef = require('../../Model/teamRef');
+var firebase = require('../../Model/firebase')
 
 
 class CreateTeamView extends Component {
     constructor(props) {
     super(props);
     this.state = {
-      teamname: '',
-      teamdescription: '',
+      name: '',
+      description: '',
       username: this.props.user.username,
+      abre: ''
 
       }
 
@@ -23,28 +26,52 @@ class CreateTeamView extends Component {
     }
 
     _Save(){
+        // AlertIOS.alert('haha')
 
-        let team = realm.objects('Team').filtered('teamname == $0',this.state.teamname)[0];
-        let user = realm.objects('User').filtered('username == $0',this.state.username)[0];
-        if ((team) && (team.teamname)){
-            AlertIOS.alert('The name is already in use. Please use another one!')
-        } else {
-        realm.write(() => {
-             realm.create('Team',{id:5, teamname: this.state.teamname, teamdescription: this.state.teamdescription})
-             user.team = this.state.teamname;
-             user.leader = true;
-        });
+        teamRef.on('value',(snap)=>{
+            // AlertIOS.alert('inside')
 
-        AlertIOS.alert('Your team has been successfully created. You have automatically been assigned as the team captain');
-        this.props.navigator.pop();
-        }
+            if (this.state.name === ''){
+                AlertIOS.alert('Please enter a valid team name')
+            } else if (snap.hasChild(this.state.name)) {
+                AlertIOS.alert('The name is already in use. Please use another one!')
+            } else if (this.state.description === ''){
+                AlertIOS.alert('Please enter a brief description about the team')
+            } else if (this.state.abre === '') {
+                AlertIOS.alert('Please enter a valid abreviation of the team name. eg Chelsea FC => CFC')
+            } else {
+                firebase.database().ref('teams').off();
+                firebase.database().ref('teams/' + this.state.name).set({
+                    abre: this.state.abre,
+                    captain: this.props.user.nickname,
+                    description: this.state.description,
+                    matches: 0,
+                    winrate: 0,
+                    rankpoint: 0,
+                    name: this.state.name,
+                    picture: 'https://firebasestorage.googleapis.com/v0/b/nextmatch-8597c.appspot.com/o/1.png?alt=media&token=6f4256cc-4503-45bf-a970-680117c14aa9',
+                    players :{
+                        userId: this.props.user.userId
+                    }
+
+                })
+              
+                var user = this.props.user;
+                user.team = this.state.name;
+                user.leader = true;
+                firebase.database().ref('users/' + this.props.user.userId).update(user);
+                
+                AlertIOS.alert('Your team has been successfully created. You have automatically been assigned as the team captain');
+                this.props.navigator.pop();
+            }
+        })
     }
     render() {
         return (
             <Container>
                 <Header>
                     <Button transparent onPress={() => {this._goBack()}}>
-                        <Icon name="ios-arrow-dropleft" />
+                        <Icon name="ios-arrow-back" />
                     </Button>
                     <Title>Create New Team</Title>
                     <Button transparent onPress={() => {this._Save()}}>
@@ -56,16 +83,24 @@ class CreateTeamView extends Component {
                     <InputGroup borderType="underline" >
                         <Icon name="ios-football" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your team name here" 
-                                onChangeText={(teamname) => this.setState({teamname})}
-                                value={this.state.teamname}
+                                onChangeText={(name) => this.setState({name})}
+                                value={this.state.name}
+                                />
+                    </InputGroup>
+
+                    <InputGroup borderType="underline" >
+                        <Icon name="ios-football" style={{color:'#384850'}}/>
+                        <Input placeholder="Enter your 3-4 letter team name abbreviation eg. Arsenal FC => AFC" 
+                                onChangeText={(abre) => this.setState({abre})}
+                                value={this.state.abre}
                                 />
                     </InputGroup>
 
                     <InputGroup borderType="underline" >
                         <Icon name="ios-information-circle" style={{color:'#384850'}}/>
                         <Input placeholder="Enter your team brief description" 
-                                onChangeText={(teamdescription) => this.setState({teamdescription})}
-                                value={this.state.teamdescription}
+                                onChangeText={(description) => this.setState({description})}
+                                value={this.state.description}
                                 />
                         </InputGroup>
                 </Content>
