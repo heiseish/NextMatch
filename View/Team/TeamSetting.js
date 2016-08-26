@@ -6,39 +6,55 @@ import { Container, Content, InputGroup, Input , Icon, Header, Title, Button, Te
 import {View, StyleSheet, Image, TouchableOpacity,Modal,Dimensions, AlertIOS} from 'react-native';
 var Swiper = require('react-native-swiper');
 var windowSize = Dimensions.get('window');
-
+var Platform = require('react-native').Platform;
+var ImagePicker = require('react-native-image-picker');
+var firebase =require('../../Model/firebase')
 
 
 class TeamSetting extends Component {
     constructor(props) {
     super(props);
     this.state = {
-      teamname: this.returnInfo('teamname'),
-      description: this.returnInfo('teamdescription'),
+      teamname: this.props.team.name,
+      description: this.props.team.description,
       radio1 : true,
       check1: false,
       modalVisible: false,
       selectedItem: undefined,
       isLoading: false,
+      team: this.props.team,
+      previousname: this.props.team.name,
         }
 
     }
 
-    returnInfo(info){
-      let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
-      return team[info];
-    }
+   
     _goBack(){
         this.props.navigator.pop();
     }
 
     _Save(){
-        let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
-        realm.write(() => {
-             team.teamname = this.state.teamname;
-             team.teamdescription = this.state.description;
-        });
-        this.props.navigator.pop();
+        let team = this.state.team;
+        team.name = this.state.teamname;
+        team.description = this.state.description;
+        firebase.database().ref('teams').on('value',(snap)=>{
+            if (this.state.teamname === this.state.previousname){
+                firebase.database().ref('teams/' + this.state.teamname).update(team);
+                AlertIOS.alert('Saved!');
+                this.props.navigator.pop()
+            } else {
+                if (snap.hasChild(this.state.teamname)) AlertIOS.alert('This name is already taken. Please choose another one')
+                    else {
+                        firebase.database().ref('teams/' + this.state.teamname).set(team);
+                        firebase.database().ref('teams/' + this.state.previousname).remove();
+                        AlertIOS.alert('Saved!');
+                this.props.navigator.pop()
+
+                    }
+                }
+
+         })
+        
     }
 
     setModalVisible(visible, x) {
@@ -62,33 +78,12 @@ class TeamSetting extends Component {
         modalVisible: false
     })
   }
-  _setProfile(imgStyle){
-    let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
-    realm.write(() => {
-       user.imageStyle = imgStyle;
-   });
 
-    
-    this.setState({
-        modalVisible: false,
-    })
-    AlertIOS.alert('Profile picture set successfully!');
-}
 
-returnTeamImage(teamname){
-    let team = realm.objects('Team').filtered('teamname == $0',teamname)[0];
-    if (team.imageStyle === 1) return require('../../imgTeam/1.png');
-    if (team.imageStyle === 2) return require('../../imgTeam/2.jpg');
-    if (team.imageStyle === 3) return require('../../imgTeam/3.png');
-    if (team.imageStyle === 4) return require('../../imgTeam/4.png');
-    if (team.imageStyle === 5) return require('../../imgTeam/5.png');
-    if (team.imageStyle === 6) return require('../../imgTeam/6.jpg');
-    if (team.imageStyle === 7) return require('../../imgTeam/7.png');
 
-  }
 
     render() {
-      let team = realm.objects('Team').filtered('teamname == $0',this.props.user.team)[0];
+
   
         return (
             <Container>
@@ -103,7 +98,7 @@ returnTeamImage(teamname){
                 </Header>
                 <Content>
                     <TouchableOpacity onPress={() => {this._changeImage()}}>
-                        <Image style={styles.modalImage} source={this.returnTeamImage(this.props.user.team)}  />
+                        <Image style={styles.modalImage} source={{uri:this.props.team.picture}}  />
                     </TouchableOpacity>
                    
 
@@ -111,8 +106,8 @@ returnTeamImage(teamname){
                     <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-eye" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your displayname" 
-                                onChangeText={(teamname) => this.setState({teamname})}
+                        <Input placeholder="Enter your team name" 
+                                onChangeText={(name) => this.setState({name})}
                                 value={this.state.teamname}
                                 />
 
@@ -120,11 +115,11 @@ returnTeamImage(teamname){
                     </InputGroup>
 
 
-                    <Text style={{color: '#000099'}}>Brief Description about you</Text>
+                    <Text style={{color: '#000099'}}>Brief Description about your team</Text>
                     <View style={{height:20}} />
                     <InputGroup borderType="underline" >
                         <Icon name="ios-information-circle" style={{color:'#384850'}}/>
-                        <Input placeholder="Enter your position" 
+                        <Input placeholder="Enter your team description" 
                                 onChangeText={(description) => this.setState({description})}
                                 value={this.state.description}
                                 />

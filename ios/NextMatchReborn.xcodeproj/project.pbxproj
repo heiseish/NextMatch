@@ -39,6 +39,7 @@
 		C8F71205831D4E5288204DDB /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1EC470101E1B446F8E084E83 /* libRCTActionSheet.a */; };
 		C96FB04E7507445386387901 /* Roboto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 669E72A0F4714C16B2E4DBCA /* Roboto.ttf */; };
 		CA6AF7D760C74B02B4CC95E7 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 36A60F7C313F4C9EBC91A965 /* libz.tbd */; };
+		CB3E96BA1D7049110085D212 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CB3E96B81D7049030085D212 /* libRNImagePicker.a */; };
 		CB5F74651D5D9A3000F153D0 /* YTPlayerView-iframe-player.html in Resources */ = {isa = PBXBuildFile; fileRef = CB5F74641D5D9A3000F153D0 /* YTPlayerView-iframe-player.html */; };
 		CB5F74661D5DABA800F153D0 /* libRCTYouTube.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CB5F745E1D5D9A0200F153D0 /* libRCTYouTube.a */; };
 		CBA19C071D5790BA006C3AC7 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBA19C061D5790AD006C3AC7 /* libRNVectorIcons.a */; };
@@ -135,6 +136,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		CB3E96B71D7049030085D212 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CB3E96A61D7049030085D212 /* RNImagePicker.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 014A3B5C1C6CF33500B6D375;
+			remoteInfo = RNImagePicker;
+		};
 		CB5F745D1D5D9A0200F153D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE3840588F6B4432AD8EE250 /* RCTYouTube.xcodeproj */;
@@ -205,6 +213,7 @@
 		8E0AB6291FBA49C58A013200 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = "../node_modules/native-base/Fonts/Arial.ttf"; sourceTree = "<group>"; };
 		9D4E218AAD2F4555B030DFBF /* Courier New.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Courier New.ttf"; path = "../node_modules/native-base/Fonts/Courier New.ttf"; sourceTree = "<group>"; };
 		A1D8C589C4BD9FC8C790C734 /* libPods-NextMatchReborn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NextMatchReborn.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB3E96A61D7049030085D212 /* RNImagePicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNImagePicker.xcodeproj; path = "../node_modules/react-native-image-picker/ios/RNImagePicker.xcodeproj"; sourceTree = "<group>"; };
 		CB5F74641D5D9A3000F153D0 /* YTPlayerView-iframe-player.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "YTPlayerView-iframe-player.html"; sourceTree = "<group>"; };
 		CBA19C011D5790AC006C3AC7 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		CBA1C2431D577E7200707697 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
@@ -241,6 +250,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB3E96BA1D7049110085D212 /* libRNImagePicker.a in Frameworks */,
 				CB5F74661D5DABA800F153D0 /* libRCTYouTube.a in Frameworks */,
 				CBA19C071D5790BA006C3AC7 /* libRNVectorIcons.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -384,6 +394,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				CB3E96A61D7049030085D212 /* RNImagePicker.xcodeproj */,
 				CBA19C011D5790AC006C3AC7 /* RNVectorIcons.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -464,6 +475,14 @@
 				6128FC59C21C4EC5AF2AA13D /* Times New Roman.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		CB3E96A71D7049030085D212 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CB3E96B81D7049030085D212 /* libRNImagePicker.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		CB5F74511D5D9A0200F153D0 /* Products */ = {
@@ -649,6 +668,10 @@
 					ProjectRef = 126EE08EE86A4ADF8DAFDD21 /* RealmReact.xcodeproj */;
 				},
 				{
+					ProductGroup = CB3E96A71D7049030085D212 /* Products */;
+					ProjectRef = CB3E96A61D7049030085D212 /* RNImagePicker.xcodeproj */;
+				},
+				{
 					ProductGroup = CBA19C021D5790AC006C3AC7 /* Products */;
 					ProjectRef = CBA19C011D5790AC006C3AC7 /* RNVectorIcons.xcodeproj */;
 				},
@@ -730,6 +753,13 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CB3E96B81D7049030085D212 /* libRNImagePicker.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNImagePicker.a;
+			remoteRef = CB3E96B71D7049030085D212 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		CB5F745E1D5D9A0200F153D0 /* libRCTYouTube.a */ = {

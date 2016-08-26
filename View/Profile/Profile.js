@@ -75,57 +75,54 @@ class Profile extends Component {
 
   render() {
     return (
-      <Container>
-        <Header >
-          <Button transparent onPress={() => {this._editProfile()}}>
-              Edit
-          </Button>
-          <Title>{this.props.user.nickname}</Title>
-          <Button transparent onPress={() => {this._search()}}>
-              <Icon name="ios-search" />
-          </Button>
-        </Header>
+      <View style={styles.container}>
+      <Header >
+      
+      <Title>{this.props.user.nickname}</Title>
 
-        <Content >
-                    
-        <View style={styles.container}>
-          
-          <View>
-            
-            <Image style={styles.modalImage} source={{uri:this.props.user.picture}}  />
-            <View >
+      </Header>
+      <Image style={styles.modalImage} source={{uri:this.props.user.picture}}  />
+      <View style={styles.containerBouttons}>
 
-            <Grid style={{alignSelf: 'center', width: 300}}>
-              <Col>
-                <Row><Text style={styles.subjectFont}>Position</Text></Row>
-              </Col>
-              <Col style={{}}>
-                <Row><Text style={styles.whiteFont}>{this.props.user.position}</Text></Row>
-              </Col>
-              <Col></Col>
-            </Grid>
-            </View>
-          </View>
-          </View>
+      <View style={styles.buttons}>
 
-          <View style={styles.containerBottom}>
-            <Button danger rounded block onPress={() => {this._logout()}}>
-                        <Icon name="ios-power" />
-            </Button>
-          </View>
-          
-        </Content>
-      </Container>
+      <Button bordered rounded block onPress={() => {this._editProfile()}}>
+      Edit profile
+      <Icon name="ios-person-outline" />
+      </Button>
+      </View>
+
+      <View style={styles.buttons}>
+      <Button bordered success rounded block onPress={() => {this._aboutUs()}}>
+      About us
+      <Icon name="ios-information-circle-outline" />
+      </Button>
+      </View>
+
+      <View style={styles.buttons}>
+      <Button bordered warning rounded block onPress={() => {this._logout()}}>
+      Feedback
+      <Icon name="ios-mail-outline" />
+      </Button>
+      </View>
+
+
+
+      <View style={styles.buttons}>
+      <Button bordered danger rounded block onPress={() => {this._logout()}}>
+      Log out
+      <Icon name="ios-power-outline" />
+      </Button>
+      </View>
+      </View>
+      </View>
        
     );
   }
 }
 
 
-
-// <Image style={styles.bg} source={{uri: 'https://3.bp.blogspot.com/-azG_Uh0T0qY/UOurj61nv0I/AAAAAAAACi0/YZZzOem_vRo/s1600/football-hd-wallpaper-soccer-iphone-5-wallpapers-06.jpg'}} />
 const styles = StyleSheet.create({
- 
   modalImage: {
     resizeMode: 'contain',
     height: 200,
@@ -145,14 +142,21 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
     // backgroundColor: 'black',
   },
-  containerBottom: {
-    marginTop: 210,
-    width: 200,
-    alignItems: 'center',
+  containerBouttons: {
     alignSelf: 'center',
+    alignItems: 'center',
+    width: 200,
+    height: 400,
+    flexDirection: 'column'
+
+  },
+  buttons: {
+    alignItems: 'center',
+    margin: 20,
+    width: 200
+
   }
  
 

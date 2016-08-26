@@ -134,7 +134,7 @@ class YourTeam extends Component {
       name: 'Setting',
       title: 'Setting',
       component: TeamSetting,
-      passProps: {user: this.props.user}
+      passProps: {user: this.props.user,team: this.props.team}
     });
 
   }
