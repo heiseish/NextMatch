@@ -60,7 +60,7 @@ class TabBar extends Component{
     // console.log(JSON.parse(JSON.stringify(new Date(Date.now()))))
     firebase.database().ref('match').orderByChild('time').startAt(JSON.parse(JSON.stringify(new Date(Date.now() - 864000000)))).endAt(JSON.parse(JSON.stringify(new Date(Date.now() + 864000000)))).once('value').then((snap)=>{
       snap.forEach((child)=>{
-        console.log(child.val())
+        // console.log(child.val())
         if (child.val().state === 'finished') matchFinished.push(child.val())
         else matchComing.push(child.val())
       })
@@ -71,7 +71,7 @@ class TabBar extends Component{
     })
     firebase.database().ref('teams').orderByChild('rankpoint').limitToLast(50).once('value').then((snap)=>{
       snap.forEach((child)=>{
-        console.log(child.val())
+        // console.log(child.val())
         ranks.push(child.val())
       })
       this.setState({ranks:temporarySwap(ranks)})

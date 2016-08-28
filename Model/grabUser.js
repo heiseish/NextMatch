@@ -7,7 +7,11 @@ var grabUser = (userId,user,cb) =>{
 	userRef.once('value').then((snap) =>{
 
 		if (snap.hasChild(userId)) {
-			firebase.database().ref('users/' + userId).once('value').then((snap) => {cb(null,snap.val())})
+			firebase.database().ref('users/' + userId).once('value').then((snap) => {
+			let userModified = snap.val();
+			userModified.picture = user.picture;
+			 cb(null,userModified)
+			})
 		}
 		else {
 			user.leader = false;

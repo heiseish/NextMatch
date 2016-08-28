@@ -9,6 +9,15 @@ var windowSize = Dimensions.get('window');
 var Platform = require('react-native').Platform;
 var ImagePicker = require('react-native-image-picker');
 var firebase =require('../../Model/firebase')
+import RNFetchBlob from 'react-native-fetch-blob'
+// var firestack = require('../../Model/firestack');
+
+const fs = RNFetchBlob.fs
+const Blob = RNFetchBlob.polyfill.Blob
+
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+window.Blob = Blob
+const dirs = RNFetchBlob.fs.dirs
 
 
 class TeamSetting extends Component {
@@ -24,7 +33,8 @@ class TeamSetting extends Component {
       isLoading: false,
       team: this.props.team,
       previousname: this.props.team.name,
-        }
+      avatarSource: ''
+      }
 
     }
 
@@ -67,12 +77,76 @@ class TeamSetting extends Component {
         this.setState({
             check1 : !this.state.check1
         })
-  }
-  _changeImage(){
-    this.setState({
-        modalVisible: true
-    })
-  }
+     }
+      _changeImage(){
+        // this.setState({
+        //     modalVisible: true
+        // })
+        var options = {
+          title: 'Select Display Picture',
+          storageOptions: {
+            skipBackup: true,
+            path: 'images'
+        }
+    }
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+    }
+    else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+    }
+    else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+    }
+    else {
+            // You can display the image using either data...
+            const source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+            // console.log('done')
+            // or a reference to the platform specific asset location
+            if (Platform.OS === 'ios') {
+              const source = {uri: response.uri.replace('file://', ''), isStatic: true};
+          } else {
+              const source = {uri: response.uri, isStatic: true};
+          }
+
+          this.setState({
+              avatarSource: source
+          });
+
+		   let rnfbURI = RNFetchBlob.wrap(source.uri)
+		  // create Blob from file path
+		  Blob.build(rnfbURI, { type : 'image/png;'}).then((blob) => {
+		  		console.log('Hi guys')
+		      // upload image using Firebase SDK
+		      firebase.storage().ref('users').put(blob, { contentType : 'image/png' }).then((snapshot) => {
+		      	
+		      		console.log(snapshot.totalBytes)
+		      		console.log(JSON.stringify(snapshot.metadata))
+		      		console.log('HEll yeah')
+
+		      		console.log(snapshot.val().path)
+		      		
+		      	blob.close()
+		      	done()
+		      })
+		  })
+
+		  // firestack.uploadFile('users', source.uri, {
+		  // 	contentType: 'image/jpeg',
+		  // 	contentEncoding: 'base64',
+		  // })
+		  // .then((res) => console.log('The file has been uploaded'))
+		  // .catch(err => console.error('There was an error uploading the file', err))
+
+
+ 		}
+
+	})
+}
   _exitModal(){
     this.setState({
         modalVisible: false

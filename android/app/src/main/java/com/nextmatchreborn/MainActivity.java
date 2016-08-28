@@ -1,6 +1,7 @@
 package com.nextmatchreborn;
 
 import com.facebook.react.ReactActivity;
+import com.RNFetchBlob.RNFetchBlobPackage;
 import io.realm.react.RealmReactPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.magus.fblogin.FacebookLoginPackage;

@@ -6,6 +6,8 @@ var Login = require('../../setup/setup')
 var EditProfile = require('./editProfile');
 var ProfileSearch = require('./ProfileSearch');
 var SignOut = require('../../Model/SignOut');
+var AboutUS = require('./AboutUs');
+var Feedback = require('./Feedback')
 
 import { 
   Container, 
@@ -70,6 +72,23 @@ class Profile extends Component {
     });
   }
 
+  _aboutUs(){
+    this.props.navigator.push({
+        name: 'About Us',
+        title: 'About us',
+        component: AboutUS
+    });
+  }
+
+  _feedback(){
+    this.props.navigator.push({
+        name: 'Feedback',
+        title: 'Feedback',
+        component: Feedback,
+        passProps: {user: this.props.user}
+    });
+  }
+
 
 
 
@@ -100,7 +119,7 @@ class Profile extends Component {
       </View>
 
       <View style={styles.buttons}>
-      <Button bordered warning rounded block onPress={() => {this._logout()}}>
+      <Button bordered warning rounded block onPress={() => {this._feedback()}}>
       Feedback
       <Icon name="ios-mail-outline" />
       </Button>
