@@ -54,53 +54,53 @@ class Login extends Component{
 
 
   openLogin(){
-    // lock.show({closable: true}, (err, profile, token) => {
-    //   if (err) {
-    //     console.log(err);
-    //     return;
-    //   } else {
-    //     if(!profile.extraInfo.email_verified) {
-    //       AlertIOS.alert('Please verify your email before loggin in')
-    //     } else {
-    //       this.grabUserOrCreate(profile.userId,profile)
+    lock.show({closable: true}, (err, profile, token) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        if(!profile.extraInfo.email_verified) {
+          AlertIOS.alert('Please verify your email before loggin in')
+        } else {
+          this.grabUserOrCreate(profile.userId,profile)
     
-    //     }
-    //   }
-    // });
-    let user ={
-      "createdAt" : 1.471765823369E9,
-      "email" : "dtrnggiang@gmail.com",
-      "extraInfo" : {
-        "clientID" : "hLxzMyG17Ae5Tga4l6PQYB3TwVmOQLIY",
-        "email_verified" : true,
-        "family_name" : "Giang",
-        "gender" : "male",
-        "given_name" : "Đào Trường",
-        "global_client_id" : "TYzGHl00J8ehjGGVX7aNkW9uKZ2uzpRz",
-        "locale" : "en",
-        "updated_at" : "2016-08-22T07:18:04.011Z"
-      },
-      "identities" : [ {
-        "connection" : "google-oauth2",
-        "identityId" : "google-oauth2|106637632885548188656",
-        "provider" : "google-oauth2",
-        "social" : true,
-        "userId" : "106637632885548188656"
-      } ],
-      "leader" : true,
-      "name" : "Đào Trường Giang",
-      "nickname" : "Heiseish",
-      "picture" : "https://lh4.googleusercontent.com/-2kzDXZ1pREo/AAAAAAAAAAI/AAAAAAAAAIc/NDczG1pkvRw/photo.jpg",
-      "position" : "Striker",
-      "team" : "Facebook FC",
-      "userId" : "google-oauth2|106637632885548188656"
-    }
-    this.props.navigator.push({
-              name: 'Main',
-              title: "Main",
-              component: TabBar,
-              passProps: {user:user,selectedTab: 'profile'}
-          });
+        }
+      }
+    });
+    // let user ={
+    //   "createdAt" : 1.471765823369E9,
+    //   "email" : "dtrnggiang@gmail.com",
+    //   "extraInfo" : {
+    //     "clientID" : "hLxzMyG17Ae5Tga4l6PQYB3TwVmOQLIY",
+    //     "email_verified" : true,
+    //     "family_name" : "Giang",
+    //     "gender" : "male",
+    //     "given_name" : "Đào Trường",
+    //     "global_client_id" : "TYzGHl00J8ehjGGVX7aNkW9uKZ2uzpRz",
+    //     "locale" : "en",
+    //     "updated_at" : "2016-08-22T07:18:04.011Z"
+    //   },
+    //   "identities" : [ {
+    //     "connection" : "google-oauth2",
+    //     "identityId" : "google-oauth2|106637632885548188656",
+    //     "provider" : "google-oauth2",
+    //     "social" : true,
+    //     "userId" : "106637632885548188656"
+    //   } ],
+    //   "leader" : true,
+    //   "name" : "Đào Trường Giang",
+    //   "nickname" : "Heiseish",
+    //   "picture" : "https://lh4.googleusercontent.com/-2kzDXZ1pREo/AAAAAAAAAAI/AAAAAAAAAIc/NDczG1pkvRw/photo.jpg",
+    //   "position" : "Striker",
+    //   "team" : "Facebook FC",
+    //   "userId" : "google-oauth2|106637632885548188656"
+    // }
+    // this.props.navigator.push({
+    //           name: 'Main',
+    //           title: "Main",
+    //           component: TabBar,
+    //           passProps: {user:user,selectedTab: 'profile'}
+    //       });
   }
 
   grabUserOrCreate(userId,profile){

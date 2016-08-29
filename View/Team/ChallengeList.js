@@ -34,6 +34,7 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 
 
+
 class MailBox extends Component {
   constructor(props){
     super(props);
@@ -55,6 +56,9 @@ class MailBox extends Component {
         <ChallengeList tabLabel="Challenge" navigator={this.props.navigator} user={this.props.user} team={this.props.team} challenge={this.props.challenge} />
 
         <RequestList tabLabel="Request to join" navigator={this.props.navigator} user={this.props.user} team={this.props.team} request={this.props.request} />
+        <ConfirmMatch tabLabel="Confirm Match Result" navigator={this.props.navigator} user={this.props.user} team={this.props.team} list={this.props.request} />
+
+
         </ScrollableTabView>
 
         <View style={styles.overlay}>
@@ -214,6 +218,128 @@ class RequestList extends Component {
       modalVisible: false,
       selectedItem: undefined,
       request: this.props.request,
+    }
+
+  }
+
+
+
+  setModalVisible(visible, x) {
+        this.setState({
+            modalVisible: visible,
+            selectedItem: x
+        });
+  }
+  
+
+
+
+  setModalInvisibleAndProceed(visible, x, request) {
+        let arr = this.state.request;
+        arr = arr.filter((x)=> x.userId !== request.userId)
+        this.setState({request: arr})
+        firebase.database().ref('teams/' + this.props.team.name + '/players/' + request.userId).set(request)
+        firebase.database().ref('teams/' + this.props.team.name + '/request/'  + request.nickname).remove()
+        this.setState({
+            modalVisible: visible,
+            selectedItem: x
+        });
+
+
+        
+        AlertIOS.alert('You have successfully accepted challenge from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
+
+  }
+
+  _Alert(){
+    AlertIOS.alert(
+          'Are you sure that you want to accept the player to your team?',
+          'Once accepted the player will join the team',
+         [
+         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+         {text: 'Yes', onPress: () => this.setModalInvisibleAndProceed(!this.state.modalVisible, this.state.selectedItem, this.state.selectedItem)},
+         ],
+         );
+  }
+
+  toggleCheck() {
+        this.setState({
+            check1 : !this.state.check1
+        })
+  }
+
+
+  _goBack(){
+    this.props.navigator.pop();
+  }
+
+  render() {
+    return (
+      <Container>
+
+      <Content>
+      {this.state.loading? <Spinner /> : <List dataArray={this.state.request} renderRow={(request) =>               
+        <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
+        <Thumbnail square size={80} source={{uri:request.picture}} />        
+        <Text>Name: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.nickname}</Text></Text>   
+        </ListItem>                            
+      }> </List> }
+
+
+
+
+      <Modal
+      animationType="slide"
+      transparent={false}
+      visible={this.state.modalVisible}
+      onRequestClose={() => {alert("Modal has been closed.")}}
+      >
+      <Card style={{paddingTop: 20}}>
+      {!this.state.selectedItem ? <View />
+        :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
+        <Image style={styles.modalImage} source={{uri:this.state.selectedItem.picture}}  />
+        <H3 style={styles.header}> {this.state.selectedItem.nickname}
+        </H3>
+        
+
+        <View style={styles.buttons}>
+          <View style={{width: 170}}>
+          <Button success style={{alignSelf: 'center'}} onPress={() => {
+            this._Alert()
+          }}>Accept Player</Button>
+          </View>
+          <View style={{width: 170}}>
+          <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+            this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+          }}>Back</Button>
+          </View>
+
+        </View>
+        </CardItem>
+      }
+      </Card>
+      </Modal>
+
+
+
+
+      </Content>
+      </Container>
+
+      );
+  }
+}
+
+class ConfirmMatch extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      search: '',
+      radio1 : true,
+      check1: false,
+      modalVisible: false,
+      selectedItem: undefined,
+      list: this.props.list,
     }
 
   }

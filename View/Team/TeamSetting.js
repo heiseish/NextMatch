@@ -2,7 +2,7 @@
 
 var realm = require('../../Model/model.js');
 import React, { Component } from 'react';
-import { Container, Content, InputGroup, Input , Icon, Header, Title, Button, Text,Card,CardItem,} from 'native-base';
+import { Container, Content, InputGroup, Input , Icon, Header, Title, Button, Text,Card,CardItem,Spinner} from 'native-base';
 import {View, StyleSheet, Image, TouchableOpacity,Modal,Dimensions, AlertIOS} from 'react-native';
 var Swiper = require('react-native-swiper');
 var windowSize = Dimensions.get('window');
@@ -12,12 +12,13 @@ var firebase =require('../../Model/firebase')
 import RNFetchBlob from 'react-native-fetch-blob'
 // var firestack = require('../../Model/firestack');
 
-const fs = RNFetchBlob.fs
-const Blob = RNFetchBlob.polyfill.Blob
 
-window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
-window.Blob = Blob
-const dirs = RNFetchBlob.fs.dirs
+// BEFORE UPDATING AN OBJECT ON FIREBASE. MAKE SURE TO RETRIEVE IT FIRST
+
+const polyfill = RNFetchBlob.polyfill
+
+window.XMLHttpRequest = polyfill.XMLHttpRequest
+window.Blob = polyfill.Blob
 
 
 class TeamSetting extends Component {
@@ -33,7 +34,9 @@ class TeamSetting extends Component {
       isLoading: false,
       team: this.props.team,
       previousname: this.props.team.name,
-      avatarSource: ''
+      avatarSource: '',
+      pictureLoading: false,
+      picture: this.props.team.picture
       }
 
     }
@@ -74,84 +77,104 @@ class TeamSetting extends Component {
         });
   }
   toggleCheck() {
-        this.setState({
-            check1 : !this.state.check1
-        })
-     }
-      _changeImage(){
+  	this.setState({
+  		check1 : !this.state.check1
+  	})
+  }
+  _changeImage(){
         // this.setState({
         //     modalVisible: true
         // })
+        
         var options = {
-          title: 'Select Display Picture',
-          storageOptions: {
-            skipBackup: true,
-            path: 'images'
+        	title: 'Select Display Picture',
+        	storageOptions: {
+        		skipBackup: true,
+        		path: 'images'
+        	}
         }
-    }
 
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
+        ImagePicker.showImagePicker(options, (response) => {
+        	console.log('Response = ', response);
 
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-    }
-    else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-    }
-    else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-    }
-    else {
+        	if (response.didCancel) {
+        		console.log('User cancelled image picker');
+        	}
+        	else if (response.error) {
+        		console.log('ImagePicker Error: ', response.error);
+        	}
+        	else if (response.customButton) {
+        		console.log('User tapped custom button: ', response.customButton);
+        	}
+        	else {
+        	this.setState({pictureLoading:true})
             // You can display the image using either data...
-            const source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
-            // console.log('done')
-            // or a reference to the platform specific asset location
-            if (Platform.OS === 'ios') {
-              const source = {uri: response.uri.replace('file://', ''), isStatic: true};
+            // const source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+            const source = {uri: '', isStatic: true};
+          //   // or a reference to the platform specific asset location
+          if (Platform.OS === 'ios') {
+          	source = {uri: response.uri.replace('file://', ''), isStatic: true};
           } else {
-              const source = {uri: response.uri, isStatic: true};
+          	source = {uri: response.uri, isStatic: true};
           }
 
           this.setState({
-              avatarSource: source
+          	avatarSource: source
           });
+          Blob.build(RNFetchBlob.wrap(source.uri), { type : 'image/jpeg' })
+          .then((blob) => {
+          	
+          	var uploadTask = firebase.storage()
+          	.ref('teams/' + this.props.team.name)
+          	.put(blob, { contentType : 'image/png' })
 
-		   let rnfbURI = RNFetchBlob.wrap(source.uri)
-		  // create Blob from file path
-		  Blob.build(rnfbURI, { type : 'image/png;'}).then((blob) => {
-		  		console.log('Hi guys')
-		      // upload image using Firebase SDK
-		      firebase.storage().ref('users').put(blob, { contentType : 'image/png' }).then((snapshot) => {
-		      	
-		      		console.log(snapshot.totalBytes)
-		      		console.log(JSON.stringify(snapshot.metadata))
-		      		console.log('HEll yeah')
-
-		      		console.log(snapshot.val().path)
-		      		
-		      	blob.close()
-		      	done()
-		      })
-		  })
-
-		  // firestack.uploadFile('users', source.uri, {
-		  // 	contentType: 'image/jpeg',
-		  // 	contentEncoding: 'base64',
-		  // })
-		  // .then((res) => console.log('The file has been uploaded'))
-		  // .catch(err => console.error('There was an error uploading the file', err))
+          	uploadTask.on('state_changed', (snapshot) => {
+          		// Observe state change events such as progress, pause, and resume
+				  // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+				  var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				  console.log('Upload is ' + progress + '% done');
+				  // switch (snapshot.state) {
+				  //   case firebase.storage.TaskState.PAUSED: // or 'paused'
+				  //     console.log('Upload is paused');
+				  //     break;
+				  //   case firebase.storage.TaskState.RUNNING: // or 'running'
+				  //     console.log('Upload is running');
+				  //     break;
+				  // }
+				}, (error) => {
+				  // Handle unsuccessful uploads
+				}, () => {
 
 
- 		}
+				  let team = this.props.team;
+				  team.picture = uploadTask.snapshot.downloadURL;
+				  firebase.database().ref('teams/'+ this.props.team.name).update(team);
+				  this.setState({
+					pictureLoading:false,
+					picture: uploadTask.snapshot.downloadURL
+				  })
+				})
 
-	})
-}
-  _exitModal(){
-    this.setState({
-        modalVisible: false
-    })
-  }
+
+          	 })
+
+				
+
+     
+
+
+
+
+
+      }
+
+  	})
+    }
+    _exitModal(){
+    	this.setState({
+    		modalVisible: false
+    	})
+    }
 
 
 
@@ -171,9 +194,10 @@ class TeamSetting extends Component {
                     </Button>
                 </Header>
                 <Content>
+                	{this.state.pictureLoading ? <Spinner/> :
                     <TouchableOpacity onPress={() => {this._changeImage()}}>
-                        <Image style={styles.modalImage} source={{uri:this.props.team.picture}}  />
-                    </TouchableOpacity>
+                        <Image style={styles.modalImage} source={{uri:this.state.picture}}  />
+                    </TouchableOpacity>}
                    
 
                     <Text style={{color: '#000099'}}>Team name</Text>

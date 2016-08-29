@@ -6,6 +6,7 @@ var Profile = require("./Profile/Profile.js");
 var realm = require('../Model/model.js');
 var GetMatch = require('./GetMatch/GetMatch.js')
 var firebase = require('../Model/firebase')
+var firestack = require('../Model/firestack')
 import Icon from 'react-native-vector-icons/Ionicons';
 import React, { Component } from 'react';
 import {
@@ -49,7 +50,9 @@ class TabBar extends Component{
     firebase.database().ref('teams/' + this.props.user.team).on('value',(snap)=>{
       // console.log(snap.val());
       this.setState({team:snap.val()});
+      console.log(snap.val().picture)
     })
+
 
     let matchFinished = []
     let matchComing = []
@@ -76,6 +79,14 @@ class TabBar extends Component{
       })
       this.setState({ranks:temporarySwap(ranks)})
     }) 
+
+    firestack.database
+      .ref('users')
+      .on('value', snapshot => {
+        if (snapshot.val()) {
+          console.log('The list was updated');
+        }
+      });
 
   }
 

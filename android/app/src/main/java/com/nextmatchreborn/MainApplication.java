@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import io.fullstack.firestack.FirestackPackage;
 import com.facebook.react.ReactInstanceManager;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new RNFetchBlobPackage(),
            new MainReactPackage(),
+            new RCTCameraPackage(),
             new FirestackPackage()
       );
     }
