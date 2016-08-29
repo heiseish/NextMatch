@@ -1,11 +1,12 @@
 package com.nextmatchreborn;
 
 import com.facebook.react.ReactActivity;
-import com.RNFetchBlob.RNFetchBlobPackage;
 import io.realm.react.RealmReactPackage;
-import com.imagepicker.ImagePickerPackage;
-import com.magus.fblogin.FacebookLoginPackage;
 import com.auth0.lock.react.LockReactPackage;
+import com.imagepicker.ImagePickerPackage;
+import io.fullstack.firestack.FirestackPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 
 public class MainActivity extends ReactActivity {
 

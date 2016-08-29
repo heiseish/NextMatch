@@ -1,10 +1,11 @@
 'use strict';
-var realm = require('../../Model/model.js');
+
 var JoinTeamView = require ('./JoinTeamView');
 var CreateTeamView = require('./CreateTeamView');
 // var TeamPost = require('./TeamPost');
 var TeamSetting = require('./TeamSetting');
-var MailBox = require('./ChallengeList');
+var MailBox = require('./MailBox');
+var TeamManagement = require('./TeamManagement')
 var matchRef = require('../../Model/matchRef');
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
@@ -105,9 +106,9 @@ class YourTeam extends Component {
         gotMail: gotMail
 
       })
-      console.log(arrChallenge);
-      console.log(arrRequest);
-      console.log(gotMail)
+      // console.log(arrChallenge);
+      // console.log(arrRequest);
+      // console.log(gotMail)
     });
 
 
@@ -144,17 +145,27 @@ class YourTeam extends Component {
       name: 'Challenge',
       title: 'Challenge',
       component: MailBox,
-      passProps: {user: this.props.user,challenge: this.state.challenge,request: this.state.request,team:this.props.team}
+      passProps: {user: this.props.user,challenge: this.state.challenge,team:this.props.team,results:[]}
     });
   }
-  _openTeamPost(){
+
+  _openTeamManagement(){
     this.props.navigator.push({
-      name: 'TeamChat',
-      title: 'TeamChat',
-      component: TeamPost,
-      passProps: {user: this.props.user}
+      name: 'Team Managment',
+      title: 'Team Managment',
+      component: TeamManagement,
+      passProps: {user: this.props.user,request: this.state.request,team:this.props.team,rosters:[]}
     });
   }
+
+  // _openTeamPost(){
+  //   this.props.navigator.push({
+  //     name: 'TeamChat',
+  //     title: 'TeamChat',
+  //     component: TeamPost,
+  //     passProps: {user: this.props.user}
+  //   });
+  // }
 
   countChallenges(){
     return this.state.challenge.length + this.state.request.length
@@ -162,8 +173,6 @@ class YourTeam extends Component {
   }
 
 
-
-// <Image style={styles.bg} source={{uri: 'https://s-media-cache-ak0.pinimg.com/736x/3c/69/35/3c69358f9f5a6ab1a986d32b9c84c022.jpg'}} />
 
 render() {
     // var profilepic = this.props.user.image ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
@@ -194,12 +203,22 @@ render() {
         </Button>
         </View> : <View/>}
 
+        <View style={{width:30,flexDirection:'column'}}>
         {this.props.user.leader ? <View style={{marginLeft: 10, width:40}}>
         <Button transparent onPress={() => {this._openChallengeBox()}}>
-        <Icon name="ios-mail" badgeValue={2} />
+        <Icon name="ios-mail" />
         </Button>
         {this.state.gotMail ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge> : <View/>}
         </View> : <View/>}
+
+        {this.props.user.leader ? <View style={{marginLeft: 10, width:40}}>
+        <Button transparent onPress={() => {this._openTeamManagement()}}>
+        <Icon name="ios-person"/>
+        </Button>
+        {this.state.gotMail ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge> : <View/>}
+        </View> : <View/>}
+        </View>
+
 
 
         
@@ -207,11 +226,11 @@ render() {
         </View>
 
 
-        <View style={{height:600,marginTop:0}}>
+        <View style={{height:600,marginTop:20}}>
 
 
         <ScrollableTabView>
-        <TeamRoster tabLabel="Team players" navigator={this.props.navigator} user={this.props.user} team={this.props.team} />
+        
         <UpcomingMatch tabLabel="Upcoming Matches" navigator={this.props.navigator} user={this.props.user} team={this.props.team} match={this.state.matchComing} />
 
         <TeamHistory tabLabel="Past Match" navigator={this.props.navigator} user={this.props.user} team={this.props.team} match={this.state.matchFinished} />
@@ -383,65 +402,7 @@ class UpcomingMatch extends Component{
   }
 }
 
-class TeamRoster extends Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      players:[{sda:'sasd'}]
-    }
-  }
 
-  componentDidMount(){
-    this.setState({players: this.returnArrayPlayer()});
-  }
-
-  
-  returnArrayPlayer(){
-    var arrPlayer =[]
-
-
-    firebase.database().ref('teams/' + this.props.team.name + '/players').on('value',(snap)=>{
-      snap.forEach((child)=>{
-       arrPlayer.push(child.val())
-     })
-
-     })
-
-    
-
-    console.log(arrPlayer)
-    
-    return(arrPlayer)
-
-  }
-
-  render(){
-    return(
-      <Container>
-      <Content>
-      <List dataArray={this.state.players} renderRow={(player) =>               
-        <ListItem> 
-
-        <View style={styles.row}>
-
-        <View style={{width: 80, height: 40, left: 0}} >
-        <Thumbnail square size={40} source={{uri:player.picture}} />
-        </View>
-        <View style={{width: 200, height: 20, right:0, paddingLeft: 10,marginTop:10 }}>
-        <Text style={{fontWeight: '600', color: '#cc00cc', right : 25, marginLeft: 55}}>{player.nickname}   {player.position}</Text>
-        </View>
-
-        </View>
-
-        </ListItem>                            
-      }> </List> 
-
-
-      </Content>
-      </Container>
-      );
-  }
-}
 
 
 class TeamHistory extends Component{
@@ -569,6 +530,7 @@ const styles = StyleSheet.create({
     marginBottom:0
   },
   row: {
+    marginTop: 10,
     flexDirection: 'row', 
     height:72,
   },
