@@ -1,6 +1,5 @@
 'use strict';
 
-
 import React, { Component } from 'react';
 import { 
   Container, 
@@ -26,8 +25,14 @@ import {
   View,
   Image,
   AlertIOS,
+  Dimensions,
+  ListView,
+  RefreshControl,
+  ScrollView,
+  TouchableHighlight
 } from 'react-native';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
+var windowSize = Dimensions.get('window');
 
 
 
@@ -52,7 +57,7 @@ class TeamManagement extends Component {
       <ScrollableTabView style={styles.scrollview}>
         
         <RequestList tabLabel="Requests" navigator={this.props.navigator} user={this.props.user} team={this.props.team} request={this.props.request} />
-        <Roster tabLabel="Roster" navigator={this.props.navigator} user={this.props.user} team={this.props.team} request={this.props.request} />
+        <Roster tabLabel="Roster" navigator={this.props.navigator} user={this.props.user} team={this.props.team} roster={this.props.roster} />
         
         
 
@@ -74,14 +79,47 @@ class TeamManagement extends Component {
 class Roster extends Component {
   constructor(props) {
     super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1.id !== row2.id});
     this.state = {
-      search: '',
-      radio1 : true,
-      check1: false,
+      dataSource: this.ds.cloneWithRows(this.props.roster),
       modalVisible: false,
       selectedItem: undefined,
-      request: this.props.request,
-    }
+      refreshing: false,
+      roster: this.props.roster
+
+    };
+  }
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this._refreshArray((err)=>{
+      if (!err) this.setState({refreshing:false})
+    })
+  }
+
+  _refreshArray(cb){
+
+    this.returnRoster((err,arr)=>{
+      if (!err)
+        this.setState({
+          refreshing: false,
+          dataSource: this.ds.cloneWithRows(arr)
+        })
+
+    })
+
+
+
+  }
+  returnRoster(cb){
+    let arr = []
+    firebase.database().ref('teams/' + this.props.team.name).child('players').once('value').then((snap)=>{
+       snap.forEach((child)=>{
+         arr.push(child.val())
+      })
+
+      cb(null,arr);
+    })
+
 
   }
 
@@ -97,27 +135,30 @@ class Roster extends Component {
 
 
 
-  setModalInvisibleAndProceed(visible, x, request) {
-        let arr = this.state.request;
-        arr = arr.filter((x)=> x.userId !== request.userId)
-        this.setState({request: arr})
-        firebase.database().ref('teams/' + this.props.team.name + '/players/' + request.userId).set(request)
-        firebase.database().ref('teams/' + this.props.team.name + '/request/'  + request.nickname).remove()
-        this.setState({
+  setModalInvisibleAndProceed(visible, x, player) {
+        if (player.userId === this.props.user.userId){
+          AlertIOS.alert('You cannot kick yourself!')
+        } else {
+          let arr = this.state.roster;
+          arr = arr.filter((x)=> x.userId !== request.userId)
+          this.setState({roster: arr})
+
+          firebase.database().ref('teams/' + this.props.team.name + '/players/' + player.userId).remove()
+          firebase.database().ref('users/' + player.userId).child('team').remove()
+        
+          this.setState({
             modalVisible: visible,
             selectedItem: x
-        });
-
-
-        
-        AlertIOS.alert('You have successfully accepted challenge from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
+          });
+          AlertIOS.alert('You have kicked the player');
+      }
 
   }
 
   _Alert(){
     AlertIOS.alert(
-          'Are you sure that you want to accept the player to your team?',
-          'Once accepted the player will join the team',
+          'Are you sure that you want to kick the player from your team?',
+          ':(',
          [
          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
          {text: 'Yes', onPress: () => this.setModalInvisibleAndProceed(!this.state.modalVisible, this.state.selectedItem, this.state.selectedItem)},
@@ -136,17 +177,44 @@ class Roster extends Component {
     this.props.navigator.pop();
   }
 
-  render() {
+  renderRow(player) {
     return (
-      <Container>
+      <View>
+      <TouchableHighlight onPress={()=>{this.setModalVisible(true,player)}}>
+      <View style={styles.row}>
 
-      <Content>
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.request} renderRow={(request) =>               
-        <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
-        <Thumbnail square size={80} source={{uri:request.picture}} />        
-        <Text>Name: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.nickname}</Text></Text>   
-        </ListItem>                            
-      }> </List> }
+      <View style={{width: 60, height: 70, left: 0}} >
+      <Thumbnail style={{margin: 5}} square size={80} source={{uri:player.picture}} />
+      </View>
+
+      <View style={{width: 250, height: 70, marginLeft:90, marginTop:20}}>
+      <Text note>Nickname: <Text style={{marginLeft:10}}>{player.nickname}</Text></Text>
+      <Text note>Position: <Text style={{marginLeft:10}}>{player.position}</Text></Text>
+      </View>
+      
+      </View>
+      </TouchableHighlight>
+      <View style={styles.rowSeparator}/>
+      </View>
+      );
+  }
+
+
+  render(){
+    return(
+      <View style={styles.container}>
+      <ScrollView style={styles.scrollview} 
+      refreshControl={
+        <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={()=>{this._onRefresh()}}
+        />}>
+        <ListView
+
+
+        dataSource={this.state.dataSource}
+        renderRow={this.renderRow.bind(this)}/>
+        </ScrollView>
 
 
 
@@ -167,9 +235,10 @@ class Roster extends Component {
 
         <View style={styles.buttons}>
           <View style={{width: 170}}>
-          <Button success style={{alignSelf: 'center'}} onPress={() => {
+          {this.props.user.leader ? 
+          <Button warning style={{alignSelf: 'center'}} onPress={() => {
             this._Alert()
-          }}>Accept Player</Button>
+          }}>Kick Player</Button> : <View/>}
           </View>
           <View style={{width: 170}}>
           <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
@@ -186,8 +255,7 @@ class Roster extends Component {
 
 
 
-      </Content>
-      </Container>
+      </View>
 
       );
   }
@@ -196,14 +264,47 @@ class Roster extends Component {
 class RequestList extends Component {
   constructor(props) {
     super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1.id !== row2.id});
     this.state = {
-      search: '',
-      radio1 : true,
-      check1: false,
+      dataSource: this.ds.cloneWithRows(this.props.request),
       modalVisible: false,
       selectedItem: undefined,
-      request: this.props.request,
-    }
+      refreshing: false,
+      roster: this.props.request
+
+    };
+  }
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this._refreshArray((err)=>{
+      if (!err) this.setState({refreshing:false})
+    })
+  }
+
+  _refreshArray(cb){
+
+    this.returnRequest((err,arr)=>{
+      if (!err)
+        this.setState({
+          refreshing: false,
+          dataSource: this.ds.cloneWithRows(arr)
+        })
+
+    })
+
+
+
+  }
+  returnRequest(cb){
+    let arr = []
+    firebase.database().ref('teams/' + this.props.team.name).child('request').once('value').then((snap)=>{
+       snap.forEach((child)=>{
+         arr.push(child.val())
+      })
+
+      cb(null,arr);
+    })
+
 
   }
 
@@ -258,17 +359,44 @@ class RequestList extends Component {
     this.props.navigator.pop();
   }
 
-  render() {
+  renderRow(player) {
     return (
-      <Container>
+      <View>
+      <TouchableHighlight onPress={()=>{this.setModalVisible(true,player)}}>
+      <View style={styles.row}>
 
-      <Content>
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.request} renderRow={(request) =>               
-        <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
-        <Thumbnail square size={80} source={{uri:request.picture}} />        
-        <Text>Name: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.nickname}</Text></Text>   
-        </ListItem>                            
-      }> </List> }
+      <View style={{width: 60, height: 70, left: 0}} >
+      <Thumbnail style={{margin: 5}} square size={80} source={{uri:player.picture}} />
+      </View>
+
+      <View style={{width: 250, height: 70, marginLeft:90, marginTop:20}}>
+      <Text note>Nickname: <Text style={{marginLeft:10}}>{player.nickname}</Text></Text>
+      <Text note>Position: <Text style={{marginLeft:10}}>{player.position}</Text></Text>
+      </View>
+      
+      </View>
+      </TouchableHighlight>
+      <View style={styles.rowSeparator}/>
+      </View>
+      );
+  }
+
+
+  render(){
+    return(
+      <View style={styles.container}>
+      <ScrollView style={styles.scrollview} 
+      refreshControl={
+        <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={()=>{this._onRefresh()}}
+        />}>
+        <ListView
+
+
+        dataSource={this.state.dataSource}
+        renderRow={this.renderRow.bind(this)}/>
+        </ScrollView>
 
 
 
@@ -308,8 +436,7 @@ class RequestList extends Component {
 
 
 
-      </Content>
-      </Container>
+      </View>
 
       );
   }
@@ -350,6 +477,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     
   },
+  row: {
+    marginTop: 10,
+    flexDirection: 'row', 
+    height:72,
+  },
   overlay: {
     flex: 1,
     position: 'absolute',
@@ -358,7 +490,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     width: 80, 
     height: 80,
-  } 
+  },
+  scrollview:{
+    height: 600,
+  },
+
+  rowSeparator: {
+    backgroundColor: '#009933',
+    height:1,
+    width: windowSize.width
+  },
+  row: {
+    flexDirection: 'row', 
+    height:90,
+  },
 });
 
 

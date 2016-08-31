@@ -25,9 +25,14 @@ import {
   View,
   Image,
   AlertIOS,
+  Dimensions,
+  ListView,
+  RefreshControl,
+  ScrollView,
+  TouchableHighlight
 } from 'react-native';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
-
+var windowSize = Dimensions.get('window');
 
 
 
@@ -40,7 +45,9 @@ class MailBox extends Component {
   goBack(){
     this.props.navigator.pop();
   }
+  componentDidMount(){
 
+  }
 
   render(){
     return(
@@ -51,7 +58,7 @@ class MailBox extends Component {
       <ScrollableTabView style={styles.scrollview}>
         
         <ChallengeList tabLabel="Challenge" navigator={this.props.navigator} user={this.props.user} team={this.props.team} challenge={this.props.challenge}/>
-        <Results tabLabel="Results" navigator={this.props.navigator} user={this.props.user} team={this.props.team} challenge={this.props.challenge}/>
+        <Results tabLabel="Results" navigator={this.props.navigator} user={this.props.user} team={this.props.team} results={this.props.results}/>
 
       </ScrollableTabView>
 
@@ -70,14 +77,54 @@ class MailBox extends Component {
 class ChallengeList extends Component {
   constructor(props) {
     super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1.id !== row2.id});
     this.state = {
-      search: '',
+      dataSource: this.ds.cloneWithRows(this.props.challenge),
       radio1 : true,
       check1: false,
       modalVisible: false,
       selectedItem: undefined,
+      isReady: true,
+      status: '',
+      quality: '',
+      error: '',
+      currentTime: '',
+      duration: '',
+      refreshing: false,
       challenge: this.props.challenge
-    }
+
+    };
+  }
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this._refreshArray((err)=>{
+      if (!err) this.setState({refreshing:false})
+    })
+  }
+
+  _refreshArray(cb){
+
+    this.returnResult((err,arr)=>{
+      if (!err)
+        this.setState({
+          refreshing: false,
+          dataSource: this.ds.cloneWithRows(arr)
+        })
+
+    })
+
+
+
+  }
+  returnResult(cb){
+    let arr = []
+    firebase.database().ref('teams/' + this.props.team.name).child('challenge').once('value').then((snap)=>{
+       snap.forEach((child)=>{
+         arr.push(child.val())
+      })
+
+      cb(null,arr);
+    })
 
 
   }
@@ -134,23 +181,54 @@ class ChallengeList extends Component {
   }
 
 
-  _goBack(){
-    this.props.navigator.pop();
+
+
+  returnTeamImage(name){
+    var picture = ''
+    firebase.database().ref('teams/' + name).on('value',(snap)=>{
+      picture= snap.val().picture;
+    })
+    return picture;
   }
 
-  render() {
+  renderRow(challenge) {
     return (
-      <Container>
+      <View>
+      <TouchableHighlight onPress={()=>{this.setModalVisible(true,challenge)}}>
+      <View style={styles.row}>
 
-      <Content>
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.challenge} renderRow={(request) =>               
-        <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
-        <Thumbnail square size={80} source={{uri:request.picture}} />        
-        <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.hometeam}</Text></Text>
-        <Text style={{color:'#007594'}}>{request.additionalCondition}</Text>    
-        <Text note>Time: <Text note style={{marginTop: 5}}>{request.time}@{request.venue}</Text></Text>    
-        </ListItem>                            
-      }> </List> }
+      <View style={{width: 60, height: 70, left: 0}} >
+      <Thumbnail square size={50} source={{uri:challenge.picture}} />
+      </View>
+      <View style={{width: 250, height: 70}}>
+      <Text style={{marginLeft:10}}>{challenge.time}</Text>
+      <Text note style={{marginLeft:10}}>{challenge.venue}</Text>
+      <Text note style={{marginLeft:10}}>{challenge.additionalCondition}</Text>
+      </View>
+      
+      </View>
+      </TouchableHighlight>
+      <View style={styles.rowSeparator}/>
+      </View>
+      );
+  }
+
+
+  render(){
+    return(
+      <View style={styles.container}>
+      <ScrollView style={styles.scrollview} 
+      refreshControl={
+        <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={()=>{this._onRefresh()}}
+        />}>
+        <ListView
+
+
+        dataSource={this.state.dataSource}
+        renderRow={this.renderRow.bind(this)}/>
+        </ScrollView>
 
 
 
@@ -163,7 +241,7 @@ class ChallengeList extends Component {
       >
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
-        :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
+        :  <CardItem cardBody style={{justifyContent: 'flex-start',height: 500}}>
         <Image style={styles.modalImage} source={{uri:this.state.selectedItem.picture}}  />
         <H3 style={styles.header}> {this.state.selectedItem.hometeam}
         </H3>
@@ -195,8 +273,7 @@ class ChallengeList extends Component {
 
 
 
-      </Content>
-      </Container>
+     </View>
 
       );
   }
@@ -207,14 +284,54 @@ class ChallengeList extends Component {
 class Results extends Component {
   constructor(props) {
     super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1.id !== row2.id});
     this.state = {
-      search: '',
+      dataSource: this.ds.cloneWithRows(this.props.results),
       radio1 : true,
       check1: false,
       modalVisible: false,
       selectedItem: undefined,
-      challenge: this.props.challenge
-    }
+      isReady: true,
+      status: '',
+      quality: '',
+      error: '',
+      refreshing: false,
+      results: this.props.results,
+      hometeamscore: '',
+      awayteamscore: '',
+
+    };
+  }
+  _onRefresh() {
+    this.setState({refreshing: true});
+    this._refreshArray('finished',(err)=>{
+      if (!err) this.setState({refreshing:false})
+    })
+  }
+
+  _refreshArray(state,cb){
+
+    this.returnResult((err,arr)=>{
+      if (!err)
+        this.setState({
+          refreshing: false,
+          dataSource: this.ds.cloneWithRows(arr)
+        })
+
+    })
+
+
+
+  }
+  returnResult(cb){
+    let arr = []
+    firebase.database().ref('teams/' + this.props.team.name).child('results').once('value').then((snap)=>{
+       snap.forEach((child)=>{
+         arr.push(child.val())
+      })
+
+      cb(null,arr);
+    })
 
 
   }
@@ -227,36 +344,33 @@ class Results extends Component {
         });
   }
 
-  setModalInvisibleAndProceed(visible, x, request) {
-        let arr = this.state.challenge;
-        arr = arr.filter((x)=> x.name !== request.name)
-        this.setState({request: arr})
+  setModalInvisibleAndProceed(visible, x, result) {
+        let arr = this.state.results;
+        arr = arr.filter((x)=> x.id !== result.id)
+        this.setState({result: arr})
 
-        firebase.database().ref('teams/' + this.props.team.name + '/challenge/' + request.name).remove();
-        firebase.database().ref('match/' + request.time + request.abre + '-' + this.props.team.abre).set({
-          "awayteam" : this.props.team.name,
-          "awayteamabre" : this.props.team.abre,
-          "awayteamscore" : 0,
-          "hometeam" : request.name,
-          "hometeamabre" : request.abre,
-          "hometeamscore" : 0,
-          "state" : 'coming',
-          "time" : request.time,
-          'id': request.time + request.abre + '-' + this.props.team.abre
+        firebase.database().ref('teams/' + this.props.team.name + '/results/' + result.id).remove();
+        firebase.database().ref('unconfirmed/' + result.id + '/statementfrom' + this.props.team.name).set({
+          "awayteam" : result.awayteam,
+          "awayteamabre" : result.awayteamabre,
+          "awayteamscore" : this.state.awayteamscore,
+          "hometeam" : result.hometeam,
+          "hometeamabre" : result.hometeamabre,
+          "hometeamscore" : this.state.hometeamscore,
         })
 
         this.setState({
             modalVisible: visible,
             selectedItem: x
         });
-        AlertIOS.alert('You have successfully accepted challenge from other team. Please check your upcoming matches in your Team tab and proceed to play in the according day');
+        AlertIOS.alert('Thanks:D');
         
   }
 
   _Alert(){
     AlertIOS.alert(
-          'Are you sure that you want to accept the challenge?',
-          'Once accepted two teams must proceed to match up.',
+          'Are you sure of the result?',
+          'Once accepted you cannot change anymore',
          [
          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
          {text: 'Yes', onPress: () => this.setModalInvisibleAndProceed(!this.state.modalVisible, this.state.selectedItem, this.state.selectedItem)},
@@ -271,23 +385,58 @@ class Results extends Component {
   }
 
 
-  _goBack(){
-    this.props.navigator.pop();
+
+
+  returnTeamImage(name){
+    var picture = ''
+    firebase.database().ref('teams/' + name).on('value',(snap)=>{
+      picture= snap.val().picture;
+    })
+    return picture;
   }
 
-  render() {
+  renderRow(result) {
     return (
-      <Container>
+      <View>
+      <TouchableHighlight onPress={()=>{this.setModalVisible(true,result)}}>
+      <View style={styles.row}>
 
-      <Content>
-      {this.state.loading? <Spinner /> : <List dataArray={this.state.challenge} renderRow={(request) =>               
-        <ListItem button onPress={()=>this.setModalVisible(true, request)} > 
-        <Thumbnail square size={80} source={{uri:request.picture}} />        
-        <Text>Team: <Text style={{fontWeight: '600', color: '#46ee4b'}}>{request.hometeam}</Text></Text>
-        <Text style={{color:'#007594'}}>{request.additionalCondition}</Text>    
-        <Text note>Time: <Text note style={{marginTop: 5}}>{request.time}@{request.venue}</Text></Text>    
-        </ListItem>                            
-      }> </List> }
+      <View style={{width: 60, height: 70, left: 0}} >
+      <Thumbnail square size={50} source={{uri:this.returnTeamImage(result.hometeam)}} />
+      </View>
+      <View style={{width: 250, height: 70}}>
+      <Text note style={{alignSelf:'center'}}>{result.state}</Text>
+      <Text style={{alignSelf:'center'}}>{result.hometeamabre}  -   {result.awayteamabre}</Text>
+      <Text note style={{alignSelf:'center'}}>{result.time}</Text>
+      <Text note style={{alignSelf:'center'}}>{result.venue}</Text>
+      </View>
+      <View style={{width: 60, height: 70, right: 0}}>
+      <Image style={styles.image} source={{uri:this.returnTeamImage(result.awayteam)}} />
+      </View> 
+
+      </View>
+      </TouchableHighlight>
+      <View style={styles.rowSeparator}/>
+      </View>
+      );
+  }
+
+
+  render(){
+    return(
+      <View style={styles.container}>
+      <ScrollView style={styles.scrollview} 
+      refreshControl={
+        <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={()=>{this._onRefresh()}}
+        />}>
+        <ListView
+
+
+        dataSource={this.state.dataSource}
+        renderRow={this.renderRow.bind(this)}/>
+        </ScrollView>
 
 
 
@@ -301,29 +450,49 @@ class Results extends Component {
       <Card style={{paddingTop: 20}}>
       {!this.state.selectedItem ? <View />
         :  <CardItem cardBody style={{justifyContent: 'flex-start'}}>
-        <Image style={styles.modalImage} source={{uri:this.state.selectedItem.picture}}  />
-        <H3 style={styles.header}> {this.state.selectedItem.hometeam}
-        </H3>
-        <Text style={styles.negativeMargin} >
-        Time: <Text style={styles.bold}>{this.state.selectedItem.time}@{this.state.selectedItem.venue}</Text>
-        </Text>
-        <Text style={styles.negativeMargin} >
-        Description: <Text style={styles.bold}>{this.state.selectedItem.additionalCondition}</Text>
-        </Text>
+              <Text>{this.state.selectedItem.hometeam}</Text>
+              <View style={{height:20}}>
+              <InputGroup success borderType="regular" iconRight >
+              <Icon name="ios-checkmark-circle" style={{color:'#00C497'}}/>
+              <Input 
+              
+              placeholder="score"
+              onChangeText={(hometeamscore) => this.setState({hometeamscore})}
+              value={this.state.hometeamscore}
+              />
 
-        <View style={styles.buttons}>
-          <View style={{width: 170}}>
-          <Button success style={{alignSelf: 'center'}} onPress={() => {
-            this._Alert()
-          }}>Accept Challenge</Button>
-          </View>
-          <View style={{width: 170}}>
-          <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
-            this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
-          }}>Back</Button>
-          </View>
 
-        </View>
+              </InputGroup>
+              </View>
+              <Text>{this.state.selectedItem.awayteam}</Text>
+              <View style={{height:20}}>
+              <InputGroup success borderType="regular" iconRight >
+              <Icon name="ios-checkmark-circle" style={{color:'#00C497'}}/>
+              <Input 
+              
+              placeholder="score"
+              onChangeText={() => this.setState({awayteamscore})}
+              value={this.state.awayteamscore}
+              />
+
+
+              </InputGroup>
+              </View>
+              <View style={styles.buttons}>
+                <View style={{width: 170}}>
+                <Button success style={{alignSelf: 'center'}} onPress={() => {
+                  this._Alert()
+                }}>Submit</Button>
+                </View>
+                <View style={{width: 170}}>
+                <Button danger style={{alignSelf: 'flex-end'}} onPress={() => {
+                  this.setModalVisible(!this.state.modalVisible, this.state.selectedItem)
+                }}>Back</Button>
+                </View>
+
+              </View>
+
+
         </CardItem>
       }
       </Card>
@@ -332,8 +501,7 @@ class Results extends Component {
 
 
 
-      </Content>
-      </Container>
+     </View>
 
       );
   }
@@ -373,6 +541,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     
   },
+  row: {
+    marginTop: 10,
+    flexDirection: 'row', 
+    height:72,
+  },
   overlay: {
     flex: 1,
     position: 'absolute',
@@ -381,7 +554,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     width: 80, 
     height: 80,
-  } 
+  },
+  scrollview:{
+    height: 600,
+  },
+
+  rowSeparator: {
+    backgroundColor: '#009933',
+    height:1,
+    width: windowSize.width
+  },
+  row: {
+    flexDirection: 'row', 
+    height:90,
+  },
 });
 
 

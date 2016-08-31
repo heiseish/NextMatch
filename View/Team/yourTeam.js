@@ -55,6 +55,11 @@ class YourTeam extends Component {
       challenge: [],
       request: [],
       gotMail:false,
+      gotRequest: false,
+      results: [],
+      roster: [],
+      mailNo: 0,
+      requestNo: 0
     }
 
   }
@@ -83,36 +88,66 @@ class YourTeam extends Component {
       snap.child('request').forEach((child)=>{
         arrRequest.push(child.val())
       })
-      if (arrChallenge.length > 0 || arrRequest.length > 0) gotMail = true;
-      cb(null,arrChallenge,arrRequest,gotMail)
+      cb(null,arrChallenge,arrRequest)
     })
   }
 
   componentDidMount(){
     this.returnArrayMatches('finished',(err,arr)=>{
       this.setState({matchFinished: arr})
-      // console.log(this.state.matchFinished)
+
     })
 
     this.returnArrayMatches('coming',(err,arr)=>{
       this.setState({matchComing: arr})
-      // console.log(this.state.matchComing)
+   
+
     })
 
-    this.returnMailBox((err,arrChallenge,arrRequest,gotMail)=>{
+    this.setState({
+      results: this.returnArrayResults(),
+      roster: this.returnArrayPlayer(),
+    })
+
+    this.returnMailBox((err,arrChallenge,arrRequest)=>{
       this.setState({
         challenge: arrChallenge,
         request: arrRequest,
-        gotMail: gotMail
 
       })
-      // console.log(arrChallenge);
-      // console.log(arrRequest);
-      // console.log(gotMail)
+      if (this.state.challenge.length > 0 || this.state.results.length > 0) this.setState({gotMail:true,mailNo: this.state.challenge.length + this.state.results.length})
+    if (this.state.request.length > 0) this.setState({gotRequest:true,requestNo: this.state.request.length})
+     
     });
+    
 
 
   }
+
+  returnArrayResults(team){
+    var arrResults = [];
+
+    for (var key in this.props.team.results){
+      arrResults.push(this.props.team.results[key])
+    }
+
+
+    return (arrResults)
+
+  }
+  returnArrayPlayer(team){
+    var arrPlayer = [];
+
+    for (var key in this.props.team.players){
+      arrPlayer.push(this.props.team.players[key])
+    }
+
+
+    return (arrPlayer)
+
+  }
+
+
   _joinTeam(){
     this.props.navigator.push({
       name: 'JoinTeam',
@@ -145,7 +180,7 @@ class YourTeam extends Component {
       name: 'Challenge',
       title: 'Challenge',
       component: MailBox,
-      passProps: {user: this.props.user,challenge: this.state.challenge,team:this.props.team,results:[]}
+      passProps: {user: this.props.user,challenge: this.state.challenge,team:this.props.team,results:this.state.results}
     });
   }
 
@@ -154,7 +189,7 @@ class YourTeam extends Component {
       name: 'Team Managment',
       title: 'Team Managment',
       component: TeamManagement,
-      passProps: {user: this.props.user,request: this.state.request,team:this.props.team,rosters:[]}
+      passProps: {user: this.props.user,request: this.state.request,team:this.props.team,roster:this.state.roster}
     });
   }
 
@@ -167,16 +202,12 @@ class YourTeam extends Component {
   //   });
   // }
 
-  countChallenges(){
-    return this.state.challenge.length + this.state.request.length
 
-  }
 
 
 
 render() {
-    // var profilepic = this.props.user.image ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
-
+  
     if (this.props.user.team){
 
       return (
@@ -185,7 +216,7 @@ render() {
         <View style={styles.container}>
         <View style={styles.containerTop}>
         <View style={{width: 80, height: 80, left: 0}} >
-        <Image style={styles.modalImage} source={{uri: this.state.team.picture}}  />
+        <Image style={styles.modalImage} source={{uri: this.props.team.picture}}  />
         </View>
         <View style={{width: 200, height: 80, right:0, paddingLeft: 10}} >
         <H3 style={styles.header}> {this.state.team.name}
@@ -208,14 +239,14 @@ render() {
         <Button transparent onPress={() => {this._openChallengeBox()}}>
         <Icon name="ios-mail" />
         </Button>
-        {this.state.gotMail ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge> : <View/>}
+        {this.state.gotMail ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.state.mailNo}</Badge> : <View/>}
         </View> : <View/>}
 
         {this.props.user.leader ? <View style={{marginLeft: 10, width:40}}>
         <Button transparent onPress={() => {this._openTeamManagement()}}>
         <Icon name="ios-person"/>
         </Button>
-        {this.state.gotMail ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.countChallenges()}</Badge> : <View/>}
+        {this.state.gotRequest ?<Badge style={{position: 'absolute', width: 27, marginTop: -50, right:0, marginLeft: 30 }}>{this.state.requestNo}</Badge> : <View/>}
         </View> : <View/>}
         </View>
 
