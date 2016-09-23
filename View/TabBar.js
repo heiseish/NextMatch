@@ -47,11 +47,13 @@ class TabBar extends Component{
   }
 
   componentDidMount(){
+    if (this.props.user.team) {
     firebase.database().ref('teams/' + this.props.user.team).on('value',(snap)=>{
       // console.log(snap.val());
       this.setState({team:snap.val()});
-      console.log(snap.val().picture)
+      // console.log(snap.val().picture)
     })
+  }
 
 
     let matchFinished = []
